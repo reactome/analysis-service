@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <context:annotation-config />
+
+    <context:component-scan base-package="org.reactome.server.components"/>
+
+    <bean id="queryHelper" class="org.reactome.server.controller.QueryHelper">
+    </bean>
+
+    <bean id="postMapperFactory" class="org.reactome.server.controller.ReactomeModelPostMapperFactory">
+        <property name="configuration" value="ReactomePostMapperConfigration.xml"/>
+    </bean>
+
+    <bean id="converter" class="org.reactome.server.controller.ReactomeToRESTfulAPIConverter">
+        <property name="postMapperFactory" ref="postMapperFactory"/>
+    </bean>
+
+    <bean id="helper" class="org.reactome.server.controller.APIControllerHelper">
+        <property name="converter" ref="converter"/>
+        <property name="outputdir" value="/Users/gwu/Documents/temp"/>
+    </bean>
+</beans>
