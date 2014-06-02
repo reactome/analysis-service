@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <h1>Reactome Analysis 4.0</h1>
+
+    <h3>Option 1</h3>
+    <p>This option projects to human</p>
+    <form method="post" enctype="multipart/form-data"
+          action="./identifiers/form/projection?&page=1">
+        <input type="file" name="file">
+        <textarea name="text" rows="10" cols="100"></textarea>
+        <button type="submit">Submit</button>
+    </form>
+    <br/><hr /><br />
+    <h3>Option 2</h3>
+    <p>Analysis against different species</p>
+    <form method="post" enctype="multipart/form-data"
+          action="./identifiers/form?page=1">
+        <input type="file" name="file">
+        <textarea name="text" rows="10" cols="100"></textarea>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
