@@ -2,7 +2,7 @@ package org.reactome.server.components;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.reactome.server.components.exporter.UniProtExporter;
+import org.reactome.server.components.exporter.Exporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration("classpath:spring-config-test.xml")
 public class UniProtExporterTest {
     @Autowired
-    private UniProtExporter uniProtExporter;
+    private Exporter exporter;
 
     @Test
     public void testAlgo(){
