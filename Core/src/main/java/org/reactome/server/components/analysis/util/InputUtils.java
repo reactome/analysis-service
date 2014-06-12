@@ -48,8 +48,8 @@ public abstract class InputUtils {
     private static List<String> getHeaderColumnNames(String line){
         line = line.replaceAll("^(#|//)", "");
         List<String> columnNames = new LinkedList<String>();
-        for (String columnName : line.split("\\s")) {
-            columnNames.add(StringEscapeUtils.escapeJava(columnName)); //Kryo serialization error instead :(
+        for (String columnName : line.split("\\t")) {
+            columnNames.add(StringEscapeUtils.escapeJava(columnName.trim())); //Kryo serialization error instead :(
         }
         return columnNames; // Arrays.asList(line.split("\\s"));
     }
@@ -57,12 +57,12 @@ public abstract class InputUtils {
     private static AnalysisIdentifier getAnalysisIdentifier(String line){
         AnalysisIdentifier rtn = null;
         if(line==null || line.isEmpty()) return rtn;
-        String[] data = line.split("\\s");
+        String[] data = line.replaceAll("[ ]+", "\t").split("\\t");
         if(data.length>0){
             rtn = new AnalysisIdentifier(data[0].trim());
             for(int i=1; i<data.length; ++i){
                 try{
-                    rtn.add(Double.valueOf(data[i]));
+                    rtn.add(Double.valueOf(data[i].trim()));
                 }catch (NumberFormatException nfe){
                     rtn.add(null); //null won't be taken into account for the AVG
                 }
