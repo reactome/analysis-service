@@ -30,10 +30,6 @@ public abstract class ResourceFactory {
     //Cache containing the previously created resource for a given name
     private static Map<String, Resource> resourceMap = new HashMap<String, Resource>();
 
-    public static MainResource getResource(MAIN main){
-        return (MainResource) ResourceFactory.getResource(main.name());
-    }
-
     public static Resource getResource(String name){
         name = name.toUpperCase().replaceAll("\\s", "_").trim();
         if(equivalences.containsKey(name)){
@@ -57,5 +53,15 @@ public abstract class ResourceFactory {
             resourceMap.put(name, resource);
         }
         return resource;
+    }
+
+    public static MAIN getMainResource(String name){
+        name = name.toUpperCase().replaceAll("\\s", "_").trim();
+        for (MAIN main : MAIN.values()) {
+            if(main.toString().equals(name)){
+                return main;
+            }
+        }
+        return null;
     }
 }
