@@ -142,9 +142,9 @@ public class PhysicalEntityHierarchyBuilder {
             }
         }
         //5th -> set the node for the main identifier
-        MapSet<Resource, String> resourceIdentifiers = this.getResourceIdentifiers(physicalEntity);
-        PhysicalEntityNode node = this.getPhysicalEntityNode(physicalEntityId, species, resourceIdentifiers);
+        PhysicalEntityNode node = this.getPhysicalEntityNode(physicalEntityId, species, physicalEntity.getCrossReference());
         if(node!=null){
+            MapSet<Resource, String> resourceIdentifiers = this.getResourceIdentifiers(physicalEntity);
             for (Resource resource : resourceIdentifiers.keySet()) {
                 for (String identifier : resourceIdentifiers.getElements(resource)) {
                     //create the corresponding entries in the RADIX TREE for all the (identifier, resource, node)
@@ -216,16 +216,21 @@ public class PhysicalEntityHierarchyBuilder {
         return rtn;
     }
 
-    private PhysicalEntityNode getPhysicalEntityNode(Long physicalEntityId, SpeciesNode species, MapSet<Resource,String> resourceIdentifiers){
+    private PhysicalEntityNode getPhysicalEntityNode(Long physicalEntityId, SpeciesNode species, List<DatabaseIdentifier> identifiers){
         PhysicalEntityNode aux = null;
-        for (Resource resource : resourceIdentifiers.keySet()) {
-            if(resource instanceof MainResource){
-                MainResource mainResource = (MainResource) resource;
-                String identifier = (String) resourceIdentifiers.getElements(resource).toArray()[0];
-                if(mainResource.isAuxMainResource() && aux==null){
-                    aux = new PhysicalEntityNode(physicalEntityId, species, mainResource, identifier);
-                }else{
-                    return new PhysicalEntityNode(physicalEntityId, species, mainResource, identifier);
+        if(identifiers != null) {
+            for (DatabaseIdentifier identifier : identifiers) {
+                for (Pair<Resource, String> resourceIdentifier : this.getIdentifier(identifier)) {
+                    Resource resource = resourceIdentifier.getFst();
+                    if(resource instanceof MainResource){
+                        MainResource mainResource = (MainResource) resource;
+                        String mainIdentifier = resourceIdentifier.getSnd();
+                        if(mainResource.isAuxMainResource() && aux==null){
+                            aux = new PhysicalEntityNode(physicalEntityId, species, mainResource, mainIdentifier);
+                        }else{
+                            return new PhysicalEntityNode(physicalEntityId, species, mainResource, mainIdentifier);
+                        }
+                    }
                 }
             }
         }
