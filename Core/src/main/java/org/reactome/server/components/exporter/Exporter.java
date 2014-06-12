@@ -67,9 +67,9 @@ public class Exporter {
             return result;
         }
 
-        public String generateLink(String uniprotID) {
-            //UniProt Identifier
-            StringBuilder sb = new StringBuilder(uniprotID);
+        public String generateLink(String resource) {
+            //Resource based Identifier
+            StringBuilder sb = new StringBuilder(resource);
 
             //REACTOME Identifier
             sb.append("\t");
@@ -113,20 +113,20 @@ public class Exporter {
         //THIS IS NEEDED HERE
         this.helper.setDba(dba);
 
-        MapSet<AnalysisIdentifier, Long> uniprotToPathways = new MapSet<AnalysisIdentifier, Long>();
+        MapSet<AnalysisIdentifier, Long> resourceToPathways = new MapSet<AnalysisIdentifier, Long>();
         for (PhysicalEntityNode node : analysisData.getPhysicalEntityGraph().getRootNodes()) {
-            uniprotToPathways.addAll(getResourceToPathways(node, resource));
+            resourceToPathways.addAll(getResourceToPathways(node, resource));
         }
 
         //Sorting the list to make it more professional xDD
-        List<AnalysisIdentifier> uniprots = new LinkedList<AnalysisIdentifier>(uniprotToPathways.keySet());
-        Collections.sort(uniprots);
+        List<AnalysisIdentifier> identifiers = new LinkedList<AnalysisIdentifier>(resourceToPathways.keySet());
+        Collections.sort(identifiers);
 
-        MapSet<Long, PathwayNode> pathwayLocation = HierarchiesDataContainer.take().getPathwayLocation();
-        for (AnalysisIdentifier uniprotID : uniprots) {
+        MapSet<Long, PathwayNode> identifierMap = HierarchiesDataContainer.take().getPathwayLocation();
+        for (AnalysisIdentifier identifier : identifiers) {
             Set<Selection> selections = new HashSet<Selection>();
-            for (Long pathwayId : uniprotToPathways.getElements(uniprotID)) {
-                Set<PathwayNode> pathwayNodes = pathwayLocation.getElements(pathwayId);
+            for (Long pathwayId : resourceToPathways.getElements(identifier)) {
+                Set<PathwayNode> pathwayNodes = identifierMap.getElements(pathwayId);
                 if(pathwayNodes!=null){
                     for (PathwayNode pathwayNode : pathwayNodes) {
                         String pId = pathwayNode.getPathwayId().toString();
@@ -138,7 +138,7 @@ public class Exporter {
                 }
             }
             for (Selection selection : selections) {
-                System.out.println(selection.generateLink(uniprotID.toString()));
+                System.out.println(selection.generateLink(identifier.toString()));
             }
         }
     }
