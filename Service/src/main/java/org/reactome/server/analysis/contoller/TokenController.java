@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -32,8 +33,6 @@ public class TokenController {
     @ResponseBody
     public AnalysisResult getToken( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
                                   @PathVariable String token,
-//                                   @ApiParam(name = "resource", value = "focused resource", defaultValue = "TOTAL")
-//                                 @PathVariable String resource,
                                    @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
                                   @RequestParam(required = false) Integer pageSize,
                                    @ApiParam(name = "page", value = "page number", defaultValue = "1")
@@ -140,12 +139,41 @@ public class TokenController {
         }
     }
 
+    @ApiOperation(value = "Returns the reaction ids of the provided pathway id that are present in the original result")
+    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found" )})
+//    @ApiResponses({@ApiResponse( code = 404, message = "No result corresponding to the token was found" ) })
+    @RequestMapping(value = "/{token}/reactions/{pathway}", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public Set<Long> getTokenFilterReactions( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+                                             @PathVariable String token,
+                                              @ApiParam(name = "pathway", required = true, value = "The database identifier of the pathway of interest")
+                                             @PathVariable Long pathway,
+                                              @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,NCBI_PROTEIN,EMBL,COMPOUND")
+                                             @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+        return controller.getFromToken(token).getFoundReactions(pathway, resource);
+    }
+
+    @ApiOperation(value = "Returns the reaction ids of the pathway ids sent by post that are present in the original result")
+    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found" )})
+//    @ApiResponses({@ApiResponse( code = 404, message = "No result corresponding to the token was found" ) })
+    @RequestMapping(value = "/{token}/reactions/pathways", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public Set<Long> getTokenFilterReactions( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+                                             @PathVariable String token,
+                                              @ApiParam(name = "input", required = true, value = "A comma separated list with the identifiers of the pathways of interest (NOTE: is plain text, not json)")
+                                             @RequestBody(required = true) String input,
+                                              @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,NCBI_PROTEIN,EMBL,COMPOUND")
+                                             @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+        List<Long> pathwayIds = controller.getInputIds(input);
+        return controller.getFromToken(token).getFoundReactions(pathwayIds, resource);
+    }
+
     @ApiOperation(value = "Returns the resources summary associated with the token")
     @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found" )})
 //    @ApiResponses({@ApiResponse( code = 404, message = "No result corresponding to the token was found" ) })
     @RequestMapping(value = "/{token}/resources", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public List<ResourceSummary> getResources(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+    public List<ResourceSummary> getResources( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
                                               @PathVariable String token) {
         return this.controller.getFromToken(token).getResourceSummary();
     }

@@ -1,10 +1,16 @@
 package org.reactome.server.analysis.result;
 
 import org.reactome.server.analysis.model.*;
-import org.reactome.server.components.analysis.model.*;
+import org.reactome.server.components.analysis.model.AnalysisIdentifier;
+import org.reactome.server.components.analysis.model.HierarchiesData;
+import org.reactome.server.components.analysis.model.PathwayNode;
+import org.reactome.server.components.analysis.model.UserData;
+import org.reactome.server.components.analysis.model.identifier.Identifier;
+import org.reactome.server.components.analysis.model.identifier.MainIdentifier;
 import org.reactome.server.components.analysis.model.resource.MainResource;
 import org.reactome.server.components.analysis.model.resource.Resource;
 import org.reactome.server.components.analysis.model.resource.ResourceFactory;
+import org.reactome.server.components.analysis.util.MapSet;
 
 import java.util.*;
 
@@ -65,6 +71,80 @@ public class AnalysisStoredResult {
         return notFound;
     }
 
+    public MapSet<Identifier, MainIdentifier> getFoundEntitiesMap() {
+        MapSet<Identifier, MainIdentifier> rtn = new MapSet<Identifier, MainIdentifier>();
+        for (PathwayNodeSummary pathway : this.pathways) {
+            rtn.addAll(pathway.getData().getIdentifierMap());
+        }
+        return rtn;
+    }
+
+    public MapSet<Identifier, MainIdentifier> getFoundEntitiesMap(MainResource mainResource) {
+        MapSet<Identifier, MainIdentifier> rtn = new MapSet<Identifier, MainIdentifier>();
+
+        MapSet<Identifier, MainIdentifier> aux = getFoundEntitiesMap();
+        for (Identifier identifier : aux.keySet()) {
+            for (MainIdentifier mainIdentifier : aux.getElements(identifier)) {
+                if(mainIdentifier.getResource().equals(mainResource)){
+                    rtn.add(identifier, mainIdentifier);
+                }
+            }
+        }
+        return rtn;
+    }
+
+//    public Set<Long> getFoundReactions(Long pathwayId){
+//        for (PathwayNodeSummary pathway : this.pathways) {
+//            if(pathway.getPathwayId().equals(pathwayId)){
+//                return pathway.getData().getReactions();
+//            }
+//        }
+//        return new HashSet<Long>();
+//    }
+
+    public Set<Long> getFoundReactions(Long pathwayId, String resource){
+        if(resource.toUpperCase().equals("TOTAL")){
+            for (PathwayNodeSummary pathway : this.pathways) {
+                if(pathway.getPathwayId().equals(pathwayId)){
+                    return pathway.getData().getReactions();
+                }
+            }
+        }else{
+            Resource r = ResourceFactory.getResource(resource);
+            if(r instanceof MainResource){
+                MainResource mainResource = (MainResource) r;
+                for (PathwayNodeSummary pathway : this.pathways) {
+                    if(pathway.getPathwayId().equals(pathwayId)){
+                        return pathway.getData().getReactions(mainResource);
+                    }
+                }
+            }
+        }
+        return new HashSet<Long>();
+    }
+
+    public Set<Long> getFoundReactions(List<Long> pathwayIds, String resource){
+        Set<Long> rtn = new HashSet<>();
+        if(resource.toUpperCase().equals("TOTAL")){
+            for (PathwayNodeSummary pathway : this.pathways) {
+                if(pathwayIds.contains(pathway.getPathwayId())){
+                    rtn.addAll(pathway.getData().getReactions());
+                }
+            }
+        }else{
+            Resource r = ResourceFactory.getResource(resource);
+            if(r instanceof MainResource){
+                MainResource mainResource = (MainResource) r;
+                for (PathwayNodeSummary pathway : this.pathways) {
+                    if(pathwayIds.contains(pathway.getPathwayId())){
+                        rtn.addAll(pathway.getData().getReactions(mainResource));
+                    }
+                }
+            }
+        }
+        return rtn;
+    }
+
     public PathwayNodeSummary getPathway(Long dbId){
         for (PathwayNodeSummary nodeSummary : this.pathways) {
             if(nodeSummary.getPathwayId().equals(dbId)){
@@ -78,10 +158,6 @@ public class AnalysisStoredResult {
         return pathways;
     }
 
-    public List<ResourceSummary> getResourceSummary() {
-        return resourceSummary;
-    }
-
     public int getPage(Long dbId, String sortBy, String order, String resource, Integer pageSize){
         this.filterPathwaysByResource(resource);
         Collections.sort(this.pathways, getComparator(sortBy, order, resource));
@@ -93,6 +169,14 @@ public class AnalysisStoredResult {
             }
         }
         return -1;
+    }
+
+    public List<ResourceSummary> getResourceSummary() {
+        return resourceSummary;
+    }
+
+    public AnalysisResult getResultSummary(String resource) {
+        return getResultSummary(null, "ASC", resource, null, null);
     }
 
     public AnalysisResult getResultSummary(String sortBy, String order, String resource, Integer pageSize, Integer page){
