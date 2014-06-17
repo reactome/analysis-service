@@ -57,7 +57,7 @@ public abstract class InputUtils {
     private static AnalysisIdentifier getAnalysisIdentifier(String line){
         AnalysisIdentifier rtn = null;
         if(line==null || line.isEmpty()) return rtn;
-        String[] data = line.replaceAll("[ ]+", "\t").split("\\t");
+        String[] data = line.split("\\t");
         if(data.length>0){
             rtn = new AnalysisIdentifier(data[0].trim());
             for(int i=1; i<data.length; ++i){
@@ -91,21 +91,4 @@ public abstract class InputUtils {
 
         return new UserData(headerColumnNames, expressionData, md5);
     }
-
-//    private static String sha1(String input) {
-//        MessageDigest mDigest = null;
-//        try {
-//            mDigest = MessageDigest.getInstance("SHA-256");
-//        } catch (NoSuchAlgorithmException e) {
-//            logger.error(e.getMessage(), e);
-//        }
-//        byte[] result = mDigest.digest(input.getBytes());
-//        StringBuffer sb = new StringBuffer();
-//        for (int i = 0; i < result.length; i++) {
-//            sb.append(Integer.toString((result[i] & 0xff) + 0x100, 16).substring(1));
-//        }
-//
-//        return sb.toString();
-//    }
-
 }
