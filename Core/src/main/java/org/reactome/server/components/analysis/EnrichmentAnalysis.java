@@ -40,6 +40,7 @@ public class EnrichmentAnalysis {
         return ANALYSIS_COUNT;
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void analyse(HierarchiesData hierarchies, Set<AnalysisIdentifier> identifiers, SpeciesNode speciesNode){
         Integer originalSampleSize = identifiers.size();
         IdentifiersMap identifiersMap = analysisData.getIdentifiersMap();

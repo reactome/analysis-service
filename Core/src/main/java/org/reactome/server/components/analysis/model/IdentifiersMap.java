@@ -34,17 +34,20 @@ public class IdentifiersMap implements Serializable {
 
     public void add(String identifier, Resource resource, PhysicalEntityNode node){
         String id = identifier.trim().toUpperCase();
-//        String id = identifier.trim();
         MapSet<Resource, PhysicalEntityNode> map = getOrCreateResourceEntitiesMap(id);
         map.add(resource, node);
     }
 
     public MapSet<Resource, PhysicalEntityNode> get(AnalysisIdentifier identifier){
-        String id = identifier.getId().toUpperCase();
-//        String id = identifier.getId();
-        MapSet<Resource, PhysicalEntityNode> rtn = this.tree.getValueForExactKey(id);
-        if(rtn==null){
-            rtn = new MapSet<Resource, PhysicalEntityNode>();
+        Set<AnalysisIdentifier> identifiers = expandIdentifierWithPolimorfism(identifier);
+
+        MapSet<Resource, PhysicalEntityNode> rtn = new MapSet<Resource, PhysicalEntityNode>();
+        for (AnalysisIdentifier aux : identifiers) {
+            String id = aux.getId().toUpperCase();
+            MapSet<Resource, PhysicalEntityNode> res = this.tree.getValueForExactKey(id);
+            if(res!=null){
+                rtn.addAll(res);
+            }
         }
         return rtn;
     }
@@ -59,5 +62,24 @@ public class IdentifiersMap implements Serializable {
             keySet.add(String.valueOf(charSequence));
         }
         return keySet;
+    }
+
+    private Set<AnalysisIdentifier> expandIdentifierWithPolimorfism(AnalysisIdentifier identifier){
+        //The compiler takes care of replacing this where the variables are used, so no worries for performance
+        String UNIPROT = "([O,P,Q][0-9][A-Z, 0-9]{3}[0-9]|[A-N,R-Z]([0-9][A-Z][A-Z,0-9]{2}){1,2}[0-9])";
+//        String UNIPROT_POLIMORFISM = UNIPROT + "\\-\\d+$";
+
+        Set<AnalysisIdentifier> rtn = new HashSet<AnalysisIdentifier>();
+        String id = identifier.getId().toUpperCase();
+        rtn.add(identifier);
+        if(id.matches(UNIPROT) && !id.contains("-")){
+            for (CharSequence sequence : this.tree.getKeysStartingWith(id + "-")) {
+//                String aux = sequence.toString();
+//                if(aux.matches(UNIPROT_POLIMORFISM)){
+                rtn.add(new AnalysisIdentifier(sequence.toString(), identifier.getExp()));
+//                }
+            }
+        }
+        return rtn;
     }
 }
