@@ -120,7 +120,7 @@ public class PathwayNodeData {
                     total++;
                 }
             }
-            if( sum > 0.0){
+            if( total > 0.0){
                 avg.add(i++, sum / total);
             }else{
                 avg.add(i++, null);
