@@ -4,10 +4,9 @@
  */
 package org.reactome.server.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This class is simply used to make JAXB happy.

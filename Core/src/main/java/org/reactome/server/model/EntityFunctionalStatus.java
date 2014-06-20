@@ -4,9 +4,8 @@
  */
 package org.reactome.server.model;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 /**
  * @author gwu

@@ -21,4 +21,6 @@ public class GenomeEncodedEntity extends PhysicalEntity {
     public void setSpecies(Taxon species) {
         this.species = species;
     }
+
+
 }
