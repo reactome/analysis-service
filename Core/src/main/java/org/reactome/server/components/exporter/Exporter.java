@@ -29,18 +29,14 @@ public class Exporter {
     private APIControllerHelper helper;
 
     class Selection {
-        final static String pbUrl = ""; // "http://www.reactome.org/PathwayBrowser/";
+        final static String pbUrl = "http://www.reactome.org/PathwayBrowser/#";
 
-        Species species;
-        Pathway pathway;
-        Pathway subpathway;
+        String pathwayId;
+        String subpathwayId;
 
-        Selection(Pathway pathway, Pathway subpathway) {
-            this.pathway = (Pathway) helper.getDetailedView("Pathway", pathway.getAvailableIdentifier());
-            this.species = (Species) helper.getDetailedView("Species", this.pathway.getSpecies().get(0).getAvailableIdentifier());
-            if(subpathway!=null){
-                this.subpathway = (Pathway) helper.getDetailedView("Pathway", subpathway.getAvailableIdentifier());
-            }
+        Selection(String pathwayId, String subpathwayId) {
+            this.pathwayId = pathwayId;
+            this.subpathwayId = subpathwayId;
         }
 
         @Override
@@ -50,10 +46,9 @@ public class Exporter {
 
             Selection selection = (Selection) o;
 
-            if (!pathway.equals(selection.pathway)) return false;
-            if (!species.equals(selection.species)) return false;
+            if (pathwayId != null ? !pathwayId.equals(selection.pathwayId) : selection.pathwayId != null) return false;
             //noinspection RedundantIfStatement
-            if (subpathway != null ? !subpathway.equals(selection.subpathway) : selection.subpathway != null)
+            if (subpathwayId != null ? !subpathwayId.equals(selection.subpathwayId) : selection.subpathwayId != null)
                 return false;
 
             return true;
@@ -61,34 +56,35 @@ public class Exporter {
 
         @Override
         public int hashCode() {
-            int result = species.hashCode();
-            result = 31 * result + pathway.hashCode();
-            result = 31 * result + (subpathway != null ? subpathway.hashCode() : 0);
+            int result = pathwayId != null ? pathwayId.hashCode() : 0;
+            result = 31 * result + (subpathwayId != null ? subpathwayId.hashCode() : 0);
             return result;
         }
 
         public String generateLink(String resource) {
+            Pathway pathway = (Pathway) helper.getDetailedView("Pathway", pathwayId);
+            Species species = (Species) helper.getDetailedView("Species", pathway.getSpecies().get(0).getAvailableIdentifier());
+            Pathway subpathway = subpathwayId!=null? (Pathway) helper.getDetailedView("Pathway", subpathwayId) : null;
+
             //Resource based Identifier
             StringBuilder sb = new StringBuilder(resource);
 
             //REACTOME Identifier
-            sb.append("\t");
-            if(subpathway!=null){
-                sb.append(subpathway.getAvailableIdentifier());
-            }else{
-                sb.append(pathway.getAvailableIdentifier());
-            }
+            String id = (subpathway!=null) ? subpathway.getAvailableIdentifier() : pathway.getAvailableIdentifier();
+            sb.append("\t").append(id);
 
             //TOKEN
             sb.append("\t").append(pbUrl);
-            if(!species.getDbId().equals(48887L)){
-                sb.append("#SPECIES=").append(species.getAvailableIdentifier()).append("&");
+            if(id.matches("^REACT_\\d+(\\.\\d+)?$")){
+                sb.append(id);
             }else{
-                sb.append("#");
-            }
-            sb.append("DIAGRAM=").append(pathway.getAvailableIdentifier());
-            if(subpathway!=null){
-                sb.append("&ID=").append(subpathway.getAvailableIdentifier());
+                if(!species.getDbId().equals(48887L)){
+                    sb.append("SPECIES=").append(species.getAvailableIdentifier()).append("&");
+                }
+                sb.append("DIAGRAM=").append(pathway.getAvailableIdentifier());
+                if(subpathway!=null){
+                    sb.append("&ID=").append(subpathway.getAvailableIdentifier());
+                }
             }
 
             //Pathway name
@@ -131,9 +127,7 @@ public class Exporter {
                     for (PathwayNode pathwayNode : pathwayNodes) {
                         String pId = pathwayNode.getPathwayId().toString();
                         String dId = pathwayNode.getDiagram().getPathwayId().toString();
-                        Pathway subpathway = (Pathway) helper.getDetailedView("Pathway", pId);
-                        Pathway pathway = (Pathway) helper.getDetailedView("Pathway", dId);
-                        selections.add(new Selection(pathway, subpathway));
+                        selections.add(new Selection(dId, pId));
                     }
                 }
             }
