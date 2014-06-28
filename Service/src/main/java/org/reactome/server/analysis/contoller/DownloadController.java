@@ -6,7 +6,6 @@ import com.wordnik.swagger.annotations.ApiParam;
 import org.reactome.server.analysis.helper.AnalysisHelper;
 import org.reactome.server.analysis.helper.DownloadHelper;
 import org.reactome.server.analysis.result.AnalysisStoredResult;
-import org.reactome.server.components.analysis.model.AnalysisIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Controller;
