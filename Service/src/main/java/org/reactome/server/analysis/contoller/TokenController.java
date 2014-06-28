@@ -27,8 +27,8 @@ public class TokenController {
     private AnalysisHelper controller;
 
     @ApiOperation(value = "Returns the result associated with the token")
-    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found" )})
-//    @ApiResponses({@ApiResponse( code = 404, message = "No result corresponding to the token was found" ) })
+    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found"),
+                        @ApiError(code = 410, reason = "Result deleted due to a new data release") })
     @RequestMapping(value = "/{token}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public AnalysisResult getToken( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
@@ -47,8 +47,8 @@ public class TokenController {
     }
 
     @ApiOperation(value = "Returns the result for the pathway ids sent by post (when they are present in the original result)")
-    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found" )})
-//    @ApiResponses({@ApiResponse( code = 404, message = "No result corresponding to the token was found" ) })
+    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found"),
+                        @ApiError(code = 410, reason = "Result deleted due to a new data release") })
     @RequestMapping(value = "/{token}/filter/pathways", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public List<PathwaySummary> getTokenFilterPathways( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
@@ -62,8 +62,8 @@ public class TokenController {
     }
 
     @ApiOperation(value = "Returns the page where the corresponding pathway is taking into account the passed parameters")
-    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found" )})
-//    @ApiResponses({@ApiResponse( code = 404, message = "No result corresponding to the token was found" ) })
+    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found"),
+                        @ApiError(code = 410, reason = "Result deleted due to a new data release") })
     @RequestMapping(value = "/{token}/page/{pathway}", method = RequestMethod.GET , produces = "application/json")
     @ResponseBody
     public int getPageOfPathway( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
@@ -82,8 +82,8 @@ public class TokenController {
     }
 
     @ApiOperation(value = "Returns a summary of the contained identifiers for a pathway in the result for a given token")
-    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found" )})
-//    @ApiResponses({@ApiResponse( code = 404, message = "No result corresponding to the token was found" ) })
+    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found"),
+                        @ApiError(code = 410, reason = "Result deleted due to a new data release") })
     @RequestMapping(value = "/{token}/summary/{pathway}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public PathwayIdentifiers getTokenSummaryPathway( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
@@ -109,8 +109,8 @@ public class TokenController {
     }
 
     @ApiOperation(value = "Returns a list of the identifiers not found for a given token")
-    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found" )})
-//    @ApiResponses({@ApiResponse( code = 404, message = "No result corresponding to the token was found" ) })
+    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found"),
+                        @ApiError(code = 410, reason = "Result deleted due to a new data release") })
     @RequestMapping(value = "/{token}/notFound", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public List<IdentifierSummary> getNotFoundIdentifiers( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
@@ -140,8 +140,8 @@ public class TokenController {
     }
 
     @ApiOperation(value = "Returns the reaction ids of the provided pathway id that are present in the original result")
-    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found" )})
-//    @ApiResponses({@ApiResponse( code = 404, message = "No result corresponding to the token was found" ) })
+    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found"),
+                        @ApiError(code = 410, reason = "Result deleted due to a new data release") })
     @RequestMapping(value = "/{token}/reactions/{pathway}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Set<Long> getTokenFilterReactions( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
@@ -154,8 +154,8 @@ public class TokenController {
     }
 
     @ApiOperation(value = "Returns the reaction ids of the pathway ids sent by post that are present in the original result")
-    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found" )})
-//    @ApiResponses({@ApiResponse( code = 404, message = "No result corresponding to the token was found" ) })
+    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found"),
+                        @ApiError(code = 410, reason = "Result deleted due to a new data release") })
     @RequestMapping(value = "/{token}/reactions/pathways", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public Set<Long> getTokenFilterReactions( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
@@ -169,8 +169,8 @@ public class TokenController {
     }
 
     @ApiOperation(value = "Returns the resources summary associated with the token")
-    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found" )})
-//    @ApiResponses({@ApiResponse( code = 404, message = "No result corresponding to the token was found" ) })
+    @ApiErrors(value = {@ApiError(code = 404, reason = "No result corresponding to the token was found"),
+                        @ApiError(code = 410, reason = "Result deleted due to a new data release") })
     @RequestMapping(value = "/{token}/resources", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public List<ResourceSummary> getResources( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")

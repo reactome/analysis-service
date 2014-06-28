@@ -1,10 +1,11 @@
 package org.reactome.server.analysis.helper;
 
 import org.apache.log4j.Logger;
+import org.reactome.server.analysis.exception.ResourceGoneException;
 import org.reactome.server.analysis.exception.ResourceNotFoundException;
 import org.reactome.server.analysis.exception.UnsopportedMediaTypeException;
-import org.reactome.server.analysis.result.AnalysisStoredResult;
 import org.reactome.server.analysis.model.AnalysisSummary;
+import org.reactome.server.analysis.result.AnalysisStoredResult;
 import org.reactome.server.analysis.utils.ResultDataUtils;
 import org.reactome.server.analysis.utils.Tokenizer;
 import org.reactome.server.components.analysis.EnrichmentAnalysis;
@@ -107,7 +108,10 @@ public class AnalysisHelper {
             try {
                 return ResultDataUtils.getAnalysisResult(fileName);
             } catch (FileNotFoundException e) {
-                //Nothing here
+                //should be alive is only true when the token follows the rule and the resulting date is in the last 7 days
+                if(Tokenizer.shouldBeAlive(token)){
+                    throw new ResourceGoneException();
+                }
             }
         }
         throw new ResourceNotFoundException();

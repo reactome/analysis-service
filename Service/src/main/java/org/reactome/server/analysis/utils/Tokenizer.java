@@ -3,11 +3,15 @@ package org.reactome.server.analysis.utils;
 import org.apache.log4j.Logger;
 import org.apache.xml.security.exceptions.Base64DecodingException;
 import org.apache.xml.security.utils.Base64;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.reactome.server.analysis.exception.ResourceNotFoundException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +28,10 @@ public abstract class Tokenizer {
     private static Map<String, String> md5ToToken = new HashMap<String, String>();
 
     private static Long lastToken = 1L;
+
+    private static final int DAYS_TO_LIVE = 7;
+
+    private static final String DATE_PATTERN = "yyyyMMddHHmmss";
 
     public static String getOrCreateToken(String md5, boolean toHuman){
         String token = md5ToToken.get(md5 + toHuman);
@@ -77,8 +85,19 @@ public abstract class Tokenizer {
         return false;
     }
 
+    public static boolean shouldBeAlive(String token){
+        boolean rtn = false;
+        DateTime now = new DateTime(System.currentTimeMillis());
+        DateTime tokenDate = getTokenDate(token);
+        if(tokenDate!=null){
+            int days = Days.daysBetween(tokenDate, now).getDays();
+            rtn = ( days <= DAYS_TO_LIVE );
+        }
+        return rtn;
+    }
+
     private static synchronized String getToken(){
-        SimpleDateFormat sdf = new SimpleDateFormat("MMddHHmmss");
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_PATTERN);
         String current = sdf.format(System.currentTimeMillis());
         String token = current + "_" + lastToken++;
         token = Base64.encode(token.getBytes());
@@ -87,5 +106,21 @@ public abstract class Tokenizer {
         } catch (UnsupportedEncodingException e) {
             return null;
         }
+    }
+
+    private static DateTime getTokenDate(String token){
+        DateTime date = null;
+        String name = Tokenizer.getName(token);
+        if(name.contains("_")){
+            String d =  name.split("_")[0];
+            if( d.length() == (DATE_PATTERN.length()-4) )  d = "2014" + d; //Keeps compatibility backwards //TODO: Remove after release 49 :)
+            DateFormat df = new SimpleDateFormat(DATE_PATTERN);
+            try {
+                date = new DateTime(df.parse(d));
+            } catch (ParseException e) {
+                //Nothing here (date is null already)
+            }
+        }
+        return date;
     }
 }

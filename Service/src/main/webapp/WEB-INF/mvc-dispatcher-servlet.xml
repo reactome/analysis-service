@@ -12,12 +12,6 @@
 
     <context:property-placeholder location="classpath:/analysis.properties" />
 
-    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">-->
-        <!--<property name="useSuffixPatternMatch" value="false" />-->
-        <!--<property name="useRegisteredSuffixPatternMatch" value="false" />-->
-    <!--</bean>-->
-
-    <!--<mvc:resources mapping="/resources/**" location="/resources/" />-->
     <mvc:resources mapping="/**" location="/resources/" />
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -41,7 +35,7 @@
         <property name="ttl" value="604800000"/> <!-- 1 week (SAB suggestion) -->
     </bean>
 
-    <bean id="analysisHelper2" class="org.reactome.server.analysis.helper.AnalysisHelper">
+    <bean id="analysisHelper" class="org.reactome.server.analysis.helper.AnalysisHelper">
         <property name="pathDirectory" value="${analysis.data.tmp}"/>
     </bean>
 
