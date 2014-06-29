@@ -1,40 +1,62 @@
 package org.reactome.server.analysis.report;
 
+import org.reactome.server.analysis.helper.AnalysisHelper;
+import org.reactome.server.analysis.model.AnalysisSummary;
+import org.reactome.server.analysis.result.AnalysisStoredResult;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class ReportParameters {
-    String name;
-    Boolean toHuman;
-    int ids;
-    int found;
-    long milliseconds;
+    private AnalysisHelper.Type type;
+    private String name;
+    private Boolean toHuman;
+    private int ids;
+    private int found;
+    private long milliseconds;
 
-    public ReportParameters(String name, Boolean toHuman, int ids, int found, long milliseconds) {
-        this.name = name;
+    public ReportParameters(AnalysisHelper.Type type) {
+        this.type = type;
+    }
+
+    public ReportParameters(AnalysisHelper.Type type, Boolean toHuman){
+        this.type = type;
         this.toHuman = toHuman;
-        this.ids = ids;
-        this.found = found;
+    }
+
+    public ReportParameters(AnalysisStoredResult analysisStoredResult) {
+        this.setAnalysisStoredResult(analysisStoredResult);
+    }
+
+    public void setAnalysisStoredResult(AnalysisStoredResult result){
+        AnalysisSummary aux = result.getSummary();
+        this.type = AnalysisHelper.Type.getType(aux.getType());
+        this.name = aux.getSampleName();
+        if(this.name==null || this.name.isEmpty()) this.name = aux.getFileName();
+        if(this.name==null || this.name.isEmpty()) this.name = aux.getSpecies().toString();
+
+        this.found = result.getFoundEntities().size();
+        int notFound = result.getNotFound().size();
+        this.ids = this.found + notFound;
+    }
+
+    public void setMilliseconds(long milliseconds) {
         this.milliseconds = milliseconds;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Boolean getToHuman() {
-        return toHuman;
-    }
-
-    public int getIds() {
-        return ids;
-    }
-
-    public int getFound() {
-        return found;
-    }
-
-    public long getMilliseconds() {
-        return milliseconds;
+    @Override
+    public String toString() {
+        String name = this.name != null ? " " + this.name.replaceAll("\\s", "_") : "";
+        String toHumanStr = toHuman != null ? ( toHuman ? "toHuman" : "toSpecies") : "N/A";
+        String type = this.type != null ? "_" + this.type + "_" : "";
+        @SuppressWarnings("StringBufferReplaceableByString")
+        StringBuilder message = new StringBuilder(type)
+                .append(name)
+                .append(" ").append(toHumanStr)
+                .append(" size:").append(ids)
+                .append(" found:").append(found)
+                .append(" notFound:").append(ids-found)
+                .append(" time:").append(milliseconds).append("ms");
+        return message.toString();
     }
 }

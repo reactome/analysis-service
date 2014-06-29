@@ -1,7 +1,6 @@
 package org.reactome.server.analysis.report;
 
 import org.apache.log4j.Logger;
-import org.reactome.server.analysis.helper.AnalysisHelper.Type;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -11,30 +10,47 @@ public abstract class AnalysisReport {
     private static Logger logger = Logger.getLogger(AnalysisReport.class.getName());
 
     private enum AnalysisAction {
-        NEW, CACHE
+        EXEC                ("_ANALYSIS_ _EXEC_"),
+        CACHE               ("_ANALYSIS_ _CACHE_"),
+        DOWNLOAD_RESULT     ("_DOWNLOAD_ _RESULT_"),
+        DOWNLOAD_MAPPING    ("_DOWNLOAD_ _MAPPING_"),
+        DOWNLOAD_NOT_FOUND  ("_DOWNLOAD_ _NOTFOUND_");
+
+        private String str;
+
+        AnalysisAction(String str) {
+            this.str = str;
+        }
+
+        @Override
+        public String toString() {
+            return str;
+        }
     }
 
-    public static void reportCachedAnalysis(Type type, String name, Boolean toHuman, int ids, int found, long milliseconds){
-        report(AnalysisAction.CACHE, type, name, toHuman, ids, found, milliseconds);
+    public static void reportCachedAnalysis(ReportParameters parameters){
+        report(AnalysisAction.CACHE, parameters);
     }
 
-//    public static void reportResultDownload(){
-//
-//    }
-
-    public static void reportNewAnalysis(Type type, String name, Boolean toHuman, int ids, int found, long milliseconds){
-        report(AnalysisAction.NEW, type, name, toHuman, ids, found, milliseconds);
+    public static void reportNewAnalysis(ReportParameters parameters){
+        report(AnalysisAction.EXEC, parameters);
     }
 
-    private static void report(AnalysisAction action, Type type, String name, Boolean toHuman, int ids, int found, long milliseconds){
-        name = name != null ? " " + name.replaceAll("\\s", "_") : "";
-        String toHumanStr = toHuman != null ? ( toHuman ? "toHuman" : "toSpecies") : "N/A";
+    public static void reportResultDownload(ReportParameters parameters){
+        report(AnalysisAction.DOWNLOAD_RESULT, parameters);
+    }
+
+    public static void reportMappingDownload(ReportParameters parameters){
+        report(AnalysisAction.DOWNLOAD_MAPPING, parameters);
+    }
+
+    public static void reportNotFoundDownload(ReportParameters parameters){
+        report(AnalysisAction.DOWNLOAD_NOT_FOUND, parameters);
+    }
+
+    private static void report(AnalysisAction action, ReportParameters parameters){
         StringBuilder message = new StringBuilder(action.toString())
-                .append(" ").append(type).append(name)
-                .append(" ").append(toHumanStr)
-                .append(" size:").append(ids)
-                .append(" found:").append(found)
-                .append(" time:").append(milliseconds).append("ms");
+                .append(" ").append(parameters);
         logger.info(message);
     }
 }

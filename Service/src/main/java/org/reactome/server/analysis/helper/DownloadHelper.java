@@ -1,5 +1,7 @@
 package org.reactome.server.analysis.helper;
 
+import org.reactome.server.analysis.report.AnalysisReport;
+import org.reactome.server.analysis.report.ReportParameters;
 import org.reactome.server.analysis.result.AnalysisSortType;
 import org.reactome.server.analysis.result.AnalysisStoredResult;
 import org.reactome.server.analysis.result.ComparatorFactory;
@@ -27,6 +29,7 @@ public class DownloadHelper {
     private static final String DELIMITER = ",";
 
     public static FileSystemResource getHitPathwaysCVS(String filename, AnalysisStoredResult asr, String resource) throws IOException {
+        long start = System.currentTimeMillis();
         File f = File.createTempFile(filename, "csv");
         FileWriter fw = new FileWriter(f);
 
@@ -46,12 +49,17 @@ public class DownloadHelper {
                 }
             }
         }
-
         fw.flush(); fw.close();
+
+        ReportParameters reportParams = new ReportParameters(asr);
+        reportParams.setMilliseconds(System.currentTimeMillis() - start);
+        AnalysisReport.reportResultDownload(reportParams);
+
         return new FileSystemResource(f);
     }
 
     public static FileSystemResource getIdentifiersFoundMappingCVS(String filename, AnalysisStoredResult asr, String resource) throws IOException {
+        long start = System.currentTimeMillis();
         File f = File.createTempFile(filename, "csv");
         FileWriter fw = new FileWriter(f);
         StringBuilder sb = new StringBuilder();
@@ -66,6 +74,7 @@ public class DownloadHelper {
             }
             for (String identifier : projection.keySet()) {
                 for (MainIdentifier mainIdentifier : projection.getElements(identifier)) {
+                    //noinspection StringBufferReplaceableByString
                     StringBuilder line = new StringBuilder(identifier);
                     line.append(DELIMITER).append(mainIdentifier.getValue().getId());
                     line.append(DELIMITER).append(mainIdentifier.getResource().getName());
@@ -85,6 +94,7 @@ public class DownloadHelper {
                 }
                 for (String identifier : projection.keySet()) {
                     for (MainIdentifier mainIdentifier : projection.getElements(identifier)) {
+                        //noinspection StringBufferReplaceableByString
                         StringBuilder line = new StringBuilder(identifier);
                         line.append(DELIMITER).append(mainIdentifier.getValue().getId());
                         line.append("\n");
@@ -93,12 +103,17 @@ public class DownloadHelper {
                 }
             }
         }
-
         fw.flush(); fw.close();
+
+        ReportParameters reportParams = new ReportParameters(asr);
+        reportParams.setMilliseconds(System.currentTimeMillis() - start);
+        AnalysisReport.reportMappingDownload(reportParams);
+
         return new FileSystemResource(f);
     }
 
     public static FileSystemResource getNotFoundIdentifiers(String filename, AnalysisStoredResult asr) throws IOException {
+        long start = System.currentTimeMillis();
         File f = File.createTempFile(filename, "csv");
         FileWriter fw = new FileWriter(f);
 
@@ -116,8 +131,12 @@ public class DownloadHelper {
             }
             fw.write("\n");
         }
-
         fw.flush(); fw.close();
+
+        ReportParameters reportParams = new ReportParameters(asr);
+        reportParams.setMilliseconds(System.currentTimeMillis() - start);
+        AnalysisReport.reportNotFoundDownload(reportParams);
+
         return new FileSystemResource(f);
     }
 
