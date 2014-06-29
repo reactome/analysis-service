@@ -10,11 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -106,9 +101,9 @@ public class IdentifiersController {
         return controller.analyse(ud, false, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
-    @ApiOperation(value = "Analise the identifiers contained on the provided url over the different species and projects the result to Homo Sapiens")
-    @ApiErrors(value = {@ApiError(code = 415, reason = "Unsupported Media Type" )})
-//    @ApiResponses({@ApiResponse( code = 415, message = "Unsupported Media Type" ) })
+    @ApiOperation(value = "Analise the identifiers contained in the provided url over the different species and projects the result to Homo Sapiens")
+    @ApiErrors(value = {@ApiError(code = 415, reason = "Unsupported Media Type" ),
+                        @ApiError(code = 422, reason = "The provided URL is not processable") })
     @RequestMapping(value = "/url/projection", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public AnalysisResult getPostURLToHuman( @ApiParam(name = "url", required = true, value = "A URL pointing to the data to be analysed")
@@ -127,9 +122,9 @@ public class IdentifiersController {
         return controller.analyse(ud, true).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
-    @ApiOperation(value = "Analise the identifiers contained on the provided url over the different species")
-    @ApiErrors(value = {@ApiError(code = 415, reason = "Unsupported Media Type" )})
-//    @ApiResponses({@ApiResponse( code = 415, message = "Unsupported Media Type" ) })
+    @ApiOperation(value = "Analise the identifiers contained in the provided url over the different species")
+    @ApiErrors(value = {@ApiError(code = 415, reason = "Unsupported Media Type" ),
+                        @ApiError(code = 422, reason = "The provided URL is not processable") })
     @RequestMapping(value = "/url", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public AnalysisResult getPostURL( @ApiParam(name = "url", required = true, value = "A URL pointing to the data to be analysed")

@@ -3,6 +3,7 @@ package org.reactome.server.analysis.helper;
 import org.apache.log4j.Logger;
 import org.reactome.server.analysis.exception.ResourceGoneException;
 import org.reactome.server.analysis.exception.ResourceNotFoundException;
+import org.reactome.server.analysis.exception.UnprocessableEntityException;
 import org.reactome.server.analysis.exception.UnsopportedMediaTypeException;
 import org.reactome.server.analysis.model.AnalysisSummary;
 import org.reactome.server.analysis.result.AnalysisStoredResult;
@@ -18,9 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -148,12 +148,18 @@ public class AnalysisHelper {
     }
 
     public UserData getUserDataFromURL(String url){
-        try {
-            URL input = new URL(url);
-            URLConnection connection = input.openConnection();
-            return InputUtils.getUserData(connection.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(url!=null && !url.isEmpty()) {
+            InputStream is;
+            try {
+                is = (new URL(url)).openConnection().getInputStream();
+            } catch (IOException e) {
+                throw new UnprocessableEntityException();
+            }
+            try {
+                return InputUtils.getUserData(is);
+            } catch (IOException e) {
+                throw new UnsopportedMediaTypeException();
+            }
         }
         throw new UnsopportedMediaTypeException();
     }
