@@ -1,5 +1,6 @@
 package org.reactome.server.analysis.helper;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.reactome.server.analysis.exception.ResourceGoneException;
 import org.reactome.server.analysis.exception.ResourceNotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -162,6 +164,18 @@ public class AnalysisHelper {
             }
         }
         throw new UnsopportedMediaTypeException();
+    }
+
+    public String getFileNameFromURL(String url){
+        String name = "";
+        if(url!=null && !url.isEmpty()) {
+            try {
+                name = FilenameUtils.getName((new URL(url)).getFile());
+            } catch (MalformedURLException e) {
+                /*Nothing here*/
+            }
+        }
+        return name;
     }
 
     public void setPathDirectory(String pathDirectory) {
