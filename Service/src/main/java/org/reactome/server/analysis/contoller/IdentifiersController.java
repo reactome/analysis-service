@@ -119,7 +119,8 @@ public class IdentifiersController {
                                               @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,NCBI_PROTEIN,EMBL,COMPOUND")
                                               @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         UserData ud = controller.getUserDataFromURL(url);
-        return controller.analyse(ud, true).getResultSummary(sortBy, order, resource, pageSize, page);
+        String fileName = controller.getFileNameFromURL(url);
+        return controller.analyse(ud, true, fileName).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analise the identifiers contained in the provided url over the different species")
@@ -140,6 +141,7 @@ public class IdentifiersController {
                                        @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,NCBI_PROTEIN,EMBL,COMPOUND")
                                        @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         UserData ud = controller.getUserDataFromURL(url);
-        return controller.analyse(ud, false).getResultSummary(sortBy, order, resource, pageSize, page);
+        String fileName = controller.getFileNameFromURL(url);
+        return controller.analyse(ud, false, fileName).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 }
