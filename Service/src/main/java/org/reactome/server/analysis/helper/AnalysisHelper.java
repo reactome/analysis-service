@@ -18,6 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -140,6 +143,17 @@ public class AnalysisHelper {
             } catch (IOException e) {
                 throw new UnsopportedMediaTypeException();
             }
+        }
+        throw new UnsopportedMediaTypeException();
+    }
+
+    public UserData getUserDataFromURL(String url){
+        try {
+            URL input = new URL(url);
+            URLConnection connection = input.openConnection();
+            return InputUtils.getUserData(connection.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         throw new UnsopportedMediaTypeException();
     }

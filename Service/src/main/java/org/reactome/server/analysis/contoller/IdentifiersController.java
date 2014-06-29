@@ -10,6 +10,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -99,5 +104,47 @@ public class IdentifiersController {
                                      @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         UserData ud = controller.getUserData(file);
         return controller.analyse(ud, false, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
+    }
+
+    @ApiOperation(value = "Analise the identifiers contained on the provided url over the different species and projects the result to Homo Sapiens")
+    @ApiErrors(value = {@ApiError(code = 415, reason = "Unsupported Media Type" )})
+//    @ApiResponses({@ApiResponse( code = 415, message = "Unsupported Media Type" ) })
+    @RequestMapping(value = "/url/projection", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public AnalysisResult getPostURLToHuman( @ApiParam(name = "url", required = true, value = "A URL pointing to the data to be analysed")
+                                              @RequestBody String url,
+                                              @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
+                                              @RequestParam(required = false) Integer pageSize,
+                                              @ApiParam(name = "page", value = "page number", defaultValue = "1")
+                                              @RequestParam(required = false) Integer page,
+                                              @ApiParam(name = "sortBy", value = "how to sort the result", required = false, defaultValue = "ENTITIES_PVALUE", allowableValues = "NAME,TOTAL_ENTITIES,TOTAL_REACTIONS,FOUND_ENTITIES,FOUND_REACTIONS,ENTITIES_RATIO,ENTITIES_PVALUE,ENTITIES_FDR,REACTIONS_RATIO")
+                                              @RequestParam(required = false) String sortBy,
+                                              @ApiParam(name = "order", value = "specifies the order", required = false, defaultValue = "ASC", allowableValues = "ASC,DESC")
+                                              @RequestParam(required = false) String order,
+                                              @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,NCBI_PROTEIN,EMBL,COMPOUND")
+                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+        UserData ud = controller.getUserDataFromURL(url);
+        return controller.analyse(ud, true).getResultSummary(sortBy, order, resource, pageSize, page);
+    }
+
+    @ApiOperation(value = "Analise the identifiers contained on the provided url over the different species")
+    @ApiErrors(value = {@ApiError(code = 415, reason = "Unsupported Media Type" )})
+//    @ApiResponses({@ApiResponse( code = 415, message = "Unsupported Media Type" ) })
+    @RequestMapping(value = "/url", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public AnalysisResult getPostURL( @ApiParam(name = "url", required = true, value = "A URL pointing to the data to be analysed")
+                                       @RequestBody String url,
+                                       @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
+                                       @RequestParam(required = false) Integer pageSize,
+                                       @ApiParam(name = "page", value = "page number", defaultValue = "1")
+                                       @RequestParam(required = false) Integer page,
+                                       @ApiParam(name = "sortBy", value = "how to sort the result", required = false, defaultValue = "ENTITIES_PVALUE", allowableValues = "NAME,TOTAL_ENTITIES,TOTAL_REACTIONS,FOUND_ENTITIES,FOUND_REACTIONS,ENTITIES_RATIO,ENTITIES_PVALUE,ENTITIES_FDR,REACTIONS_RATIO")
+                                       @RequestParam(required = false) String sortBy,
+                                       @ApiParam(name = "order", value = "specifies the order", required = false, defaultValue = "ASC", allowableValues = "ASC,DESC")
+                                       @RequestParam(required = false) String order,
+                                       @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,NCBI_PROTEIN,EMBL,COMPOUND")
+                                       @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+        UserData ud = controller.getUserDataFromURL(url);
+        return controller.analyse(ud, false).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 }
