@@ -7,6 +7,7 @@ import org.reactome.server.analysis.exception.ResourceNotFoundException;
 import org.reactome.server.analysis.exception.UnprocessableEntityException;
 import org.reactome.server.analysis.exception.UnsopportedMediaTypeException;
 import org.reactome.server.analysis.model.AnalysisSummary;
+import org.reactome.server.analysis.report.AnalysisReport;
 import org.reactome.server.analysis.result.AnalysisStoredResult;
 import org.reactome.server.analysis.utils.ResultDataUtils;
 import org.reactome.server.analysis.utils.Tokenizer;
@@ -61,20 +62,21 @@ public class AnalysisHelper {
             AnalysisSummary summary = getAnalysisSummary(token, userData.getSampleName(), type, userFileName);
             try {
                 String fileName = getFileName(token);
-                return ResultDataUtils.getAnalysisResult(fileName);
+                return ResultDataUtils.getAnalysisResult(type, toHuman, fileName, true);
             } catch (FileNotFoundException e) {
                 logger.trace("No TOKEN found. Analysing...");
-                return analyse(summary, userData, speciesNode);
+                return analyse(type, toHuman, summary, userData, speciesNode);
             } catch (Exception e){
                 logger.error("Error retrieving the result from the MD5 token. Analysing again...");
             }
         }
         String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman);
         AnalysisSummary summary = getAnalysisSummary(token, userData.getSampleName(), type, userFileName);
-        return analyse(summary, userData, speciesNode);
+        return analyse(type, toHuman, summary, userData, speciesNode);
     }
 
     public AnalysisStoredResult compareSpecies(Long from, Long to){
+        AnalysisHelper.Type type = Type.SPECIES_COMPARISON;
         SpeciesNode speciesFrom = SpeciesNodeFactory.getSpeciesNode(from, "");
         SpeciesNode speciesTo = SpeciesNodeFactory.getSpeciesNode(to, "");
 
@@ -84,7 +86,7 @@ public class AnalysisHelper {
             String token = Tokenizer.getOrCreateToken(fakeMD5, human);
             try {
                 String fileName = getFileName(token);
-                return ResultDataUtils.getAnalysisResult(fileName);
+                return ResultDataUtils.getAnalysisResult(type, null, fileName, true);
             } catch (FileNotFoundException e) {
                 //Nothing here
             }
@@ -92,7 +94,7 @@ public class AnalysisHelper {
         UserData ud = speciesComparison.getSyntheticUserData(speciesTo);
         String token = Tokenizer.getOrCreateToken(fakeMD5, human);
         AnalysisSummary summary = new AnalysisSummary(token, null, Type.SPECIES_COMPARISON, to);
-        return analyse(summary, ud, speciesFrom);
+        return analyse(type, null, summary, ud, speciesFrom);
     }
 
     private AnalysisSummary getAnalysisSummary(String token, String sampleName, Type type, String userFileName){
@@ -111,7 +113,7 @@ public class AnalysisHelper {
         String fileName = getFileName(token);
         if(fileName!=null){
             try {
-                return ResultDataUtils.getAnalysisResult(fileName);
+                return ResultDataUtils.getAnalysisResult(null, null, fileName, false);
             } catch (FileNotFoundException e) {
                 //should be alive is only true when the token follows the rule and the resulting date is in the last 7 days
                 if(Tokenizer.shouldBeAlive(token)){
@@ -182,7 +184,7 @@ public class AnalysisHelper {
         this.pathDirectory = pathDirectory;
     }
 
-    private AnalysisStoredResult analyse(AnalysisSummary summary, UserData userData, SpeciesNode speciesNode){
+    private AnalysisStoredResult analyse(AnalysisHelper.Type type, Boolean toHuman, AnalysisSummary summary, UserData userData, SpeciesNode speciesNode){
         long start = System.currentTimeMillis();
         Set<AnalysisIdentifier> identifiers = userData.getIdentifiers();
         HierarchiesData resAux = this.enrichmentAnalysis.overRepresentation(identifiers, speciesNode);
@@ -191,8 +193,17 @@ public class AnalysisHelper {
         result.setSummary(summary);
         result.setHitPathways(resAux.getUniqueHitPathways(speciesNode));
         this.saveResult(result);
-        long end = System.currentTimeMillis();
-        logger.info(String.format("Analysis for %d identifiers performed in %d ms", identifiers.size(), end-start));
+
+        //The following bit is to create a "nice" report file for future statistics about analysis usage
+        String name = summary.getSampleName();
+        if(name==null || name.isEmpty()) name = summary.getFileName();
+        if(name==null || name.isEmpty()) name = summary.getSpecies().toString();
+
+        int size = identifiers.size();
+        int found = result.getFoundEntities().size();
+        long time = System.currentTimeMillis() - start;
+        AnalysisReport.reportNewAnalysis(type, name, toHuman, size, found, time);
+
         return result;
     }
 

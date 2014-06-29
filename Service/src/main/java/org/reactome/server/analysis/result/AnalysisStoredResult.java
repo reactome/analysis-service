@@ -63,12 +63,12 @@ public class AnalysisStoredResult {
         return expressionSummary;
     }
 
-    public AnalysisSummary getSummary() {
-        return summary;
-    }
-
-    public Set<AnalysisIdentifier> getNotFound() {
-        return notFound;
+    public Set<AnalysisIdentifier> getFoundEntities(){
+        Set<AnalysisIdentifier> rtn = new HashSet<AnalysisIdentifier>();
+        for (Identifier identifier : getFoundEntitiesMap().keySet()) {
+            rtn.add(identifier.getValue());
+        }
+        return rtn;
     }
 
     public MapSet<Identifier, MainIdentifier> getFoundEntitiesMap() {
@@ -92,15 +92,6 @@ public class AnalysisStoredResult {
         }
         return rtn;
     }
-
-//    public Set<Long> getFoundReactions(Long pathwayId){
-//        for (PathwayNodeSummary pathway : this.pathways) {
-//            if(pathway.getPathwayId().equals(pathwayId)){
-//                return pathway.getData().getReactions();
-//            }
-//        }
-//        return new HashSet<Long>();
-//    }
 
     public Set<Long> getFoundReactions(Long pathwayId, String resource){
         if(resource.toUpperCase().equals("TOTAL")){
@@ -143,6 +134,10 @@ public class AnalysisStoredResult {
             }
         }
         return rtn;
+    }
+
+    public Set<AnalysisIdentifier> getNotFound() {
+        return notFound;
     }
 
     public PathwayNodeSummary getPathway(Long dbId){
@@ -196,6 +191,10 @@ public class AnalysisStoredResult {
             }
         }
         return new AnalysisResult(this, rtn);
+    }
+
+    public AnalysisSummary getSummary() {
+        return summary;
     }
 
     public List<PathwaySummary> filterByPathways(List<Long> pathwayIds, String resource){

@@ -6,6 +6,9 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.shaded.org.objenesis.strategy.StdInstantiatorStrategy;
 import org.apache.log4j.Logger;
+import org.reactome.server.analysis.helper.AnalysisHelper;
+import org.reactome.server.analysis.model.AnalysisSummary;
+import org.reactome.server.analysis.report.AnalysisReport;
 import org.reactome.server.analysis.result.AnalysisStoredResult;
 
 import java.io.*;
@@ -17,22 +20,36 @@ public abstract class ResultDataUtils {
 
     private static Logger logger = Logger.getLogger(ResultDataUtils.class.getName());
 
-    public static AnalysisStoredResult getAnalysisResult(InputStream file){
-//        logger.info(String.format("Loading %s file...", AnalysisResult.class.getSimpleName()));
-        long start = System.currentTimeMillis();
-        AnalysisStoredResult result = (AnalysisStoredResult) ResultDataUtils.read(file);
-        long end = System.currentTimeMillis();
-        logger.info(String.format("%s file loaded in %d ms", AnalysisStoredResult.class.getSimpleName() , end-start));
-        return result;
+    private static AnalysisStoredResult getAnalysisResult(String fileName) throws FileNotFoundException {
+        InputStream file = new FileInputStream(fileName);
+        AnalysisStoredResult rtn = (AnalysisStoredResult) ResultDataUtils.read(file);
+        logger.info(fileName + " retrieved");
+        return rtn;
     }
 
-    public static AnalysisStoredResult getAnalysisResult(String fileName) throws FileNotFoundException {
-        InputStream file = new FileInputStream(fileName);
-        return getAnalysisResult(file);
+    public static AnalysisStoredResult getAnalysisResult(AnalysisHelper.Type type, Boolean toHuman, String fileName, boolean report) throws FileNotFoundException {
+        long start = -1;
+        if(report) {
+            start = System.currentTimeMillis();
+        }
+        AnalysisStoredResult rtn = getAnalysisResult(fileName);
+        if(report){
+            //The following bit is to create a "nice" report file for future statistics about analysis usage
+            AnalysisSummary aux = rtn.getSummary();
+            String name = aux.getSampleName();
+            if(name==null || name.isEmpty()) name = aux.getFileName();
+            if(name==null || name.isEmpty()) name = aux.getSpecies().toString();
+
+            int found = rtn.getFoundEntities().size();
+            int notFound = rtn.getNotFound().size();
+            int size = found + notFound;
+            long end = System.currentTimeMillis();
+            AnalysisReport.reportCachedAnalysis(type, name, toHuman, size, found, end - start);
+        }
+        return rtn;
     }
 
     public static void kryoSerialisation(AnalysisStoredResult result, String fileName){
-//        logger.trace(String.format("Saving %s data into file %s", result.getClass().getSimpleName(), fileName));
         long start = System.currentTimeMillis();
         try {
             Kryo kryo = new Kryo();
