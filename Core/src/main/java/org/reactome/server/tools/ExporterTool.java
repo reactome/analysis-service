@@ -51,13 +51,13 @@ public class ExporterTool {
 
         ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
 
-        //Initializing Analysis Data  *** IMPORTANT ***
-        AnalysisData analysisData = context.getBean(AnalysisData.class);
-        analysisData.setFileName(config.getString("input"));
-
         String resource = config.getString("resource");
         ResourceFactory.MAIN mainResource = ResourceFactory.getMainResource(resource);
         if(mainResource!=null){
+            //Initializing Analysis Data  *** IMPORTANT ***
+            AnalysisData analysisData = context.getBean(AnalysisData.class);
+            analysisData.setFileName(config.getString("input"));
+
             Exporter exporter = context.getBean(Exporter.class);
             exporter.export(dba, mainResource);
         }else{
