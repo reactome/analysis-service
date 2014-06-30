@@ -33,7 +33,8 @@ public class ReportParameters {
         this.type = AnalysisHelper.Type.getType(aux.getType());
         this.name = aux.getSampleName();
         if(this.name==null || this.name.isEmpty()) this.name = aux.getFileName();
-        if(this.name==null || this.name.isEmpty()) this.name = aux.getSpecies().toString();
+        if( ( this.name==null || this.name.isEmpty() ) && aux.getSpecies()!=null) this.name = aux.getSpecies().toString();
+        if(this.name==null || this.name.isEmpty()) this.name = "_NO_NAME_AVAILABLE_";
 
         this.found = result.getFoundEntities().size();
         int notFound = result.getNotFound().size();
