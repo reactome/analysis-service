@@ -1,16 +1,14 @@
 package org.reactome.server.components.analysis.data;
 
 import org.apache.log4j.Logger;
-import org.reactome.server.components.analysis.model.DataContainer;
-import org.reactome.server.components.analysis.model.HierarchiesData;
-import org.reactome.server.components.analysis.model.IdentifiersMap;
-import org.reactome.server.components.analysis.model.PhysicalEntityGraph;
+import org.reactome.server.components.analysis.model.*;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  * Used to load the DataContainer from the file only ONCE when the application is loaded
@@ -63,6 +61,10 @@ public class AnalysisData {
      */
     public IdentifiersMap getIdentifiersMap() {
         return this.getContainer().getIdentifiersMap();
+    }
+
+    public Map<SpeciesNode, PathwayHierarchy> getPathwayHierarchies(){
+        return this.getContainer().getHierarchiesData().getPathwayHierarchies();
     }
 
     /**

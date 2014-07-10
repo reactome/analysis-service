@@ -41,6 +41,10 @@ public class HierarchiesData {
         return rtn;
     }
 
+    public Map<SpeciesNode, PathwayHierarchy> getPathwayHierarchies() {
+        return pathwayHierarchies;
+    }
+
     private Set<PathwayNode> getHitPathways(){
         Set<PathwayNode> rtn = new HashSet<PathwayNode>();
         for (SpeciesNode species : pathwayHierarchies.keySet()) {

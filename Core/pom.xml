@@ -143,7 +143,7 @@
                     <!--<finalName>OptionalNameForTheFileWithDependencies</finalName>-->
                     <archive>
                         <manifest>
-                            <mainClass>org.reactome.server.EntryPoint</mainClass>
+                            <mainClass>org.reactome.server.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

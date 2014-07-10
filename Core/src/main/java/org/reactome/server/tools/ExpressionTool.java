@@ -1,7 +1,7 @@
 package org.reactome.server.tools;
 
 import com.martiansoftware.jsap.*;
-import org.reactome.server.EntryPoint;
+import org.reactome.server.Main;
 import org.reactome.server.components.analysis.EnrichmentAnalysis;
 import org.reactome.server.components.analysis.data.AnalysisData;
 import org.reactome.server.components.analysis.model.*;
@@ -23,7 +23,7 @@ public class ExpressionTool {
                 "Provides a set of tools for the pathway analysis and species comparison",
                 new Parameter[] {
                         new UnflaggedOption( "tool", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, JSAP.NOT_GREEDY,
-                                "The tool to use. Options: " + EntryPoint.Tool.getOptions()) //WE DO NOT TAKE INTO ACCOUNT TOOL HERE ANY MORE
+                                "The tool to use. Options: " + Main.Tool.getOptions()) //WE DO NOT TAKE INTO ACCOUNT TOOL HERE ANY MORE
                         ,new FlaggedOption( "input", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'i', "input",
                                 "The file containing the user data for the analysis." )
                         ,new FlaggedOption( "structure", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 's', "structure",

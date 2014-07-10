@@ -4,20 +4,19 @@ import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.Parameter;
 import com.martiansoftware.jsap.SimpleJSAP;
 import com.martiansoftware.jsap.UnflaggedOption;
-import org.reactome.server.components.analysis.EnrichmentAnalysis;
 import org.reactome.server.components.analysis.data.HierarchiesDataContainer;
-import org.reactome.server.components.analysis.data.HierarchiesDataProducer;
 import org.reactome.server.tools.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class EntryPoint {
+public class Main {
     public static enum Tool {
         ANALYSIS,
         EXPRESSION,
         COMPARISON,
         EXPORT,
+        HIERARCHY,
         BUILD;
 
         public static String getOptions(){
@@ -72,6 +71,9 @@ public class EntryPoint {
                 case EXPORT:
                     ExporterTool.main(args);
                     break;
+                case HIERARCHY:
+                    HierarchyTool.main(args);
+                    break;
                 case BUILD:
                     BuilderTool.main(args);
                     break;
@@ -82,7 +84,7 @@ public class EntryPoint {
 
             System.err.println("Sorry, the tool " + args[0] + " is not available." );
             System.err.println("\nUsage:" );
-            System.err.println(EntryPoint.class.getName() + " tool [options]");
+            System.err.println(Main.class.getName() + " tool [options]");
             System.err.println("\nThe tools are: " + Tool.getOptions());
             System.exit( 1 );
         }

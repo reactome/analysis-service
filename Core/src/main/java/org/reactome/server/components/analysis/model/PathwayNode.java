@@ -42,6 +42,10 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
         return node;
     }
 
+    public Set<PathwayNode> getChildren() {
+        return children;
+    }
+
     public String getName() {
         return name;
     }

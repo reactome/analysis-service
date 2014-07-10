@@ -3,7 +3,7 @@ package org.reactome.server.tools;
 import com.martiansoftware.jsap.*;
 import org.apache.log4j.Logger;
 import org.gk.persistence.MySQLAdaptor;
-import org.reactome.server.EntryPoint;
+import org.reactome.server.Main;
 import org.reactome.server.components.analysis.filter.AnalysisBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -24,7 +24,7 @@ public class BuilderTool {
                 "Provides a set of tools for the pathway analysis and species comparison",
                 new Parameter[] {
                         new UnflaggedOption( "tool", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, JSAP.NOT_GREEDY,
-                                "The tool to use. Options: " + EntryPoint.Tool.getOptions()) //WE DO NOT TAKE INTO ACCOUNT TOOL HERE ANY MORE
+                                "The tool to use. Options: " + Main.Tool.getOptions()) //WE DO NOT TAKE INTO ACCOUNT TOOL HERE ANY MORE
                         ,new FlaggedOption( "host", JSAP.STRING_PARSER, "localhost", JSAP.NOT_REQUIRED, 'h', "host",
                                 "The database host")
                         ,new FlaggedOption( "database", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'd', "database",
