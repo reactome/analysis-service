@@ -11,27 +11,27 @@ import org.reactome.server.components.analysis.model.SpeciesNode;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class PathwayNodeSummary {
+    private String stId;
     private Long pathwayId;
-    private Long diagramId;
     private String name;
     private SpeciesNode species;
     private PathwayNodeData data;
 
 
     public PathwayNodeSummary(PathwayNode node) {
+        this.stId = node.getStId();
         this.pathwayId = node.getPathwayId();
-        this.diagramId = node.getDiagram().getPathwayId();
         this.name = node.getName();
         this.species = node.getSpecies();
         this.data = node.getPathwayNodeData();
     }
 
-    public Long getPathwayId() {
-        return pathwayId;
+    public String getStId() {
+        return stId;
     }
 
-    public Long getDiagramId() {
-        return diagramId;
+    public Long getPathwayId() {
+        return pathwayId;
     }
 
     public String getName() {

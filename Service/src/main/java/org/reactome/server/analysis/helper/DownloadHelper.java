@@ -167,7 +167,9 @@ public class DownloadHelper {
     }
 
     private static String getPathwayNodeSummaryTotalRow(PathwayNodeSummary summary){
-        StringBuilder line = new StringBuilder(summary.getPathwayId().toString());
+        String stId = summary.getStId();
+        String id = (stId!=null && !summary.getStId().isEmpty()) ? stId : summary.getPathwayId().toString();
+        StringBuilder line = new StringBuilder(id);
         line.append(DELIMITER).append("\"").append(summary.getName()).append("\"");
 
         PathwayNodeData data = summary.getData();
@@ -217,7 +219,9 @@ public class DownloadHelper {
     }
 
     private static String getPathwayNodeSummaryResourceRow(PathwayNodeSummary summary, MainResource resource){
-        StringBuilder line = new StringBuilder(summary.getPathwayId().toString());
+        String stId = summary.getStId();
+        String id = (stId!=null && !summary.getStId().isEmpty()) ? stId : summary.getPathwayId().toString();
+        StringBuilder line = new StringBuilder(id);
         line.append(DELIMITER).append("\"").append(summary.getName()).append("\"");
 
         PathwayNodeData data = summary.getData();

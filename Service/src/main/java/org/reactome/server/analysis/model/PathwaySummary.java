@@ -9,10 +9,11 @@ import org.reactome.server.components.analysis.model.resource.MainResource;
  */
 //@ApiModel(value = "PathwaySummary", description = "Contains general information about a certain pathway")
 public class PathwaySummary {
+    private String stId;
 //    @ApiModelProperty(value = "The pathway identifier", notes = "", required = true )
     private Long dbId;
 //    @ApiModelProperty(value = "The identifier of the pathway with diagram (could be the same than dbId)", notes = "", required = true )
-    private Long diagramDbId;
+//    private Long diagramDbId;
 //    @ApiModelProperty(value = "The pathway name", notes = "", required = true )
     private String name;
 //    @ApiModelProperty(value = "The pathway species", notes = "", required = true )
@@ -28,8 +29,9 @@ public class PathwaySummary {
     private ReactionStatistics reactions;
 
     public PathwaySummary(PathwayNodeSummary node, String resource) {
+        this.stId = node.getStId();
         this.dbId = node.getPathwayId();
-        this.diagramDbId = node.getDiagramId();
+//        this.diagramDbId = node.getDiagramId();
         this.name = node.getName();
         this.species = new SpeciesSummary(node.getSpecies().getSpeciesID(), node.getSpecies().getName());
         initialize(node.getData(), resource);
@@ -76,13 +78,17 @@ public class PathwaySummary {
         }
     }
 
+    public String getStId() {
+        return stId;
+    }
+
     public Long getDbId() {
         return dbId;
     }
 
-    public Long getDiagramDbId() {
-        return diagramDbId;
-    }
+//    public Long getDiagramDbId() {
+//        return diagramDbId;
+//    }
 
     public String getName() {
         return name;
