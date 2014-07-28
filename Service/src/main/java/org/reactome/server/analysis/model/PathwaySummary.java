@@ -9,11 +9,10 @@ import org.reactome.server.components.analysis.model.resource.MainResource;
  */
 //@ApiModel(value = "PathwaySummary", description = "Contains general information about a certain pathway")
 public class PathwaySummary {
+//    @ApiModelProperty(value = "The pathway stable identifier", notes = "", required = true )
     private String stId;
-//    @ApiModelProperty(value = "The pathway identifier", notes = "", required = true )
+//    @ApiModelProperty(value = "The pathway database identifier", notes = "", required = true )
     private Long dbId;
-//    @ApiModelProperty(value = "The identifier of the pathway with diagram (could be the same than dbId)", notes = "", required = true )
-//    private Long diagramDbId;
 //    @ApiModelProperty(value = "The pathway name", notes = "", required = true )
     private String name;
 //    @ApiModelProperty(value = "The pathway species", notes = "", required = true )
@@ -85,10 +84,6 @@ public class PathwaySummary {
     public Long getDbId() {
         return dbId;
     }
-
-//    public Long getDiagramDbId() {
-//        return diagramDbId;
-//    }
 
     public String getName() {
         return name;
