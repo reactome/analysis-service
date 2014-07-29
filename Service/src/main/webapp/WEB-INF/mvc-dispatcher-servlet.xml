@@ -55,6 +55,10 @@
         <property name="outputdir" value="${restful.result.tmp}"/>
     </bean>
 
+    <bean id="templateCacher" class="org.reactome.server.analysis.utils.HeaderFooterCacher">
+        <constructor-arg name="server" value="${template_server}"/>
+    </bean>
+
      <!-- Creates a controller at /api-docs from this uri, which serves swagger's raw documentation in JSON format. -->
     <bean id="documentationConfig" class="com.mangofactory.swagger.configuration.DocumentationConfig" />
 </beans>
