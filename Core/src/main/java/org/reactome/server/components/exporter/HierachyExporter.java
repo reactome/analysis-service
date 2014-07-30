@@ -39,17 +39,22 @@ public class HierachyExporter {
         }
     }
 
-    public void printNodeParentship(PathwayNode node){
+    private void printNodeParentship(PathwayNode node){
         for (PathwayNode child : node.getChildren()) {
-            System.out.println(node.getPathwayId() + "\t" + child.getPathwayId());
+            System.out.println(getNodeIdentifier(node) + "\t" + getNodeIdentifier(child));
             printNodeParentship(child);
         }
     }
 
-    public void printNodeDetails(PathwayNode node){
-        System.out.println(node.getPathwayId() + "\t" + node.getName() + "\t" + node.getSpecies().getName());
+    private void printNodeDetails(PathwayNode node){
+        System.out.println(getNodeIdentifier(node) + "\t" + node.getName() + "\t" + node.getSpecies().getName());
         for (PathwayNode child : node.getChildren()) {
             printNodeDetails(child);
         }
+    }
+
+    private String getNodeIdentifier(PathwayNode node){
+        String id = node.getStId();
+        return id!=null && !id.isEmpty()? id : node.getPathwayId().toString();
     }
 }

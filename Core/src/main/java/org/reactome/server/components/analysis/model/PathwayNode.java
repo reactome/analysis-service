@@ -13,22 +13,24 @@ import java.util.Set;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class PathwayNode implements Serializable, Comparable<PathwayNode> {
-
+    private String stId;
     private Long pathwayId;
     private String name;
     private boolean hasDiagram;
+    private boolean isLowerLevelPathway = false;
 
     private PathwayNode parent;
     private Set<PathwayNode> children;
 
     private PathwayNodeData data;
 
-    public PathwayNode(Long pathwayId, String name, boolean hasDiagram) {
-        this(null, pathwayId, name, hasDiagram);
+    public PathwayNode(String stId, Long pathwayId, String name, boolean hasDiagram) {
+        this(null, stId, pathwayId, name, hasDiagram);
     }
 
-    protected PathwayNode(PathwayNode parent, Long pathwayId, String name, boolean hasDiagram) {
+    protected PathwayNode(PathwayNode parent, String stID, Long pathwayId, String name, boolean hasDiagram) {
         this.parent = parent;
+        this.stId = stID;
         this.pathwayId = pathwayId;
         this.name = name;
         this.hasDiagram = hasDiagram;
@@ -36,8 +38,8 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
         this.data = new PathwayNodeData();
     }
 
-    public PathwayNode addChild(Long pathwayId, String name, boolean hasDiagram){
-        PathwayNode node = new PathwayNode(this, pathwayId, name, hasDiagram);
+    public PathwayNode addChild(String stId, Long pathwayId, String name, boolean hasDiagram){
+        PathwayNode node = new PathwayNode(this, stId, pathwayId, name, hasDiagram);
         this.children.add(node);
         return node;
     }
@@ -71,9 +73,14 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
         return rtn;
     }
 
+    public boolean isLowerLevelPathway() {
+        return isLowerLevelPathway;
+    }
+
     public Long getPathwayId() {
         return pathwayId;
     }
+
 
     public PathwayNodeData getPathwayNodeData() {
         return data;
@@ -86,6 +93,14 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
         }else{
             return parent.getSpecies();
         }
+    }
+
+    public String getStId() {
+        return stId;
+    }
+
+    public void setLowerLevelPathway(boolean isLowerLevelPathway) {
+        this.isLowerLevelPathway = isLowerLevelPathway;
     }
 
     protected void setCounters(){
@@ -117,6 +132,5 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
     @Override
     public int compareTo(PathwayNode o) {
         return this.data.getEntitiesPValue().compareTo(o.data.getEntitiesPValue());
-//        return this.name.compareToIgnoreCase(o.name);
     }
 }

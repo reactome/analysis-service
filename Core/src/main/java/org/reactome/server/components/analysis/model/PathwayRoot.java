@@ -2,7 +2,6 @@ package org.reactome.server.components.analysis.model;
 
 import org.reactome.server.components.analysis.model.identifier.Identifier;
 import org.reactome.server.components.analysis.model.identifier.MainIdentifier;
-import org.reactome.server.model.Species;
 
 import java.util.Set;
 
@@ -12,8 +11,8 @@ import java.util.Set;
 public class PathwayRoot extends PathwayNode {
     private PathwayHierarchy pathwayHierarchy;
 
-    public PathwayRoot(PathwayHierarchy pathwayHierarchy, Long pathwayId, String name, boolean hasDiagram) {
-        super(pathwayId, name, hasDiagram);
+    public PathwayRoot(PathwayHierarchy pathwayHierarchy, String stId, Long pathwayId, String name, boolean hasDiagram) {
+        super(stId, pathwayId, name, hasDiagram);
         this.pathwayHierarchy = pathwayHierarchy;
     }
 

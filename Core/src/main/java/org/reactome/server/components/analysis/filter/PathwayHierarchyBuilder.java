@@ -37,8 +37,9 @@ public class PathwayHierarchyBuilder {
             this.hierarchies.put(speciesNode, pathwayHierarchy);
             try{
                 for (GKInstance instance : this.helper.getFrontPageItems(species.getDisplayName())) {
+                    String stId =  this.getStableIdentifier(instance);
                     boolean hasDiagram = this.getHasDiagram(instance);
-                    PathwayNode node = pathwayHierarchy.addFrontpageItem(instance.getDBID(), instance.getDisplayName(), hasDiagram);
+                    PathwayNode node = pathwayHierarchy.addFrontpageItem(stId, instance.getDBID(), instance.getDisplayName(), hasDiagram);
                     this.pathwayLocation.add(instance.getDBID(), node);
                     System.out.print("."); // Indicates progress
                     this.fillBranch(node, instance);
@@ -57,10 +58,13 @@ public class PathwayHierarchyBuilder {
                 for (Object obj : children) {
                     GKInstance instance = (GKInstance) obj;
                     if(instance.getSchemClass().isa(ReactomeJavaConstants.Pathway)){
+                        String stId = this.getStableIdentifier(instance);
                         boolean hasDiagram = this.getHasDiagram(instance);
-                        PathwayNode aux = node.addChild(instance.getDBID(), instance.getDisplayName(), hasDiagram);
+                        PathwayNode aux = node.addChild(stId, instance.getDBID(), instance.getDisplayName(), hasDiagram);
                         this.pathwayLocation.add(instance.getDBID(), aux);
                         this.fillBranch(aux, instance);
+                    }else{
+                        node.setLowerLevelPathway(true); //if the pathways has other events than pathways means it is a lower leve pathway candidate
                     }
                 }
             }
@@ -75,6 +79,15 @@ public class PathwayHierarchyBuilder {
 
     public MapSet<Long, PathwayNode> getPathwayLocation() {
         return pathwayLocation;
+    }
+
+    private String getStableIdentifier(GKInstance pathway){
+        try {
+            GKInstance stId = (GKInstance) pathway.getAttributeValue(ReactomeJavaConstants.stableIdentifier);
+            return (String) stId.getAttributeValue(ReactomeJavaConstants.identifier);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     private boolean getHasDiagram(GKInstance pathway){

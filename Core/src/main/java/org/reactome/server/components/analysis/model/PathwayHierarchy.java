@@ -22,8 +22,8 @@ public class PathwayHierarchy implements Serializable {
         this.data = new PathwayNodeData();
     }
 
-    public PathwayNode addFrontpageItem(Long pathwayId, String name, boolean hasDiagram){
-        PathwayRoot node = new PathwayRoot(this, pathwayId, name, hasDiagram);
+    public PathwayNode addFrontpageItem(String stId, Long pathwayId, String name, boolean hasDiagram){
+        PathwayRoot node = new PathwayRoot(this, stId, pathwayId, name, hasDiagram);
         this.children.add(node);
         return node;
     }
