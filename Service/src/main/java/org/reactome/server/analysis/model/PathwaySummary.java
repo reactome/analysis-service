@@ -17,6 +17,8 @@ public class PathwaySummary {
     private String name;
 //    @ApiModelProperty(value = "The pathway species", notes = "", required = true )
     private SpeciesSummary species;
+//    @ApiModelProperty(value = "Whether it is a lower level pathway or not", notes = "", required = true )
+    private boolean llp; //lower level pathway
 
 //    private Long speciesDbId;
 
@@ -33,6 +35,7 @@ public class PathwaySummary {
 //        this.diagramDbId = node.getDiagramId();
         this.name = node.getName();
         this.species = new SpeciesSummary(node.getSpecies().getSpeciesID(), node.getSpecies().getName());
+        this.llp = node.isLlp();
         initialize(node.getData(), resource);
     }
 
@@ -91,6 +94,10 @@ public class PathwaySummary {
 
     public SpeciesSummary getSpecies() {
         return species;
+    }
+
+    public boolean isLlp() {
+        return llp;
     }
 
     public EntityStatistics getEntities() {

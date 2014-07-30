@@ -15,6 +15,7 @@ public class PathwayNodeSummary {
     private Long pathwayId;
     private String name;
     private SpeciesNode species;
+    private boolean llp;
     private PathwayNodeData data;
 
 
@@ -23,6 +24,7 @@ public class PathwayNodeSummary {
         this.pathwayId = node.getPathwayId();
         this.name = node.getName();
         this.species = node.getSpecies();
+        this.llp = node.isLowerLevelPathway();
         this.data = node.getPathwayNodeData();
     }
 
@@ -46,4 +48,7 @@ public class PathwayNodeSummary {
         return species;
     }
 
+    public boolean isLlp() {
+        return llp;
+    }
 }
