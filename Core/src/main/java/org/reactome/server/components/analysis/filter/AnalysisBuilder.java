@@ -29,7 +29,6 @@ public class AnalysisBuilder {
         this.rleBuilder.build(dba, this.pathwaysBuilder.getPathwayLocation());
         this.peBuilder.build(dba, rleBuilder.getEntityPathwayReaction());
         this.peBuilder.setOrthologous();
-//        this.orthologyBuilder.build(dba, peBuilder.getPhysicalEntityGraph(), peBuilder.getPhysicalEntityBuffer());
         //Pre-calculates the counters for each MainResource/PathwayNode
         this.calculateNumbersInHierarchyNodesForMainResources();
 

@@ -13,6 +13,7 @@ import org.reactome.server.components.analysis.util.Pair;
 import org.reactome.server.controller.ReactomeToRESTfulAPIConverter;
 import org.reactome.server.mapper.PhysicalEntityMapper;
 import org.reactome.server.model.*;
+import org.reactome.server.tools.BuilderTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -66,7 +67,9 @@ public class PhysicalEntityHierarchyBuilder {
         this.clearDBACache();
         int i=0; int tot = physicalEntitiesPathways.keySet().size();
         for (Long physicalEntityId : physicalEntitiesPathways.keySet()) {
-            System.out.print("\rPhysicalEntity -> " + physicalEntityId + " >> " + (++i) + "/" + tot);
+            if(BuilderTool.VERBOSE) {
+                System.out.print("\rPhysicalEntity -> " + physicalEntityId + " >> " + (++i) + "/" + tot);
+            }
             PhysicalEntityNode node = this.process(physicalEntityId);
             if(node!=null){
                 MapSet<Long, Long> pathwaysReactions = physicalEntitiesPathways.getPathwaysReactions(physicalEntityId);
@@ -74,7 +77,9 @@ public class PhysicalEntityHierarchyBuilder {
                 this.physicalEntityGraph.addRoot(node);
             }
         }
-        System.out.println("\rPhysicalEntity processed");
+        if(BuilderTool.VERBOSE) {
+            System.out.println("\rPhysicalEntity processed");
+        }
     }
 
     public IdentifiersMap getIdentifiersMap() {
@@ -298,7 +303,9 @@ public class PhysicalEntityHierarchyBuilder {
         Set<PhysicalEntityNode> nodes = getPhysicalEntityGraph().getAllNodes();
         int i=0; int tot = nodes.size();
         for (PhysicalEntityNode node : nodes) {
-            System.out.print("\rOrthology for PhysicalEntity -> " + node.getId() + " >> " + (++i) + "/" + tot);
+            if(BuilderTool.VERBOSE) {
+                System.out.print("\rOrthology for PhysicalEntity -> " + node.getId() + " >> " + (++i) + "/" + tot);
+            }
             GKInstance pe = null;
             try {
                 pe = dba.fetchInstance(node.getId());
@@ -318,7 +325,9 @@ public class PhysicalEntityHierarchyBuilder {
                 node.addInferredTo(inferredToNode);
             }
         }
-        System.out.println("\rOrthologies processed");
+        if(BuilderTool.VERBOSE) {
+            System.out.println("\rOrthologies processed");
+        }
     }
 
     private List<?> getAttributeValuesList(GKInstance instance, String attr){

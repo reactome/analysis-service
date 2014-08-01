@@ -3,14 +3,21 @@ package org.reactome.server.components.analysis.filter;
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
-import org.reactome.server.components.analysis.model.*;
+import org.reactome.server.components.analysis.model.PathwayHierarchy;
+import org.reactome.server.components.analysis.model.PathwayNode;
+import org.reactome.server.components.analysis.model.SpeciesNode;
+import org.reactome.server.components.analysis.model.SpeciesNodeFactory;
 import org.reactome.server.components.analysis.util.MapSet;
 import org.reactome.server.controller.APIControllerHelper;
 import org.reactome.server.model.Species;
+import org.reactome.server.tools.BuilderTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -31,7 +38,9 @@ public class PathwayHierarchyBuilder {
         int i = 0; int tot = speciess.size();
         for (Species species : speciess) {
 //            if(!species.getDbId().equals(48887L)) break;
-            System.out.print("\rCreating the pathway hierarchies >> " + ++i + "/" + tot + " ");
+            if(BuilderTool.VERBOSE) {
+                System.out.print("\rCreating the pathway hierarchies >> " + ++i + "/" + tot + " ");
+            }
             SpeciesNode speciesNode = SpeciesNodeFactory.getSpeciesNode(species.getDbId(), species.getDisplayName());
             PathwayHierarchy pathwayHierarchy = new PathwayHierarchy(speciesNode);
             this.hierarchies.put(speciesNode, pathwayHierarchy);
@@ -41,14 +50,18 @@ public class PathwayHierarchyBuilder {
                     boolean hasDiagram = this.getHasDiagram(instance);
                     PathwayNode node = pathwayHierarchy.addFrontpageItem(stId, instance.getDBID(), instance.getDisplayName(), hasDiagram);
                     this.pathwayLocation.add(instance.getDBID(), node);
-                    System.out.print("."); // Indicates progress
+                    if(BuilderTool.VERBOSE) {
+                        System.out.print("."); // Indicates progress
+                    }
                     this.fillBranch(node, instance);
                 }
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
-        System.out.println("\rPathway hierarchies created successfully");
+        if(BuilderTool.VERBOSE) {
+            System.out.println("\rPathway hierarchies created successfully");
+        }
     }
 
     private void fillBranch(PathwayNode node, GKInstance inst){
@@ -108,11 +121,15 @@ public class PathwayHierarchyBuilder {
     }
 
     protected void prepareToSerialise(){
-        System.out.print("Setting up the resource counters for each Resource/PathwayNode");
+        if(BuilderTool.VERBOSE) {
+            System.out.print("Setting up the resource counters for each Resource/PathwayNode");
+        }
         for (SpeciesNode species : this.hierarchies.keySet()) {
             PathwayHierarchy hierarchy = this.hierarchies.get(species);
             hierarchy.setCountersAndCleanUp();
         }
-        System.out.println("\rResource counters set up successfully.");
+        if(BuilderTool.VERBOSE) {
+            System.out.println("\rResource counters set up successfully.");
+        }
     }
 }

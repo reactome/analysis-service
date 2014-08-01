@@ -13,6 +13,18 @@
         <lib.dir>lib</lib.dir>
     </properties>
 
+    <developers>
+        <developer>
+            <id>fabregat</id>
+            <name>Antonio Fabregat</name>
+            <email>fabregat@ebi.ac.uk</email>
+            <roles>
+                <role>Author</role>
+            </roles>
+            <organization>http://www.ebi.ac.uk/</organization>
+        </developer>
+    </developers>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>

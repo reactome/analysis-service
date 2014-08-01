@@ -6,6 +6,7 @@ import org.reactome.server.Main;
 import org.reactome.server.components.analysis.data.AnalysisData;
 import org.reactome.server.components.analysis.model.resource.ResourceFactory;
 import org.reactome.server.components.exporter.Exporter;
+import org.reactome.server.util.FileUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -14,29 +15,28 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class ExporterTool {
 
+
     public static void main(String[] args) throws Exception {
         SimpleJSAP jsap = new SimpleJSAP(
                 BuilderTool.class.getName(),
                 "Provides a set of tools for the pathway analysis and species comparison",
                 new Parameter[] {
                         new UnflaggedOption( "tool", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, JSAP.NOT_GREEDY,
-                                "The tool to use. Options: " + Main.Tool.getOptions()) //WE DO NOT TAKE INTO ACCOUNT TOOL HERE ANY MORE
+                            "The tool to use. Options: " + Main.Tool.getOptions()) //WE DO NOT TAKE INTO ACCOUNT TOOL HERE ANY MORE
                         ,new FlaggedOption( "host", JSAP.STRING_PARSER, "localhost", JSAP.NOT_REQUIRED, 'h', "host",
-                        "The database host")
+                            "The database host")
                         ,new FlaggedOption( "resource", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'r', "resource",
-                        "The resource to export data from (Options [ "+ getAvailableResources() + " ]")
+                            "The resource to export data from (Options [ "+ getAvailableResources() + " ]")
                         ,new FlaggedOption( "database", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'd', "database",
-                        "The reactome database name to connect to")
+                            "The reactome database name to connect to")
                         ,new FlaggedOption( "username", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'u', "username",
-                        "The database user")
+                            "The database user")
                         ,new FlaggedOption( "password", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'p', "password",
-                        "The password to connect to the database")
+                            "The password to connect to the database")
                         ,new FlaggedOption( "input", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'i', "input",
-                        "The file containing the data structure for the analysis." )
-                        ,new FlaggedOption( "output", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'o', "output",
-                        "The file where the results are written to." )
-                        ,new QualifiedSwitch( "verbose", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'v', "verbose",
-                        "Requests verbose output." )
+                            "The file containing the data structure for the analysis." )
+                        ,new FlaggedOption( "output", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'o', "output",
+                            "The file where the results are written to." )
                 }
         );
         JSAPResult config = jsap.parse(args);
@@ -49,6 +49,9 @@ public class ExporterTool {
                 config.getString("password")
         );
 
+        String fileName = config.getString("output");
+        FileUtil.checkFileName(fileName);
+
         ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
 
         String resource = config.getString("resource");
@@ -59,7 +62,7 @@ public class ExporterTool {
             analysisData.setFileName(config.getString("input"));
 
             Exporter exporter = context.getBean(Exporter.class);
-            exporter.export(dba, mainResource);
+            exporter.export(dba, mainResource, fileName);
         }else{
             System.err.println("Invalid resource " + resource + ". Available options are: " + getAvailableResources());
         }

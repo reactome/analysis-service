@@ -15,6 +15,10 @@ import org.reactome.server.model.Species;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -105,9 +109,11 @@ public class Exporter {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void export(MySQLAdaptor dba, ResourceFactory.MAIN resource){
+    public void export(MySQLAdaptor dba, ResourceFactory.MAIN resource, String fileName) throws FileNotFoundException {
         //THIS IS NEEDED HERE
         this.helper.setDba(dba);
+
+        PrintStream ps = new PrintStream(new FileOutputStream(new File(fileName)));
 
         MapSet<AnalysisIdentifier, Long> resourceToPathways = new MapSet<AnalysisIdentifier, Long>();
         for (PhysicalEntityNode node : analysisData.getPhysicalEntityGraph().getRootNodes()) {
@@ -132,9 +138,11 @@ public class Exporter {
                 }
             }
             for (Selection selection : selections) {
-                System.out.println(selection.generateLink(identifier.toString()));
+                ps.println(selection.generateLink(identifier.toString()));
             }
         }
+
+        ps.close();
     }
 
     private MapSet<AnalysisIdentifier, Long> getResourceToPathways(PhysicalEntityNode node, ResourceFactory.MAIN resource){

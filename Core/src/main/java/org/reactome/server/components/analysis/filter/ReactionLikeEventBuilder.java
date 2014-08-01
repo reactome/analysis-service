@@ -4,14 +4,15 @@ import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.reactome.server.components.analysis.model.EntityPathwayReactionMap;
-import org.reactome.server.components.analysis.util.MapSet;
 import org.reactome.server.components.analysis.model.PathwayNode;
+import org.reactome.server.components.analysis.util.MapSet;
 import org.reactome.server.controller.ReactomeToRESTfulAPIConverter;
 import org.reactome.server.mapper.EventMapper;
 import org.reactome.server.model.CatalystActivity;
 import org.reactome.server.model.DatabaseObject;
 import org.reactome.server.model.PhysicalEntity;
 import org.reactome.server.model.ReactionlikeEvent;
+import org.reactome.server.tools.BuilderTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,15 +45,6 @@ public class ReactionLikeEventBuilder {
 
         Collection<?> instances;
         try {
-//            GKInstance pathway = dba.fetchInstance(211733L);
-//            instances = pathway.getAttributeValuesList(ReactomeJavaConstants.hasEvent);
-//            pathway = dba.fetchInstance(211728L);
-//            instances.addAll(pathway.getAttributeValuesList(ReactomeJavaConstants.hasEvent));
-//            pathway = dba.fetchInstance(418889L);
-//            instances.addAll(pathway.getAttributeValuesList(ReactomeJavaConstants.hasEvent));
-
-//            instances = dba.fetchInstanceByAttribute(ReactomeJavaConstants.ReactionlikeEvent, ReactomeJavaConstants.species, "=", 48887);
-
             instances = dba.fetchInstancesByClass(ReactomeJavaConstants.ReactionlikeEvent);
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,7 +53,9 @@ public class ReactionLikeEventBuilder {
         int i=0; int tot=instances.size();
         for (Object instance : instances) {
             GKInstance inst = (GKInstance) instance;
-            System.out.print("\rProcessing ReactionlikeEvent -> " + inst.getDBID() + " >> " + ++i + "/" + tot + "   ");
+            if(BuilderTool.VERBOSE) {
+                System.out.print("\rProcessing ReactionlikeEvent -> " + inst.getDBID() + " >> " + ++i + "/" + tot + "   ");
+            }
             if(!inst.getSchemClass().isa(ReactomeJavaConstants.ReactionlikeEvent)){
                 continue;
             }
@@ -79,7 +73,9 @@ public class ReactionLikeEventBuilder {
                 }
             }
         }
-        System.out.println("\rReactionlikeEvent processed");
+        if(BuilderTool.VERBOSE) {
+            System.out.println("\rReactionlikeEvent processed");
+        }
     }
 
     public EntityPathwayReactionMap getEntityPathwayReaction() {
