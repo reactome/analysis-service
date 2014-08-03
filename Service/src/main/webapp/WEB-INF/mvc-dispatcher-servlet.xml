@@ -6,7 +6,9 @@
                             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                             http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <context:component-scan base-package="org.reactome.server"/>
+    <context:component-scan base-package="org.reactome.server.analysis.core.components"/>
+    <context:component-scan base-package="org.reactome.server.analysis.service.contoller"/>
+    <context:component-scan base-package="org.reactome.server.analysis.service.entrypoint"/>
 
     <mvc:annotation-driven/>
 
@@ -23,11 +25,11 @@
         <property name="maxUploadSize" value="10485760"/> <!-- 10 MB  // 52428800 = 50 MB-->
     </bean>
 
-    <bean id="analysisData" class="org.reactome.server.components.analysis.data.AnalysisData">
+    <bean id="analysisData" class="org.reactome.server.analysis.core.data.AnalysisData">
         <property name="fileName" value="${analysis.data.file}"/>
     </bean>
 
-    <bean id="fileCheckerController" class="org.reactome.server.analysis.helper.FileCheckerController">
+    <bean id="fileCheckerController" class="org.reactome.server.analysis.service.helper.FileCheckerController">
         <property name="pathDirectory" value="${analysis.data.tmp}"/>
         <property name="maxSize" value="5368709120"/> <!-- 104857600 = 100MB // 5368709120 = 5 GB // 10737418240 = 10GB -->
         <property name="threshold" value="524288000"/> <!-- 10485760 = 10MB // 524288000 = 500MB // 1073741824 = 1GB -->
@@ -35,28 +37,12 @@
         <property name="ttl" value="604800000"/> <!-- 1 week (SAB suggestion) -->
     </bean>
 
-    <bean id="analysisHelper" class="org.reactome.server.analysis.helper.AnalysisHelper">
+    <bean id="analysisHelper" class="org.reactome.server.analysis.service.helper.AnalysisHelper">
         <property name="pathDirectory" value="${analysis.data.tmp}"/>
     </bean>
 
-    <bean id="queryHelper" class="org.reactome.server.controller.QueryHelper">
-    </bean>
-
-    <bean id="postMapperFactory" class="org.reactome.server.controller.ReactomeModelPostMapperFactory">
-        <property name="configuration" value="ReactomePostMapperConfigration.xml"/>
-    </bean>
-
-    <bean id="converter" class="org.reactome.server.controller.ReactomeToRESTfulAPIConverter">
-        <property name="postMapperFactory" ref="postMapperFactory"/>
-    </bean>
-
-    <bean id="helper" class="org.reactome.server.controller.APIControllerHelper">
-        <property name="converter" ref="converter"/>
-        <property name="outputdir" value="${restful.result.tmp}"/>
-    </bean>
-
-    <bean id="templateCacher" class="org.reactome.server.analysis.utils.HeaderFooterCacher">
-        <constructor-arg name="server" value="${template_server}"/>
+    <bean id="templateCacher" class="org.reactome.server.analysis.service.utils.HeaderFooterCacher">
+        <constructor-arg name="server" value="${template_server_host}"/>
     </bean>
 
      <!-- Creates a controller at /api-docs from this uri, which serves swagger's raw documentation in JSON format. -->
