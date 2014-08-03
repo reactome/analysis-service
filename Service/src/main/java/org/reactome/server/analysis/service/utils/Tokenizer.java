@@ -113,7 +113,6 @@ public abstract class Tokenizer {
         String name = Tokenizer.getName(token);
         if(name.contains("_")){
             String d =  name.split("_")[0];
-            if( d.length() == (DATE_PATTERN.length()-4) )  d = "2014" + d; //Keeps compatibility backwards //TODO: Remove after release 49 :)
             DateFormat df = new SimpleDateFormat(DATE_PATTERN);
             try {
                 date = new DateTime(df.parse(d));
