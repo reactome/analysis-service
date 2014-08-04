@@ -5,21 +5,23 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
     <context:annotation-config />
 
-    <context:component-scan base-package="org.reactome.server.components"/>
+    <context:component-scan base-package="org.reactome.server.analysis.core.components"/>
+    <context:component-scan base-package="org.reactome.server.analysis.core.data"/>
+    <context:component-scan base-package="org.reactome.server.analysis.tools.components"/>
 
-    <bean id="queryHelper" class="org.reactome.server.controller.QueryHelper">
+    <bean id="queryHelper" class="org.reactome.core.controller.QueryHelper">
     </bean>
 
-    <bean id="postMapperFactory" class="org.reactome.server.controller.ReactomeModelPostMapperFactory">
+    <bean id="postMapperFactory" class="org.reactome.core.controller.ReactomeModelPostMapperFactory">
         <property name="configuration" value="ReactomePostMapperConfigration.xml"/>
     </bean>
 
-    <bean id="converter" class="org.reactome.server.controller.ReactomeToRESTfulAPIConverter">
+    <bean id="converter" class="org.reactome.core.controller.ReactomeToRESTfulAPIConverter">
         <property name="postMapperFactory" ref="postMapperFactory"/>
     </bean>
 
-    <bean id="helper" class="org.reactome.server.controller.APIControllerHelper">
+    <bean id="helper" class="org.reactome.core.controller.APIControllerHelper">
         <property name="converter" ref="converter"/>
-        <property name="outputdir" value="/Users/gwu/Documents/temp"/>
+        <property name="outputdir" value="${restful.tmp}"/>
     </bean>
 </beans>

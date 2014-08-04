@@ -4,8 +4,8 @@ import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.Parameter;
 import com.martiansoftware.jsap.SimpleJSAP;
 import com.martiansoftware.jsap.UnflaggedOption;
-import org.reactome.server.components.analysis.data.HierarchiesDataContainer;
-import org.reactome.server.tools.*;
+import org.reactome.server.analysis.core.data.HierarchiesDataContainer;
+import org.reactome.server.analysis.tools.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
