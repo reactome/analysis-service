@@ -1,4 +1,4 @@
-package org.reactome.server.analysis.service.contoller;
+package org.reactome.server.analysis.service.controller;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -15,14 +15,17 @@ import org.springframework.web.bind.annotation.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(value = "Queries for only one identifier")
+@Api(value="identifier", description = "Queries for only one identifier", position = 0)
 @RequestMapping(value = "/identifier")
 public class IdentifierController {
 
     @Autowired
     private AnalysisHelper controller;
-
-    @ApiOperation(value = "Analise the identifier over the different species in the database and projects the result to Homo Sapiens", notes = "")
+    @ApiOperation(value = "Analise the identifier over the different species in the database and projects the result to Homo Sapiens",
+                  notes = "The projection is calculated by the orthologous slot in the Reactome database. Use page and pageSize " +
+                          "to reduce the amount of data retrieved. Use sortBy and order to sort the result by your preferred option. " +
+                          "The resource field will filter the results to show only those corresponding to the preferred molecule type " +
+                          "(TOTAL includes all the different molecules type)")
     @RequestMapping(value = "/{id}/projection", method = RequestMethod.GET , produces = "application/json")
     @ResponseBody
     public AnalysisResult getIdentifierToHuman( @ApiParam(name = "id", required = true, value = "The identifier of the element to be retrieved")
@@ -41,7 +44,10 @@ public class IdentifierController {
         return controller.analyse(ud, true).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
-    @ApiOperation(value = "Analise the identifier over the different species in the database")
+    @ApiOperation(value = "Analise the identifier over the different species in the database",
+                  notes = "Use page and pageSize to reduce the amount of data retrieved. Use sortBy and order to sort the result by your " +
+                          "preferred option. The resource field will filter the results to show only those corresponding to the preferred " +
+                          "molecule type (TOTAL includes all the different molecules type)")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET , produces = "application/json")
     @ResponseBody
     public AnalysisResult getIdentifier( @ApiParam(name = "id" , required = true, value = "The identifier of the element to be retrieved")

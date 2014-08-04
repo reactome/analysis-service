@@ -1,8 +1,6 @@
-package org.reactome.server.analysis.service.contoller;
+package org.reactome.server.analysis.service.controller;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.*;
 import org.reactome.server.analysis.core.model.SpeciesNodeFactory;
 import org.reactome.server.analysis.service.helper.AnalysisHelper;
 import org.reactome.server.analysis.service.model.AnalysisResult;
@@ -11,14 +9,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@Api(value = "Species comparison")
+@Api(value = "species", description= "Species comparison", position = 3)
 @RequestMapping(value = "/species")
 public class SpeciesController {
 
     @Autowired
     private AnalysisHelper controller;
 
-    @ApiOperation(value = "Compares Homo sapiens to the specified species")
+    @ApiOperation(value = "Compares Homo sapiens to the specified species",
+                  notes = "Use page and pageSize to reduce the amount of data retrieved. Use sortBy and order to sort the result by your " +
+                          "preferred option. The resource field will filter the results to show only those corresponding to the preferred " +
+                          "molecule type (TOTAL includes all the different molecules type)")
+    @ApiResponses({@ApiResponse( code = 404, message = "Species identifier does not match with any of the species in the current data" )})
     @RequestMapping(value = "/homoSapiens/{species}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public AnalysisResult compareHomoSapiensTo( @ApiParam(name = "species", required = true, value = "The dbId of the species to compare to")
