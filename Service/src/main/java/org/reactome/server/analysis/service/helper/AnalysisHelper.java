@@ -1,15 +1,14 @@
 package org.reactome.server.analysis.service.helper;
 
+import net.sf.jmimemagic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.reactome.server.analysis.core.components.EnrichmentAnalysis;
 import org.reactome.server.analysis.core.components.SpeciesComparison;
+import org.reactome.server.analysis.core.exception.SpeciesNotFoundException;
 import org.reactome.server.analysis.core.model.*;
 import org.reactome.server.analysis.core.util.InputUtils;
-import org.reactome.server.analysis.service.exception.ResourceGoneException;
-import org.reactome.server.analysis.service.exception.ResourceNotFoundException;
-import org.reactome.server.analysis.service.exception.UnprocessableEntityException;
-import org.reactome.server.analysis.service.exception.UnsopportedMediaTypeException;
+import org.reactome.server.analysis.service.exception.*;
 import org.reactome.server.analysis.service.model.AnalysisSummary;
 import org.reactome.server.analysis.service.report.AnalysisReport;
 import org.reactome.server.analysis.service.report.ReportParameters;
@@ -19,12 +18,14 @@ import org.reactome.server.analysis.service.utils.Tokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -53,6 +54,9 @@ public class AnalysisHelper {
     private static Logger logger = Logger.getLogger(AnalysisHelper.class.getName());
 
     private String pathDirectory;
+
+    @Autowired
+    CommonsMultipartResolver multipartResolver;
 
     @Autowired
     private EnrichmentAnalysis enrichmentAnalysis;
@@ -102,10 +106,16 @@ public class AnalysisHelper {
                 //Nothing here
             }
         }
-        UserData ud = speciesComparison.getSyntheticUserData(speciesTo);
-        String token = Tokenizer.getOrCreateToken(fakeMD5, human);
-        AnalysisSummary summary = new AnalysisSummary(token, null, Type.SPECIES_COMPARISON, to);
-        return analyse(summary, ud, speciesFrom, reportParams);
+
+        try {
+            UserData ud = speciesComparison.getSyntheticUserData(speciesTo);
+            String token = Tokenizer.getOrCreateToken(fakeMD5, human);
+            AnalysisSummary summary = new AnalysisSummary(token, null, Type.SPECIES_COMPARISON, to);
+            return analyse(summary, ud, speciesFrom, reportParams);
+        } catch (SpeciesNotFoundException e) {
+            throw new ResourceNotFoundException();
+        }
+
     }
 
     private AnalysisSummary getAnalysisSummary(String token, String sampleName, Type type, String userFileName){
@@ -151,9 +161,30 @@ public class AnalysisHelper {
         return rtn;
     }
 
+    @SuppressWarnings("TryWithIdenticalCatches")
     public UserData getUserData(MultipartFile file){
         if(!file.isEmpty()){
             try {
+                try {
+                    //MagicMatch tries to get the content type of the original file
+                    //sent via an HTML multi-part form (remember that the file mime-type
+                    //is always 'application/octet-stream' when using the form)
+                    MagicMatch match = Magic.getMagicMatch(file.getBytes());
+                    if(!isAcceptedContentType(match.getMimeType())){
+                        throw new UnsopportedMediaTypeException();
+                    }
+                } catch (MagicMatchNotFoundException e) {
+                    logger.error(e.getMessage(),e);
+                    e.printStackTrace();
+                    throw new UnsopportedMediaTypeException();
+                } catch (MagicException e) {
+                    logger.error(e.getMessage(),e);
+                    throw new UnsopportedMediaTypeException();
+                } catch (MagicParseException e) {
+                    logger.error(e.getMessage(),e);
+                    throw new UnsopportedMediaTypeException();
+                }
+
                 return InputUtils.getUserData(file.getInputStream());
             } catch (IOException e) {
                 throw new UnsopportedMediaTypeException();
@@ -166,7 +197,15 @@ public class AnalysisHelper {
         if(url!=null && !url.isEmpty()) {
             InputStream is;
             try {
-                is = (new URL(url)).openConnection().getInputStream();
+                URLConnection conn = (new URL(url)).openConnection();
+                is = conn.getInputStream();
+
+                if(conn.getContentLength() > multipartResolver.getFileUpload().getSizeMax()){
+                    throw new RequestEntityTooLargeException();
+                }
+                if(!isAcceptedContentType(conn.getContentType())){
+                    throw new UnsopportedMediaTypeException();
+                }
             } catch (IOException e) {
                 throw new UnprocessableEntityException();
             }
@@ -230,5 +269,9 @@ public class AnalysisHelper {
 
         String fileName = getFileName(result.getSummary().getToken());
         ResultDataUtils.kryoSerialisation(result, fileName);
+    }
+
+    private boolean isAcceptedContentType(String contentType){
+        return contentType.contains("text/plain");
     }
 }
