@@ -290,15 +290,22 @@ table {
 }
 .swagger-ui-wrap .info_license {
   padding-bottom: 5px;
+  font-size: x-small;
+  text-align: right;
+  margin-bottom: 15px;
 }
 .swagger-ui-wrap .info_tos {
   padding-bottom: 5px;
+  font-size: x-small;
+  text-align: right;
 }
 .swagger-ui-wrap .message-fail {
   color: #cc0000;
 }
 .swagger-ui-wrap .info_contact {
   padding-bottom: 5px;
+  font-size: x-small;
+  text-align: right;
 }
 .swagger-ui-wrap .info_description {
   padding-bottom: 10px;

@@ -261,7 +261,7 @@ function program2(depth0,data) {
   buffer += "<div class=\"info_tos\"><a target='_blank' href=\""
     + escapeExpression(((stack1 = ((stack1 = depth0.info),stack1 == null || stack1 === false ? stack1 : stack1.termsOfServiceUrl)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">Terms of service</a></div>";
-  return buffer;
+  return ""; // buffer; //Modified by Antonio to avoid showing the Terms of service
   }
 
 function program4(depth0,data) {
