@@ -275,6 +275,7 @@ public abstract class ComparatorFactory {
         if(c2 == null){
             return -1;
         }else{
+            //noinspection unchecked
             return c1.compareTo(c2);
         }
     }
