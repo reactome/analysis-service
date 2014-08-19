@@ -23,8 +23,11 @@
     <script type="text/javascript">
         $(function () {
             var deployPath = window.location.pathname.substr(0, window.location.pathname.lastIndexOf("/"));
+            <!-- IE fix: if not present manually construct window.location.origin as IE does not support it directly -->
+            if (!window.location.origin) {
+                window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+            }
             window.swaggerUi = new SwaggerUi({
-//                url: window.location.origin  + deployPath + "/api/resourceList",
                 url: window.location.origin  + deployPath + "/api-docs ",
                 dom_id: "swagger-ui-container",
                 supportedSubmitMethods: ['get', 'post', 'put', 'delete'],
