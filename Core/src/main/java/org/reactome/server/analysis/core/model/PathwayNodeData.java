@@ -29,8 +29,6 @@ public class PathwayNodeData {
         Integer totalReactions = 0; //Pre-calculated in setCounters method
         Integer foundReactions = 0;
         Double reactionsRatio;
-        Double reactionsPValue;
-        Double reactionsFDR;
     }
 
     /*
@@ -259,30 +257,6 @@ public class PathwayNodeData {
         return this.getReactions(resource).size();
     }
 
-    public Double getReactionsPValue(){
-        return this.combinedResult.reactionsPValue;
-    }
-
-    public Double getReactionsPValue(MainResource resource){
-        Counter counter = this.entitiesResult.get(resource);
-        if(counter!=null){
-            return counter.reactionsPValue;
-        }
-        return null;
-    }
-
-    public Double getReactionsFDR(){
-        return this.combinedResult.reactionsFDR;
-    }
-
-    public Double getReactionsFDR(MainResource resource){
-        Counter counter = this.entitiesResult.get(resource);
-        if(counter!=null){
-            return counter.reactionsFDR;
-        }
-        return null;
-    }
-
     public Double getReactionsRatio(){
         return this.combinedResult.reactionsRatio;
     }
@@ -302,8 +276,8 @@ public class PathwayNodeData {
     public boolean hasResult(){
         for (MainResource resource : this.entitiesResult.keySet()) {
             Counter counter = this.entitiesResult.get(resource);
-            if(counter != null && counter.entitiesRatio != null){
-                return true;
+            if(counter != null && counter.foundEntities != null){
+                return counter.foundEntities > 0;
             }
         }
         return false;
@@ -317,23 +291,17 @@ public class PathwayNodeData {
         this.entitiesResult.get(resource).entitiesFDR = fdr;
     }
 
-    public void setReactionsFDR(Double fdr){
-        this.combinedResult.reactionsFDR = fdr;
-    }
-
-    public void setReactionsFDR(MainResource resource, Double fdr){
-        this.entitiesResult.get(resource).reactionsFDR = fdr;
-    }
-
     //This is only called in build time
-    protected void setCounters(){
+    protected void setCounters(PathwayNodeData speciesData){
         Set<AnalysisReaction> totalReactions = new HashSet<AnalysisReaction>();
         for (MainResource mainResource : this.reactions.keySet()) {
             Counter counter = this.getOrCreateCounter(mainResource);
             counter.totalReactions = this.reactions.getElements(mainResource).size();
             totalReactions.addAll(this.reactions.getElements(mainResource));
+            counter.reactionsRatio = counter.totalReactions/speciesData.getReactionsCount(mainResource).doubleValue();
         }
         this.combinedResult.totalReactions += totalReactions.size(); totalReactions.clear();
+        this.combinedResult.reactionsRatio =  this.combinedResult.totalReactions /speciesData.getReactionsCount().doubleValue();
         this.reactions = new MapSet<MainResource, AnalysisReaction>();
 
         MapSet<MainResource, AnalysisIdentifier> aux = new MapSet<MainResource, AnalysisIdentifier>();
@@ -345,26 +313,21 @@ public class PathwayNodeData {
         for (MainResource mainResource : aux.keySet()) {
             Counter counter = this.getOrCreateCounter(mainResource);
             counter.totalEntities = aux.getElements(mainResource).size();
+            counter.entitiesRatio =  counter.totalEntities/speciesData.getEntitiesCount(mainResource).doubleValue();
             this.combinedResult.totalEntities += counter.totalEntities;
         }
+        this.combinedResult.entitiesRatio = this.combinedResult.totalEntities / speciesData.getEntitiesCount().doubleValue();
         this.map = new MapSet<Identifier, MainIdentifier>();
     }
 
-    public void setResultStatistics(PathwayNodeData speciesData, Map<MainResource, Integer> sampleSizePerResource, Integer notFound){
+    public void setResultStatistics(Map<MainResource, Integer> sampleSizePerResource, Integer notFound){
         for (MainResource mainResource : this.getResources()) {
             Counter counter = this.entitiesResult.get(mainResource);
             counter.foundEntities = this.getEntitiesFound(mainResource);
-            if( counter.foundEntities > 0 ){
-                Integer sampleSize = sampleSizePerResource.get(mainResource) + notFound;
-                counter.entitiesRatio =  counter.totalEntities/speciesData.getEntitiesCount(mainResource).doubleValue();
-                counter.entitiesPValue =  MathUtilities.calculatePValue(counter.entitiesRatio, sampleSize, counter.foundEntities);
-            }
-
             counter.foundReactions = this.getReactionsFound(mainResource);
-            if( counter.foundReactions > 0 ){
-                Integer reactionsSize = speciesData.getReactionsFound(mainResource);
-                counter.reactionsRatio = counter.totalReactions/speciesData.getReactionsCount(mainResource).doubleValue();
-                counter.reactionsPValue = MathUtilities.calculatePValue(counter.reactionsRatio, reactionsSize, counter.foundReactions);
+            if( counter.foundEntities > 0 ) {
+                Integer sampleSize = sampleSizePerResource.get(mainResource) + notFound;
+                counter.entitiesPValue =  MathUtilities.calculatePValue(counter.entitiesRatio, sampleSize, counter.foundEntities);
             }
         }
 
@@ -375,15 +338,23 @@ public class PathwayNodeData {
             for (MainResource mainResource : sampleSizePerResource.keySet()) {
                 sampleSize += sampleSizePerResource.get(mainResource);
             }
-            counter.entitiesRatio = counter.totalEntities/speciesData.getEntitiesCount().doubleValue();
             counter.entitiesPValue = MathUtilities.calculatePValue(counter.entitiesRatio, sampleSize, counter.foundEntities);
         }
         counter.foundReactions = this.getReactionsFound();
-        if( counter.foundReactions > 0) {
-            Integer reactionsSize = speciesData.getReactionsFound();
-            counter.reactionsRatio = counter.totalReactions/speciesData.getReactionsCount().doubleValue();
-            counter.reactionsPValue = MathUtilities.calculatePValue(counter.reactionsRatio, reactionsSize, counter.foundReactions);
-        }
+    }
+
+    protected Double getScore(){
+        return getScore(this.combinedResult);
+    }
+
+    protected Double getScore(MainResource mainResource){
+        return getScore(this.entitiesResult.get(mainResource));
+    }
+
+    private Double getScore(Counter counter){
+        Double entitiesPercentage = counter.foundEntities / counter.totalEntities.doubleValue();
+        Double reactionsPercentage = counter.foundReactions / counter.totalReactions.doubleValue();
+        return (0.75 * (reactionsPercentage)) + (0.25 * (entitiesPercentage));
     }
 
     private Counter getOrCreateCounter(MainResource mainResource){

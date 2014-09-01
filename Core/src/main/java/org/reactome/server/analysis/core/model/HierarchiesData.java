@@ -65,9 +65,8 @@ public class HierarchiesData {
     public void setResultStatistics(Map<MainResource, Integer> sampleSizePerResource, Integer notFound){
         for (SpeciesNode species : this.pathwayHierarchies.keySet()) {
             PathwayHierarchy hierarchy = this.pathwayHierarchies.get(species);
-            PathwayNodeData data = hierarchy.getData();
             for (PathwayRoot node : hierarchy.getChildren()) {
-                node.setResultStatistics(data, sampleSizePerResource, notFound);
+                node.setResultStatistics(sampleSizePerResource, notFound);
             }
             /*
             FDR has to be calculated after the pValues for each pathway because it uses all the pValues.
@@ -80,12 +79,10 @@ public class HierarchiesData {
             //Contains several sets of PathwayStatistic objects depending on the main resource (this one is used to calculate
             //the entities FDR result based on the entities pValues
             MapSet<MainResource, PathwayStatistic> pathwayResourceEntityPValue = new MapSet<MainResource, PathwayStatistic>();
-            //The same than before but this one for the reactions FDR based on reactions pValues for each main resource
-            MapSet<MainResource, PathwayStatistic> pathwayResourceReactionPValue = new MapSet<MainResource, PathwayStatistic>();
+
             //This one does not depend on main resource because is for the combined result of the entities FDR based in their pValues
             List<PathwayStatistic> pathwayEntityPValue = new LinkedList<PathwayStatistic>();
-            //Finally this one is for the combined result for the reactions. As before, we need all the reactions pValues for the FDR
-            List<PathwayStatistic> pathwayReactionPValue = new LinkedList<PathwayStatistic>(); //Not sure if we will keep for final release
+
             //First thing we have to do, is iterate over the hit pathways and populate the lists (and MapSet) defined above
             for (PathwayNode node : hierarchy.getHitPathways()) {
                 PathwayNodeData nodeData = node.getPathwayNodeData();
@@ -94,15 +91,9 @@ public class HierarchiesData {
                     Double pValue = nodeData.getEntitiesPValue(resource);
                     if(pValue!=null)
                         pathwayResourceEntityPValue.add(resource, new PathwayStatistic(node, pValue));
-                    pValue = nodeData.getReactionsPValue(resource);
-                    if(pValue!=null)
-                        pathwayResourceReactionPValue.add(resource, new PathwayStatistic(node, pValue));
                 }
-
                 Double pValue = nodeData.getEntitiesPValue();
                 pathwayEntityPValue.add(new PathwayStatistic(node, pValue));
-                pValue = nodeData.getReactionsPValue();
-                pathwayReactionPValue.add(new PathwayStatistic(node, pValue));
             }
             /*
             Here we have to iterate over the different resources where the "individual" results have been found
@@ -120,25 +111,12 @@ public class HierarchiesData {
                     PathwayNodeData nodeData = pathwayStatistic.getPathwayNode().getPathwayNodeData();
                     nodeData.setEntitiesFDR(resource, pathwayStatistic.getFDR());
                 }
-                //Now we do the same but for the reactions
-                set = pathwayResourceReactionPValue.getElements(resource);
-                list = new LinkedList<PathwayStatistic>(set);
-                this.setFDRWithBenjaminiHochberg(list);
-                for (PathwayStatistic pathwayStatistic : list) {
-                    PathwayNodeData nodeData = pathwayStatistic.getPathwayNode().getPathwayNodeData();
-                    nodeData.setReactionsFDR(resource, pathwayStatistic.getFDR());
-                }
             }
             //You know what the comment here is... the same than before but for the combined result
             this.setFDRWithBenjaminiHochberg(pathwayEntityPValue);
             for (PathwayStatistic pathwayStatistic : pathwayEntityPValue) {
                 PathwayNodeData nodeData = pathwayStatistic.getPathwayNode().getPathwayNodeData();
                 nodeData.setEntitiesFDR(pathwayStatistic.getFDR());
-            }
-            this.setFDRWithBenjaminiHochberg(pathwayReactionPValue);
-            for (PathwayStatistic pathwayStatistic : pathwayReactionPValue) {
-                PathwayNodeData nodeData = pathwayStatistic.getPathwayNode().getPathwayNodeData();
-                nodeData.setReactionsFDR(pathwayStatistic.getFDR());
             }
         }
     }
@@ -190,6 +168,7 @@ public class HierarchiesData {
             this.fdr = fdr;
         }
 
+        @SuppressWarnings("NullableProblems")
         @Override
         public int compareTo(PathwayStatistic o) {
             return pValue.compareTo(o.pValue);

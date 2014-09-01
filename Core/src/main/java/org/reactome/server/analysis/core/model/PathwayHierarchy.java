@@ -49,9 +49,9 @@ public class PathwayHierarchy implements Serializable {
     }
 
     public void setCountersAndCleanUp(){
-        this.data.setCounters();
+        this.data.setCounters(getData());
         for (PathwayRoot node : children) {
-            node.setCounters();
+            node.setCounters(getData());
         }
     }
 

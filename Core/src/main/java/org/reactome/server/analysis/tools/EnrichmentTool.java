@@ -82,14 +82,7 @@ public class EnrichmentTool {
             System.out.print("\t|\t");
             found = data.getReactionsFound(resource);
             total = data.getReactionsCount(resource);
-            System.out.print("[" + found + "/" + total + "]");
-            pValue = data.getReactionsPValue(resource); ratio = data.getReactionsRatio(resource); fdr = data.getReactionsFDR(resource);
-            if(pValue!=null && ratio!=null && fdr!=null){
-                System.out.print("\t" + ratio + "\t" + pValue + "\t" + fdr);
-//                DecimalFormat f = new DecimalFormat("#.####");
-//                System.out.print("\t" + f.format(ratio) + "\t" + f.format(pValue));
-            }
-            System.out.println();
+            System.out.println("[" + found + "/" + total + "]");
         }
 
 //        Integer found = data.getEntitiesFound();

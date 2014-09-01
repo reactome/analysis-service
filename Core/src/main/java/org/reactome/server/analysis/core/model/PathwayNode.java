@@ -103,18 +103,18 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
         this.isLowerLevelPathway = isLowerLevelPathway;
     }
 
-    protected void setCounters(){
-        this.data.setCounters();
+    protected void setCounters(PathwayNodeData speciesData){
+        this.data.setCounters(speciesData);
         for (PathwayNode child : this.children) {
-            child.setCounters();
+            child.setCounters(speciesData);
         }
     }
 
-    public void setResultStatistics(PathwayNodeData speciesData, Map<MainResource, Integer> sampleSizePerResource, Integer notFound){
+    public void setResultStatistics(Map<MainResource, Integer> sampleSizePerResource, Integer notFound){
         for (PathwayNode child : this.children) {
-            child.setResultStatistics(speciesData, sampleSizePerResource, notFound);
+            child.setResultStatistics(sampleSizePerResource, notFound);
         }
-        this.data.setResultStatistics(speciesData, sampleSizePerResource, notFound);
+        this.data.setResultStatistics(sampleSizePerResource, notFound);
     }
 
     public void process(MainIdentifier mainIdentifier, Set<AnalysisReaction> reactions){
@@ -129,8 +129,17 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
         }
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public int compareTo(PathwayNode o) {
-        return this.data.getEntitiesPValue().compareTo(o.data.getEntitiesPValue());
+        int rtn = this.data.getEntitiesPValue().compareTo(o.data.getEntitiesPValue());
+        if(rtn==0){
+            Double oScore = o.data.getScore(); Double thisScore = this.data.getScore();
+            rtn = oScore.compareTo(thisScore);
+            if(rtn==0){
+                rtn = o.data.getEntitiesFound().compareTo(this.data.getEntitiesFound());
+            }
+        }
+        return rtn;
     }
 }
