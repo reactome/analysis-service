@@ -22,7 +22,7 @@ public class IdentifiersController {
     @Autowired
     private AnalysisHelper controller;
 
-    @ApiOperation(value = "Analise the post identifiers over the different species and projects the result to Homo Sapiens",
+    @ApiOperation(value = "Analyse the post identifiers over the different species and projects the result to Homo Sapiens",
                   notes = "The projection is calculated by the orthologous slot in the Reactome database. Use page and pageSize " +
                           "to reduce the amount of data retrieved. Use sortBy and order to sort the result by your preferred option. " +
                           "The resource field will filter the results to show only those corresponding to the preferred molecule type " +
@@ -47,7 +47,7 @@ public class IdentifiersController {
         return controller.analyse(ud, true).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
-    @ApiOperation(value = "Analise the post identifiers over the different species",
+    @ApiOperation(value = "Analyse the post identifiers over the different species",
                   notes = "Use page and pageSize to reduce the amount of data retrieved. Use sortBy and order to sort the result by your " +
                           "preferred option. The resource field will filter the results to show only those corresponding to the preferred " +
                           "molecule type (TOTAL includes all the different molecules type)")
@@ -71,7 +71,7 @@ public class IdentifiersController {
         return controller.analyse(ud, false).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
-    @ApiOperation(value = "Analise the identifiers in the file over the different species and projects the result to Homo Sapiens",
+    @ApiOperation(value = "Analyse the identifiers in the file over the different species and projects the result to Homo Sapiens",
                   notes = "The projection is calculated by the orthologous slot in the Reactome database. Use page and pageSize " +
                           "to reduce the amount of data retrieved. Use sortBy and order to sort the result by your preferred option. " +
                           "The resource field will filter the results to show only those corresponding to the preferred molecule type " +
@@ -97,7 +97,7 @@ public class IdentifiersController {
         return controller.analyse(ud, true, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
-    @ApiOperation(value = "Analise the identifiers in the file over the different species",
+    @ApiOperation(value = "Analyse the identifiers in the file over the different species",
                   notes = "Use page and pageSize to reduce the amount of data retrieved. Use sortBy and order to sort the result by your " +
                           "preferred option. The resource field will filter the results to show only those corresponding to the preferred " +
                           "molecule type (TOTAL includes all the different molecules type)")
@@ -122,7 +122,7 @@ public class IdentifiersController {
         return controller.analyse(ud, false, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
-    @ApiOperation(value = "Analise the identifiers contained in the provided url over the different species and projects the result to Homo Sapiens",
+    @ApiOperation(value = "Analyse the identifiers contained in the provided url over the different species and projects the result to Homo Sapiens",
                   notes = "The projection is calculated by the orthologous slot in the Reactome database. Use page and pageSize " +
                           "to reduce the amount of data retrieved. Use sortBy and order to sort the result by your preferred option. " +
                           "The resource field will filter the results to show only those corresponding to the preferred molecule type " +
@@ -150,7 +150,7 @@ public class IdentifiersController {
         return controller.analyse(ud, true, fileName).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
-    @ApiOperation(value = "Analise the identifiers contained in the provided url over the different species",
+    @ApiOperation(value = "Analyse the identifiers contained in the provided url over the different species",
                   notes = "Use page and pageSize to reduce the amount of data retrieved. Use sortBy and order to sort the result by your " +
                           "preferred option. The resource field will filter the results to show only those corresponding to the preferred " +
                           "molecule type (TOTAL includes all the different molecules type)")

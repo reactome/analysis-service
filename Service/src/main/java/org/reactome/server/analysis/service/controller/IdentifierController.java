@@ -21,7 +21,7 @@ public class IdentifierController {
 
     @Autowired
     private AnalysisHelper controller;
-    @ApiOperation(value = "Analise the identifier over the different species in the database and projects the result to Homo Sapiens",
+    @ApiOperation(value = "Analyse the identifier over the different species in the database and projects the result to Homo Sapiens",
                   notes = "The projection is calculated by the orthologous slot in the Reactome database. Use page and pageSize " +
                           "to reduce the amount of data retrieved. Use sortBy and order to sort the result by your preferred option. " +
                           "The resource field will filter the results to show only those corresponding to the preferred molecule type " +
@@ -44,7 +44,7 @@ public class IdentifierController {
         return controller.analyse(ud, true).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
-    @ApiOperation(value = "Analise the identifier over the different species in the database",
+    @ApiOperation(value = "Analyse the identifier over the different species in the database",
                   notes = "Use page and pageSize to reduce the amount of data retrieved. Use sortBy and order to sort the result by your " +
                           "preferred option. The resource field will filter the results to show only those corresponding to the preferred " +
                           "molecule type (TOTAL includes all the different molecules type)")
