@@ -274,13 +274,7 @@ public class PathwayNodeData {
     }
 
     public boolean hasResult(){
-        for (MainResource resource : this.entitiesResult.keySet()) {
-            Counter counter = this.entitiesResult.get(resource);
-            if(counter != null && counter.foundEntities != null){
-                return counter.foundEntities > 0;
-            }
-        }
-        return false;
+        return !this.map.isEmpty();
     }
 
     public void setEntitiesFDR(Double fdr){
