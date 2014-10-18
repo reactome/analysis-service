@@ -36,9 +36,12 @@ public class ExporterTool {
                         ,new FlaggedOption( "input", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'i', "input",
                             "The file containing the data structure for the analysis." )
                         ,new FlaggedOption( "output", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'o', "output",
-                            "The file where the results are written to." )
+                            "The file where the results are written to.")
+                        ,new QualifiedSwitch( "all", JSAP.BOOLEAN_PARSER, null, JSAP.NOT_REQUIRED, 'a', "all",
+                            "Exports data for all the levels in the hierarchy." )
                 }
         );
+
         JSAPResult config = jsap.parse(args);
         if( jsap.messagePrinted() ) System.exit( 1 );
 
@@ -61,8 +64,10 @@ public class ExporterTool {
             AnalysisData analysisData = context.getBean(AnalysisData.class);
             analysisData.setFileName(config.getString("input"));
 
+            Boolean all = config.getBoolean("all");
             Exporter exporter = context.getBean(Exporter.class);
-            exporter.export(dba, mainResource, fileName);
+            exporter.export(dba, mainResource, fileName, all);
+
         }else{
             System.err.println("Invalid resource " + resource + ". Available options are: " + getAvailableResources());
         }
