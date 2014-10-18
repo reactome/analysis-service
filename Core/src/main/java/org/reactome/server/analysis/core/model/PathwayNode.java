@@ -81,6 +81,9 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
         return pathwayId;
     }
 
+    public PathwayNode getParent() {
+        return parent;
+    }
 
     public PathwayNodeData getPathwayNodeData() {
         return data;

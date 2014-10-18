@@ -109,7 +109,7 @@ public class Exporter {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void export(MySQLAdaptor dba, ResourceFactory.MAIN resource, String fileName) throws FileNotFoundException {
+    public void export(MySQLAdaptor dba, ResourceFactory.MAIN resource, String fileName, Boolean all) throws FileNotFoundException {
         //THIS IS NEEDED HERE
         this.helper.setDba(dba);
 
@@ -131,9 +131,16 @@ public class Exporter {
                 Set<PathwayNode> pathwayNodes = identifierMap.getElements(pathwayId);
                 if(pathwayNodes!=null){
                     for (PathwayNode pathwayNode : pathwayNodes) {
-                        String pId = pathwayNode.getPathwayId().toString();
-                        String dId = pathwayNode.getDiagram().getPathwayId().toString();
-                        selections.add(new Selection(dId, pId));
+                        try {
+                            do {
+                                String pId = pathwayNode.getPathwayId().toString();
+                                String dId = pathwayNode.getDiagram().getPathwayId().toString();
+                                selections.add(new Selection(dId, pId));
+                            // If all is true we go up to the top-level-pathway adding all the pathways to "selections"
+                            } while (all && (pathwayNode = pathwayNode.getParent())!=null);
+                        }catch (NullPointerException e){
+                            System.err.println("No diagram found for: " + pathwayNode.getPathwayId());
+                        }
                     }
                 }
             }
