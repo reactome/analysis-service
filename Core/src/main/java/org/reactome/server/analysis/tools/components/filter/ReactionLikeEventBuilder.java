@@ -115,8 +115,11 @@ public class ReactionLikeEventBuilder {
         //CATALYST ACTIVITIES
         if(reactionlikeEvent.getCatalystActivity()!=null) {
             for (CatalystActivity catalystActivity : reactionlikeEvent.getCatalystActivity()) {
-                if (catalystActivity != null && catalystActivity.getPhysicalEntity() != null) {
-                    pes.add(catalystActivity.getPhysicalEntity());
+                if (catalystActivity != null){
+                    catalystActivity.load();
+                    if(catalystActivity.getPhysicalEntity() != null) {
+                        pes.add(catalystActivity.getPhysicalEntity());
+                    }
                 }
             }
         }
