@@ -5,10 +5,7 @@ import org.gk.model.ReactomeJavaConstants;
 import org.gk.persistence.MySQLAdaptor;
 import org.reactome.core.factory.DatabaseObjectFactory;
 import org.reactome.core.mapper.EventMapper;
-import org.reactome.core.model.CatalystActivity;
-import org.reactome.core.model.DatabaseObject;
-import org.reactome.core.model.PhysicalEntity;
-import org.reactome.core.model.ReactionlikeEvent;
+import org.reactome.core.model.*;
 import org.reactome.server.analysis.core.model.AnalysisReaction;
 import org.reactome.server.analysis.core.model.EntityPathwayReactionMap;
 import org.reactome.server.analysis.core.model.PathwayNode;
@@ -119,6 +116,17 @@ public class ReactionLikeEventBuilder {
                     catalystActivity.load();
                     if(catalystActivity.getPhysicalEntity() != null) {
                         pes.add(catalystActivity.getPhysicalEntity());
+                    }
+                }
+            }
+        }
+        //ENTITY FUNCTIONAL STATUS
+        if(reactionlikeEvent.getEntityFunctionalStatus()!=null){
+            for (EntityFunctionalStatus efs : reactionlikeEvent.getEntityFunctionalStatus()) {
+                if(efs!=null) {
+                    efs.load();
+                    if (efs.getPhysicalEntity() != null) {
+                        pes.add(efs.getPhysicalEntity());
                     }
                 }
             }
