@@ -11,7 +11,7 @@ public abstract class ResourceFactory {
     public static enum MAIN { UNIPROT, ENSEMBL, MIRBASE, CHEBI }
     //NOTE: The idea is to get rid of the auxMainResources by being in touch with curators and find out whether a
     //main resource identifier can be used in the PhysicalEntities where no main resource was found
-    public static enum AUX { NCBI_PROTEIN, EMBL, COMPOUND } //TODO: Add miRBase as AUX resource
+    public static enum AUX { NCBI_PROTEIN, EMBL, COMPOUND }
 
     //Some resources use the same identifiers than other resources so in these cases we do not take into account
     //the equivalents. To do so we convert the equivalent ones to the main resource in the 'getResource' method
