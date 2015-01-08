@@ -266,6 +266,11 @@ public class PhysicalEntityHierarchyBuilder {
                 String rscAux = "#" + resource.getName(); //fake resource
                 resource = ResourceFactory.getResource(rscAux);
                 List<String> aux = new LinkedList<String>();
+                if(instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.secondaryIdentifier)){
+                    for (Object identifier : instance.getAttributeValuesList(ReactomeJavaConstants.secondaryIdentifier)) {
+                        aux.add((String) identifier);
+                    }
+                }
                 if(instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.otherIdentifier)){
                     for (Object identifier : instance.getAttributeValuesList(ReactomeJavaConstants.otherIdentifier)) {
                         aux.add((String) identifier);
