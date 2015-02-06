@@ -48,9 +48,10 @@ public class LogEntryProducer extends Thread {
             sortFileArray(files);
             for (File file : files != null ? files : new File[0]) {
                 logger.info("Reading file " + file.getName());
+
                 if (maxDBDate != null) {
                     if (new Date(file.lastModified()).before(DateUtils.dbDateStringToDate(maxDBDate))) {
-                        break;
+                        continue;
                     }
                 }
                 if (fileContains(file.getName())) {
