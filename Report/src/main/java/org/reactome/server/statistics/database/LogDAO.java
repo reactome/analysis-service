@@ -37,17 +37,21 @@ public class LogDAO {
      */
     public void insertLogEntry(LogEntry logEntry) {
         String query = "INSERT INTO logs values (?,?,?,?,?,?,?,?,?,?);";
-        jdbcTemplate.update(query,
-                logEntry.getDate(),
-                logEntry.getTypeOfRequest(),
-                logEntry.getTypeOfExecution(),
-                logEntry.getAnalysisType(),
-                logEntry.getSampleName(),
-                logEntry.getProjection(),
-                logEntry.getDataSetSize(),
-                logEntry.getFound(),
-                logEntry.getNotFound(),
-                logEntry.getProcessingTime());
+        try {
+            jdbcTemplate.update(query,
+                    logEntry.getDate(),
+                    logEntry.getTypeOfRequest(),
+                    logEntry.getTypeOfExecution(),
+                    logEntry.getAnalysisType(),
+                    logEntry.getSampleName(),
+                    logEntry.getProjection(),
+                    logEntry.getDataSetSize(),
+                    logEntry.getFound(),
+                    logEntry.getNotFound(),
+                    logEntry.getProcessingTime());
+        } catch (Exception e){
+            logger.error("Error on inserting log entry");
+        }
     }
 
     /**
@@ -110,7 +114,7 @@ public class LogDAO {
      * @return
      */
     public Map<Date, String> getTotalAnalysisByDates(String startDate, String endDate, String granularity) {
-        Map<Date, String> dateStringMap = new HashMap<Date, String>();
+        Map<Date, String> dateStringMap = new HashMap<>();
         String extractCommand = getExtractCommand(granularity);
         String groupByCommand = getGroupByCommand(granularity);
         String orderByCommand = getOrderByCommand(granularity);
@@ -135,7 +139,7 @@ public class LogDAO {
      * @return
      */
     public Map<Date, String> getExecutedAnalysisByDates(String startDate, String endDate, String granularity) {
-        Map<Date, String> dateStringMap = new HashMap<Date, String>();
+        Map<Date, String> dateStringMap = new HashMap<>();
         String extractCommand = getExtractCommand(granularity);
         String groupByCommand = getGroupByCommand(granularity);
         String orderByCommand = getOrderByCommand(granularity);
@@ -160,7 +164,7 @@ public class LogDAO {
      * @return
      */
     public Map<Date, String> getCachedAnalysisByDates(String startDate, String endDate, String granularity) {
-        Map<Date, String> dateStringMap = new HashMap<Date, String>();
+        Map<Date, String> dateStringMap = new HashMap<>();
         String extractCommand = getExtractCommand(granularity);
         String groupByCommand = getGroupByCommand(granularity);
         String orderByCommand = getOrderByCommand(granularity);
@@ -186,7 +190,7 @@ public class LogDAO {
      * @return
      */
     public Map<Date, String> getDownloadsByDates(String startDate, String endDate, String granularity) {
-        Map<Date, String> dateStringMap = new HashMap<Date, String>();
+        Map<Date, String> dateStringMap = new HashMap<>();
         String extractCommand = getExtractCommand(granularity);
         String groupByCommand = getGroupByCommand(granularity);
         String orderByCommand = getOrderByCommand(granularity);
@@ -204,37 +208,14 @@ public class LogDAO {
 
     /**
      * Returns the average data set size by a given granularity.
-     * @param startDate
-     * @param endDate
-     * @param granularity
-     * @return
-     */
-    public Map<Date, String> getAVGDataSetSize(String startDate, String endDate, String granularity) {
-        Map<Date, String> dateStringMap = new HashMap<Date, String>();
-        String extractCommand = getExtractCommand(granularity);
-        String groupByCommand = getGroupByCommand(granularity);
-        String orderByCommand = getOrderByCommand(granularity);
-        String query = "SELECT AVG (dataSetSize), " + extractCommand + " FROM logs " +
-                " WHERE datetime BETWEEN ? AND ? " +
-                groupByCommand + orderByCommand;
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query, startDate, endDate);
-
-        while (rowSet.next()) {
-            Date date = prepareDate(rowSet, granularity);
-            dateStringMap.put(date, rowSet.getString(1));
-        }
-        return dateStringMap;
-    }
-
-    /**
-     * Returns the average data set size by a given granularity.
+     *
      * @param startDate
      * @param endDate
      * @param granularity
      * @return
      */
     public Map<Date, String> getAVGDataSetSizeTOTAL(String startDate, String endDate, String granularity) {
-        Map<Date, String> dateStringMap = new HashMap<Date, String>();
+        Map<Date, String> dateStringMap = new HashMap<>();
         String extractCommand = getExtractCommand(granularity);
         String groupByCommand = getGroupByCommand(granularity);
         String orderByCommand = getOrderByCommand(granularity);
@@ -251,13 +232,14 @@ public class LogDAO {
 
     /**
      * Returns the average data set size by a given granularity.
+     *
      * @param startDate
      * @param endDate
      * @param granularity
      * @return
      */
     public Map<Date, String> getAVGDataSetSizeExecuted(String startDate, String endDate, String granularity) {
-        Map<Date, String> dateStringMap = new HashMap<Date, String>();
+        Map<Date, String> dateStringMap = new HashMap<>();
         String extractCommand = getExtractCommand(granularity);
         String groupByCommand = getGroupByCommand(granularity);
         String orderByCommand = getOrderByCommand(granularity);
@@ -274,13 +256,14 @@ public class LogDAO {
 
     /**
      * Returns the average data set size by a given granularity.
+     *
      * @param startDate
      * @param endDate
      * @param granularity
      * @return
      */
     public Map<Date, String> getAVGDataSetSizeCached(String startDate, String endDate, String granularity) {
-        Map<Date, String> dateStringMap = new HashMap<Date, String>();
+        Map<Date, String> dateStringMap = new HashMap<>();
         String extractCommand = getExtractCommand(granularity);
         String groupByCommand = getGroupByCommand(granularity);
         String orderByCommand = getOrderByCommand(granularity);
@@ -298,7 +281,7 @@ public class LogDAO {
 
 
     public Map<Date, String> getAVGTimeNewAnalysis(String startDate, String endDate, String granularity) {
-        Map<Date, String> dateStringMap = new HashMap<Date, String>();
+        Map<Date, String> dateStringMap = new HashMap<>();
         String extractCommand = getExtractCommand(granularity);
         String groupByCommand = getGroupByCommand(granularity);
         String orderByCommand = getOrderByCommand(granularity);
@@ -315,7 +298,7 @@ public class LogDAO {
     }
 
     public Map<Date, String> getAVGTimeCached(String startDate, String endDate, String granularity) {
-        Map<Date, String> dateStringMap = new HashMap<Date, String>();
+        Map<Date, String> dateStringMap = new HashMap<>();
         String extractCommand = getExtractCommand(granularity);
         String groupByCommand = getGroupByCommand(granularity);
         String orderByCommand = getOrderByCommand(granularity);
@@ -332,7 +315,7 @@ public class LogDAO {
     }
 
     public Map<Date, String> getAVGTimeDownsloads(String startDate, String endDate, String granularity) {
-        Map<Date, String> dateStringMap = new HashMap<Date, String>();
+        Map<Date, String> dateStringMap = new HashMap<>();
         String extractCommand = getExtractCommand(granularity);
         String groupByCommand = getGroupByCommand(granularity);
         String orderByCommand = getOrderByCommand(granularity);
@@ -368,7 +351,8 @@ public class LogDAO {
         while (rowSet.next()) {
             result = rowSet.getString(1);
         }
-        return result;    }
+        return result;
+    }
 
     public String getCachedNumberAnalysis(String startDate, String endDate) {
         String result = null;
@@ -382,7 +366,7 @@ public class LogDAO {
 
     public String getAVGTimeExecutedAnalysis(String startDate, String endDate) {
         String result = null;
-        String query = "SELECT SELECT AVG(processingTime) FROM logs WHERE typeOfRequest = '_ANALYSIS_' AND typeOfExecution = '_EXEC_' AND datetime BETWEEN ? AND ?";
+        String query = "SELECT AVG(processingTime) FROM logs WHERE typeOfRequest = '_ANALYSIS_' AND typeOfExecution = '_EXEC_' AND datetime BETWEEN ? AND ?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query, startDate, endDate);
         while (rowSet.next()) {
             result = rowSet.getString(1);
