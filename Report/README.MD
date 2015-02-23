@@ -1,6 +1,6 @@
 #Analysis Report
 
-The Analysis Report, is a tool for generating statical charts out of the Analysis-Logs (ReactomeAnalysis_Report.log).
+The Analysis Report, is a tool for generating statistical charts out of the Analysis-Logs (ReactomeAnalysis_Report.log).
 
 ###Technologies
 
@@ -12,7 +12,3 @@ The Analysis Report, is a tool for generating statical charts out of the Analysi
 * C3.js
 * H2 DB
 
-
-###Installtion
-
-###How does it work?
