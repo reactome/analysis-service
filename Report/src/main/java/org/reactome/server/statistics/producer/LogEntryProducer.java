@@ -18,10 +18,11 @@ import java.util.Date;
 /**
  * Created by Maximilian Koch (mkoch@ebi.ac.uk).
  */
-public class LogEntryProducer extends Thread {
+public class LogEntryProducer extends Thread {    
     private static Logger logger = Logger.getLogger(LogEntryProducer.class.getName());
-
-    private static final String logName = "ReactomeAnalysis_Report";
+    
+    private static final String LOG_NAME = "ReactomeAnalysis_Report";
+    private static final Integer UPDATE_TIME = 600000;
     private final String logPath;
     private LogDAO logDAO;
     private boolean firstTime = true;
@@ -33,7 +34,7 @@ public class LogEntryProducer extends Thread {
     }
 
     public static String getStaticLogName() {
-        return logName;
+        return LOG_NAME;
     }
 
     /**
@@ -56,7 +57,7 @@ public class LogEntryProducer extends Thread {
                 }
                 if (fileContains(file.getName())) {
                     if (file.isFile()) {
-                        if(firstTime){
+                        if (firstTime) {
                             readFileTopDown(file);
                         } else {
                             readFileBottomUp(file, maxDBDate);
@@ -68,7 +69,7 @@ public class LogEntryProducer extends Thread {
             try {
                 firstTime = false;
                 logger.info("Finished process...");
-                Thread.sleep(900000);
+                Thread.sleep(UPDATE_TIME);
                 logger.info("Restart process!");
             } catch (InterruptedException e) {
                 logDAO.closeConnection();
@@ -122,7 +123,7 @@ public class LogEntryProducer extends Thread {
         }
     }
 
-    private void readFileTopDown(File file){
+    private void readFileTopDown(File file) {
         BufferedReader bufferedReader = null;
 
         try {
