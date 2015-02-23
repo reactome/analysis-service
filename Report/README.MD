@@ -6,8 +6,13 @@ The Analysis Report, is a tool for generating statical charts out of the Analysi
 
 * Maven
 * Java
-* Spring-JDBC
+* Spring
 * FasterXML
 * jQuery
 * C3.js
 * H2 DB
+
+
+###Installtion
+
+###How does it work?
