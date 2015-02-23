@@ -13,7 +13,7 @@ import java.util.Map;
  * Created by Maximilian Koch (mkoch@ebi.ac.uk).
  */
 public class JSONObjFactory {
-    private static Logger logger = Logger.getLogger(LogChartsController.class.getName());
+    private static Logger logger = Logger.getLogger(JSONObjFactory.class.getName());
 
     public static Model getRequestComparisonModel(String granularity,
                                                   Integer chartHeight,
@@ -321,15 +321,15 @@ public class JSONObjFactory {
         c3Chart.setBindto(".analysisComparison.chart");
         dataInformationTotal.setName("Total number of analysis");
         dataInformationTotal.setResult(totalNumberAnalysis);
-        dataInformationExecuted.setName("Total number of analysis");
+        dataInformationExecuted.setName("Total number of executed analysis");
         dataInformationExecuted.setResult(executedNumberAnalysis);
-        dataInformationCached.setName("Total number of analysis");
+        dataInformationCached.setName("Total number of cached analysis");
         dataInformationCached.setResult(cachedNumberAnalysis);
         dataInformationList.add(dataInformationTotal);
         dataInformationList.add(dataInformationExecuted);
         dataInformationList.add(dataInformationCached);
         chartInformation.setTitle("Analysis Requests Comparison");
-        chartInformation.setDescription("The following chart presents the number of analyses requests received, both executed and cashed, over the specified time period.");
+        chartInformation.setDescription("The following chart presents the number of analyses requests received, both executed and cached, over the specified time period.");
         model.setChartInformation(chartInformation);
         model.setC3Chart(c3Chart);
         model.setDataInformationList(dataInformationList);
