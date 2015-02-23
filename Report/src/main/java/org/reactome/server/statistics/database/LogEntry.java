@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.reactome.server.statistics.util.DateUtils;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
