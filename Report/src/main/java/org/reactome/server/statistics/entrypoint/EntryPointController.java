@@ -16,8 +16,7 @@ public class EntryPointController {
 
     @RequestMapping(value = {"/", "/index.html"}, method = RequestMethod.GET)
 //    @ApiIgnore //Swagger will NOT include this method in the documentation
-    public String entryPoint () {
+    public String entryPoint() {
         return "index";
     }
-
 }
