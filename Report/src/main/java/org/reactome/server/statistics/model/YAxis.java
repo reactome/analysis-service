@@ -31,12 +31,12 @@ public class YAxis {
         return min;
     }
 
-    public void setLabel(Label label) {
-        this.label = label;
-    }
-
     public Label getLabel() {
         return label;
+    }
+
+    public void setLabel(Label label) {
+        this.label = label;
     }
 
     public Padding getPadding() {
