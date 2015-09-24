@@ -20,12 +20,20 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import javax.net.ssl.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -197,8 +205,18 @@ public class AnalysisHelper {
         if(url!=null && !url.isEmpty()) {
             InputStream is;
             try {
-                URLConnection conn = (new URL(url)).openConnection();
-                is = conn.getInputStream();
+                HttpURLConnection conn;
+                URL aux = new URL(url);
+                if(aux.getProtocol().contains("https")){
+                    doTrustToCertificates(); //accepting the certificate by default
+                    HttpsURLConnection tmpConn = (HttpsURLConnection) aux.openConnection();
+                    is = tmpConn.getInputStream();
+                    conn = tmpConn;
+                }else{
+                    URLConnection tmpConn = aux.openConnection();
+                    is = tmpConn.getInputStream();
+                    conn = (HttpURLConnection) tmpConn;
+                }
 
                 if(conn.getContentLength() > multipartResolver.getFileUpload().getSizeMax()){
                     throw new RequestEntityTooLargeException();
@@ -206,7 +224,8 @@ public class AnalysisHelper {
                 if(!isAcceptedContentType(conn.getContentType())){
                     throw new UnsopportedMediaTypeException();
                 }
-            } catch (IOException e) {
+            } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+
                 throw new UnprocessableEntityException();
             }
             try {
@@ -258,20 +277,40 @@ public class AnalysisHelper {
     }
 
     private void saveResult(final AnalysisStoredResult result){
-//        Thread thread = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                String fileName = getFileName(result.getToken());
-//                ResultDataUtils.kryoSerialisation(result, fileName);
-//            }
-//        });
-//        thread.start();
-
         String fileName = getFileName(result.getSummary().getToken());
         ResultDataUtils.kryoSerialisation(result, fileName);
     }
 
     private boolean isAcceptedContentType(String contentType){
         return contentType.contains("text/plain");
+    }
+
+    // trusting all certificate
+    private void doTrustToCertificates() throws NoSuchAlgorithmException, KeyManagementException {
+        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {}
+
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {}
+                }
+        };
+
+        SSLContext sc = SSLContext.getInstance("SSL");
+        sc.init(null, trustAllCerts, new SecureRandom());
+        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        HostnameVerifier hv = new HostnameVerifier() {
+            public boolean verify(String urlHostName, SSLSession session) {
+                if (!urlHostName.equalsIgnoreCase(session.getPeerHost())) {
+                    logger.warn("Warning: URL host '" + urlHostName + "' is different to SSLSession host '" + session.getPeerHost() + "'.");
+                }
+                return true;
+            }
+        };
+        HttpsURLConnection.setDefaultHostnameVerifier(hv);
     }
 }
