@@ -5,6 +5,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.reactome.server.analysis.core.model.AnalysisIdentifier;
 import org.reactome.server.analysis.core.model.UserData;
+import org.reactome.server.analysis.parser.InputFormat;
+import org.reactome.server.analysis.parser.exception.ParserException;
 import org.springframework.util.DigestUtils;
 
 import java.io.IOException;
@@ -23,22 +25,23 @@ public abstract class InputUtils {
     private static Logger logger = Logger.getLogger(InputUtils.class.getName());
 
     @SuppressWarnings("UnusedDeclaration")
-    public static UserData getUserData(String input){
+    public static UserData getUserData(String input) throws IOException, ParserException {
         logger.trace("Loading identifiers...");
         long start = System.currentTimeMillis();
         String md5 = DigestUtils.md5DigestAsHex(input.getBytes());
-        UserData ud = InputUtils.processData(input, md5);
+        UserData ud = processData(input, md5);
         long end = System.currentTimeMillis();
         logger.trace(String.format("%d loaded in %d ms", ud.getIdentifiers().size(), end-start));
         return ud;
     }
 
-    public static UserData getUserData(InputStream is) throws IOException {
+    public static UserData getUserData(InputStream is) throws IOException, ParserException {
         logger.trace("Loading identifiers...");
         long start = System.currentTimeMillis();
         String input = IOUtils.toString(is);
         String md5 = DigestUtils.md5DigestAsHex(input.getBytes());
-        UserData ud = InputUtils.processData(input, md5);
+        //UserData ud = InputUtils.processData(input, md5);
+        UserData ud = processData(input, md5);
         long end = System.currentTimeMillis();
         logger.trace(String.format("%d loaded in %d ms", ud.getIdentifiers().size(), end-start));
         return ud;
@@ -74,6 +77,7 @@ public abstract class InputUtils {
         return rtn;
     }
 
+    /*
     private static UserData processData(String data, String md5){
         List<String> headerColumnNames = new LinkedList<>();
         Set<AnalysisIdentifier> expressionData = new HashSet<AnalysisIdentifier>();
@@ -93,5 +97,13 @@ public abstract class InputUtils {
         }
 
         return new UserData(headerColumnNames, expressionData, md5);
+    }
+    */
+
+    private static UserData processData(String data, String md5) throws IOException, ParserException {
+        InputFormat parser = new InputFormat();
+        parser.parseData(data);
+
+        return new UserData(parser.getHeaderColumnNames(), parser.getAnalysisIdentifierSet(), md5, parser.getWarningResponses());
     }
 }

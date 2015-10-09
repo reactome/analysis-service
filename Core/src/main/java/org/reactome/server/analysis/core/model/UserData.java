@@ -1,5 +1,7 @@
 package org.reactome.server.analysis.core.model;
 
+import org.reactome.server.analysis.parser.InputFormat;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -12,12 +14,21 @@ public class UserData {
     Set<AnalysisIdentifier> identifiers;
     String inputMD5;
     ExpressionBoundaries expressionBoundaries;
+    List<String> warningMessages;
 
     public UserData(List<String> columnNames, Set<AnalysisIdentifier> identifiers, String inputMD5) {
         this.columnNames = columnNames;
         this.identifiers = identifiers;
         this.inputMD5 = inputMD5;
         this.expressionBoundaries = new ExpressionBoundaries(identifiers);
+    }
+
+    public UserData(List<String> columnNames, Set<AnalysisIdentifier> identifiers, String inputMD5, List<String> warningResponses) {
+        this.columnNames = columnNames;
+        this.identifiers = identifiers;
+        this.inputMD5 = inputMD5;
+        this.expressionBoundaries = new ExpressionBoundaries(identifiers);
+        this.warningMessages = warningResponses;
     }
 
     public String getSampleName(){
@@ -46,5 +57,9 @@ public class UserData {
 
     public String getInputMD5() {
         return inputMD5;
+    }
+
+    public List<String> getWarningMessages(){
+        return warningMessages;
     }
 }
