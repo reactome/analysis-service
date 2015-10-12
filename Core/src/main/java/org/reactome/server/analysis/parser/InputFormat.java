@@ -3,6 +3,7 @@ package org.reactome.server.analysis.parser;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.reactome.server.analysis.core.model.AnalysisIdentifier;
 import org.reactome.server.analysis.parser.exception.ParserException;
 import org.reactome.server.analysis.parser.response.Response;
@@ -21,19 +22,26 @@ import java.util.regex.Pattern;
  */
 public class InputFormat {
 
+    private static Logger logger = Logger.getLogger(InputFormat.class.getName());
+
     private List<String> headerColumnNames = new LinkedList<>();
     private Set<AnalysisIdentifier> analysisIdentifierSet = new LinkedHashSet<>();
-    //private String md5;
     private boolean hasHeader = false;
     private final String DELIMITER = "\\s";
     private int thresholdColumn = 0;
     private List<String> errorResponses = new LinkedList<>();
     private List<String> warningResponses = new LinkedList<>();
+    private int startOnLine = 0;
 
     /**
+     * This is the core method. Start point for calling other features.
+     * It is split in header and data.
      *
-     * @param input
-     * @throws IOException
+     * ParserException is thrown only when there is error.
+     *
+     * @param input file already converted into a String.
+     * @throws IOException, ParserException
+     *
      */
     public void parseData(String input) throws IOException, ParserException {
         long start = System.currentTimeMillis();
@@ -41,10 +49,7 @@ public class InputFormat {
         if(input == null || input.equalsIgnoreCase("")) {
             // no data to be analysed
             errorResponses.add(Response.getMessage(Response.EMPTY_FILE));
-            //parserResponseList.add(ParserResponse.EMPTY_FILE);
         }else {
-            // Start parsing
-            //md5 = DigestUtils.md5DigestAsHex(input.getBytes());
 
             // Split lines
             String[] lines = input.split("\\r?\\n");
@@ -57,11 +62,11 @@ public class InputFormat {
 
         }
 
-
         long end = System.currentTimeMillis();
-        System.out.println("Parse Time: " + (end - start) + ".ms");
+        logger.debug("Elapsed Time Parsing the data: " + (end - start) + ".ms");
 
         if(hasError()){
+            logger.error("Error analysing your data");
             throw new ParserException("Error analysing your data", errorResponses);
         }
 
@@ -71,7 +76,6 @@ public class InputFormat {
      * Analyse header based on the first line.
      * Headers must start with # or //
      *
-     *
      * @param data
      */
     private void analyseHeaderColumns(String[] data) {
@@ -80,25 +84,22 @@ public class InputFormat {
         for(int i = 0; i < data.length; i++){
             if(StringUtils.isNotEmpty(data[i])){
                 headerLine = data[i];
+                startOnLine = i;
                 break;
             }
         }
-
-        //if(data[0] != null) {
-            //String headerLine = firstLine;
 
             if (hasHeaderLine(headerLine)) {
                 // parse header line
                 List<String> headers = getHeaderLabel(headerLine);
                 hasHeader = true;
             } else {
-//                parserResponseList.add(ParserResponse.MALFORMED_HEADER);
                 warningResponses.add(Response.getMessage(Response.MALFORMED_HEADER));
                 predictFirstLineAsHeader(headerLine);
             }
-        //}
+
         long end = System.currentTimeMillis();
-        System.out.println("AnalyseHeaderColumns: " + (end-start) + ".ms");
+        logger.debug("Elapsed Time on AnalyseHeaderColumns: " + (end - start) + ".ms");
     }
 
     /**
@@ -131,7 +132,6 @@ public class InputFormat {
             headerColumnNames = columnNames;
         }else {
             // just skip the predictable header and use the default one
-//            parserResponseList.add(ParserResponse.NO_HEADER);
             warningResponses.add(Response.getMessage(Response.NO_HEADER));
             buildDefaultHeader(firstLine);
         }
@@ -139,6 +139,7 @@ public class InputFormat {
 
     /**
      * The default header will be built based on the first line.
+     *
      * @param firstLine
      */
     private void buildDefaultHeader(String firstLine){
@@ -159,26 +160,25 @@ public class InputFormat {
 
     /**
      *
-     * @param content
+     * Analyse all the data itself.
+     * Replace any character like space, comma, semicolon, tab into a space and then replace split by space.
+     *
+     * @param content line array
      */
     private void analyseContent(String[] content){
         long start = System.currentTimeMillis();
-        int h = 0;
         if(hasHeader){
-            h = 1;
+            startOnLine += 1;
         }
 
         String regexp = "[\\s,;:\\t]+";
 
         Pattern p = Pattern.compile(regexp);
 
-        for(int i = h; i < content.length; ++i){
-
+        for(int i = startOnLine; i < content.length; ++i){
             String line = content[i];
-            //if(line == null || line.isEmpty()) {
             if(StringUtils.isBlank(line)){
                 warningResponses.add(Response.getMessage(Response.EMPTY_LINE, i + 1));
-                //parserResponseList.add(ParserResponse.EMPTY_LINE.setParams(i));
                 continue;
             }
 
@@ -186,55 +186,38 @@ public class InputFormat {
 
             String[] data = line.split(DELIMITER);
 
-            //if(StringUtils.isNotBlank(line)) {
-                if (data.length > 0) {
-                    // analyse if each line has the same amount of columns as the threshold based on first line
-                    if (thresholdColumn == data.length) {
-                        AnalysisIdentifier rtn = new AnalysisIdentifier(data[0].trim());
-                        for (int j = 1; j < data.length; j++) {
-                            try {
-                                rtn.add(Double.valueOf(data[j].trim()));
-                                analysisIdentifierSet.add(rtn);
-                            } catch (NumberFormatException nfe) {
-                                warningResponses.add(Response.getMessage(Response.INLINE_PROBLEM, i + 1, j + 1));
-                                //parserResponseList.add(ParserResponse.INLINE_PROBLEM.setParams(i, j));
-                                //rtn.add(null); //null won't be taken into account for the AVG
-                            }
+            if (data.length > 0) {
+                // analyse if each line has the same amount of columns as the threshold based on first line
+                if (thresholdColumn == data.length) {
+                    AnalysisIdentifier rtn = new AnalysisIdentifier(data[0].trim());
+                    for (int j = 1; j < data.length; j++) {
+                        try {
+                            rtn.add(Double.valueOf(data[j].trim()));
+                            analysisIdentifierSet.add(rtn);
+                        } catch (NumberFormatException nfe) {
+                            warningResponses.add(Response.getMessage(Response.INLINE_PROBLEM, i + 1, j + 1));
                         }
-                    } else {
-                        errorResponses.add(Response.getMessage(Response.COLUMN_MISMATCH, i + 1, thresholdColumn, data.length));
-                        //parserResponseList.add(ParserResponse.COLUMNS_MISMATCH.setParams(i, thresholdColumn));
                     }
+                } else {
+                    errorResponses.add(Response.getMessage(Response.COLUMN_MISMATCH, i + 1, thresholdColumn, data.length));
                 }
-            //}
+            }
         }
 
         long end = System.currentTimeMillis();
-        System.out.println("AnalyseContent: " + (end-start) + ".ms");
+        logger.debug("Elapsed time on AnalyseContent: " + (end-start) + ".ms");
     }
-
-    /*
-    private void printFile(InputStream streamData) throws IOException{
-        String input = IOUtils.toString(streamData);
-
-        // Split lines
-        String[] lines = input.split("\\r?\\n");
-        for(int i = 0; i < lines.length; i++){
-            System.out.println("Line: " + i + " - " + lines[i]);
-
-            try {
-                Thread.sleep(500);
-            }catch (InterruptedException e){
-                e.printStackTrace();
-            }
-        }
-    }
-    */
 
     private static boolean hasHeaderLine(String line){
         return line.startsWith("#") || line.startsWith("//");
     }
 
+    /**
+     * Get header labels and also define a standard pattern in the column length
+     *
+     * @param line The line to be analysed as a header
+     * @return
+     */
     private List<String> getHeaderLabel(String line){
         line = line.replaceAll("^(#|//)", "");
         List<String> columnNames = new LinkedList<>();
@@ -253,7 +236,8 @@ public class InputFormat {
 
     public static void main(String args[]) throws Exception {
 
-        File analysisDir = new File("/Users/gsviteri/data/Reactome/analysis");
+        File analysisDir = new File("/Users/gsviteri/data/Reactome/analysis/sample-files");
+
         for(File f : analysisDir.listFiles()) {
 
             System.out.println("Analysing file: " + f.getName() + " - Filesize: " + f.length());
@@ -295,16 +279,28 @@ public class InputFormat {
 
     /**
      * An easy handy method for determining if the parse succeeded
-     * @return true if data is wrong
+     *
+     * @return true if data is wrong, false otherwise
      */
     public boolean hasError() {
         return errorResponses.size() >= 1;
     }
 
+    /**
+     * This is of error messages must be associated with a ParserException.
+     *
+     * @return list of error messages.
+     */
     public List<String> getErrorResponses() {
         return errorResponses;
     }
 
+    /**
+     * List of warning messages, process will go on, just show what happened in the parser in terms of
+     * blank lines or ignored values.
+     *
+     * @return list of warning messages.
+     */
     public List<String> getWarningResponses() {
         return warningResponses;
     }

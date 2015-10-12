@@ -13,15 +13,15 @@ public class Response {
     /**
      * Codes
      */
-    public final static Integer UNEXPECTED_ERROR = new Integer(450);
+    public final static Integer UNEXPECTED_ERROR = 450;
 
-    public final static Integer NO_HEADER = new Integer(451);
-    public final static Integer EMPTY_FILE = new Integer(452);
-    public final static Integer MALFORMED_HEADER = new Integer(453);
-    public final static Integer INLINE_PROBLEM = new Integer(454);
-    public final static Integer EMPTY_LINE = new Integer(455);
-    public final static Integer POTENTIAL_HEADER = new Integer(456);
-    public final static Integer COLUMN_MISMATCH = new Integer(457);
+    public final static Integer NO_HEADER = 451;
+    public final static Integer EMPTY_FILE = 452;
+    public final static Integer MALFORMED_HEADER = 453;
+    public final static Integer INLINE_PROBLEM = 454;
+    public final static Integer EMPTY_LINE = 455;
+    public final static Integer POTENTIAL_HEADER = 456;
+    public final static Integer COLUMN_MISMATCH = 457;
 
     /**
      * messages - Strings
@@ -41,7 +41,7 @@ public class Response {
     public final static Map<Integer, String> codeToMessage;
 
     static {
-        codeToMessage = new HashMap<Integer, String>(8);
+        codeToMessage = new HashMap<>(8);
 
         codeToMessage.put(UNEXPECTED_ERROR, MESSAGE_UNEXPECTED_ERROR);
 
@@ -57,11 +57,11 @@ public class Response {
 
     /**
      * Return appropriate message based on the code
-     * @param code
-     * @return
+     * @param code integer code message
+     * @return message
      */
     public static String getMessage(Integer code) {
-        String message = (String) codeToMessage.get(code);
+        String message = codeToMessage.get(code);
         return message;
     }
 
@@ -69,9 +69,9 @@ public class Response {
     /**
      * Returns error message based on param int code after formatting message
      * with args
-     * @param code
-     * @param args
-     * @return
+     * @param code integer code message
+     * @param args parameter argument
+     * @return message
      */
     public static String getMessage(Integer code, Object... args) {
 
@@ -88,16 +88,16 @@ public class Response {
     /**
      * Returns error message based on param int code after formatting message
      * with arg
-     * @param code
-     * @param arg
-     * @return
+     * @param code integer code message
+     * @param arg parameter argument
+     * @return message
      */
     public static String getMessage(Integer code, int arg) {
 
         String message = Response.getMessage(code);
 
         MessageFormat format = new MessageFormat(message);
-        message = format.format(new Object[] { new Integer(arg) });
+        message = format.format(new Object[] { arg });
 
         return message;
     }
