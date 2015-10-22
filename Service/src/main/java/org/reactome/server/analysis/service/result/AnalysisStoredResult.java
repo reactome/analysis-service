@@ -7,7 +7,7 @@ import org.reactome.server.analysis.core.model.resource.MainResource;
 import org.reactome.server.analysis.core.model.resource.Resource;
 import org.reactome.server.analysis.core.model.resource.ResourceFactory;
 import org.reactome.server.analysis.core.util.MapSet;
-import org.reactome.server.analysis.service.exception.BadRequestException;
+import org.reactome.server.analysis.service.exception.DataFormatException;
 import org.reactome.server.analysis.service.model.*;
 
 import java.util.*;
@@ -19,12 +19,14 @@ public class AnalysisStoredResult {
     private static final Integer PAGE_SIZE = 20;
 
     private AnalysisSummary summary;
+    private List<String> warnings;
     private Set<AnalysisIdentifier> notFound;
     private List<PathwayNodeSummary> pathways;
     private List<ResourceSummary> resourceSummary;
     private ExpressionSummary expressionSummary;
 
     public AnalysisStoredResult(UserData userData, HierarchiesData data){
+        this.warnings = userData.getWarningMessages();
         this.notFound = data.getNotFound();
         this.pathways = new LinkedList<PathwayNodeSummary>();
         this.expressionSummary = new ExpressionSummary(userData);
@@ -204,6 +206,10 @@ public class AnalysisStoredResult {
         return summary;
     }
 
+    public List<String> getWarnings() {
+        return warnings;
+    }
+
     public List<PathwaySummary> filterByPathways(List<Long> pathwayIds, String resource){
         this.filterPathwaysByResource(resource);
         List<PathwaySummary> rtn = new LinkedList<PathwaySummary>();
@@ -252,7 +258,7 @@ public class AnalysisStoredResult {
             }
             return new SpeciesFilteredResult(this.summary.getType(), summary,  rtn);
         }
-        throw new BadRequestException();
+        throw new DataFormatException("Resource is null");
     }
 
     private Comparator<PathwayNodeSummary> getComparator(String sortBy, String order, String resource){
