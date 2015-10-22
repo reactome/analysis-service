@@ -2,8 +2,6 @@ package org.reactome.server.analysis.service.controller;
 
 import com.wordnik.swagger.annotations.*;
 import org.reactome.server.analysis.core.model.UserData;
-import org.reactome.server.analysis.core.util.InputUtils;
-import org.reactome.server.analysis.service.exception.BadRequestException;
 import org.reactome.server.analysis.service.helper.AnalysisHelper;
 import org.reactome.server.analysis.service.model.AnalysisResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +40,7 @@ public class IdentifiersController {
                                              @RequestParam(required = false) String order,
                                               @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        if(input==null || input.isEmpty()) throw (new BadRequestException());
-        UserData ud = InputUtils.getUserData(input);
+        UserData ud = controller.getUserData(input);
         return controller.analyse(ud, true).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
@@ -66,8 +63,7 @@ public class IdentifiersController {
                                       @RequestParam(required = false) String order,
                                        @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                       @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        if(input==null || input.isEmpty()) throw (new BadRequestException());
-        UserData ud = InputUtils.getUserData(input);
+        UserData ud = controller.getUserData(input);
         return controller.analyse(ud, false).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
@@ -77,6 +73,7 @@ public class IdentifiersController {
                           "The resource field will filter the results to show only those corresponding to the preferred molecule type " +
                           "(TOTAL includes all the different molecules type)")
     @ApiResponses({
+            @ApiResponse( code = 400, message = "Bad request" ),
             @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (10MB)"  ),
             @ApiResponse( code = 415, message = "Unsupported Media Type (only 'text/plain')" )})
     @RequestMapping(value = "/form/projection", method = RequestMethod.POST, produces = "application/json")
@@ -102,6 +99,7 @@ public class IdentifiersController {
                           "preferred option. The resource field will filter the results to show only those corresponding to the preferred " +
                           "molecule type (TOTAL includes all the different molecules type)")
     @ApiResponses({
+            @ApiResponse( code = 400, message = "Bad request" ),
             @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (10MB)"  ),
             @ApiResponse( code = 415, message = "Unsupported Media Type (only 'text/plain')" )})
     @RequestMapping(value = "/form", method = RequestMethod.POST, produces = "application/json")
@@ -128,6 +126,7 @@ public class IdentifiersController {
                           "The resource field will filter the results to show only those corresponding to the preferred molecule type " +
                           "(TOTAL includes all the different molecules type)")
     @ApiResponses({
+            @ApiResponse( code = 400, message = "Bad request" ),
             @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (10MB)"  ),
             @ApiResponse( code = 415, message = "Unsupported Media Type (only 'text/plain')" ),
             @ApiResponse( code = 422, message = "The provided URL is not processable" )})
@@ -155,6 +154,7 @@ public class IdentifiersController {
                           "preferred option. The resource field will filter the results to show only those corresponding to the preferred " +
                           "molecule type (TOTAL includes all the different molecules type)")
     @ApiResponses({
+            @ApiResponse( code = 400, message = "Bad request" ),
             @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (10MB)"  ),
             @ApiResponse( code = 415, message = "Unsupported Media Type (only 'text/plain')" ),
             @ApiResponse( code = 422, message = "The provided URL is not processable" )})

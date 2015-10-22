@@ -4,7 +4,6 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.reactome.server.analysis.core.model.UserData;
-import org.reactome.server.analysis.core.util.InputUtils;
 import org.reactome.server.analysis.service.helper.AnalysisHelper;
 import org.reactome.server.analysis.service.model.AnalysisResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ public class IdentifierController {
                                               @RequestParam(required = false) String order,
                                                @ApiParam(name = "resource", value = "resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                               @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        UserData ud = InputUtils.getUserData(id);
+        UserData ud = controller.getUserData(id);
         return controller.analyse(ud, true).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
@@ -62,7 +61,7 @@ public class IdentifierController {
                                        @RequestParam(required = false) String order,
                                         @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                        @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        UserData ud = InputUtils.getUserData(id);
+        UserData ud = controller.getUserData(id);
         return controller.analyse(ud, false).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 }
