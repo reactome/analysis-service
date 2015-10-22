@@ -208,7 +208,7 @@ public class AnalysisHelper {
             } catch (IOException e) {
                 throw new UnsupportedMediaTypeException();
             } catch (ParserException e) {
-                e.printStackTrace();
+                throw new DataFormatException(e.getErrorMessages());
             }
         }
         throw new UnsupportedMediaTypeException();
@@ -246,7 +246,7 @@ public class AnalysisHelper {
             } catch (IOException e) {
                 throw new UnsupportedMediaTypeException();
             } catch (ParserException e) {
-                e.printStackTrace();
+                throw new DataFormatException(e.getErrorMessages());
             }
         }
         throw new UnsupportedMediaTypeException();
