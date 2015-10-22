@@ -174,7 +174,7 @@ public class AnalysisHelper {
         try {
             return InputUtils.getUserData(input);
         } catch (IOException e) {
-            throw new UnsopportedMediaTypeException();
+            throw new UnsupportedMediaTypeException();
         } catch (ParserException e) {
             throw new DataFormatException(e.getErrorMessages());
         }
@@ -190,28 +190,28 @@ public class AnalysisHelper {
                     //is always 'application/octet-stream' when using the form)
                     MagicMatch match = Magic.getMagicMatch(file.getBytes());
                     if(!isAcceptedContentType(match.getMimeType())){
-                        throw new UnsopportedMediaTypeException();
+                        throw new UnsupportedMediaTypeException();
                     }
                 } catch (MagicMatchNotFoundException e) {
                     logger.error(e.getMessage(),e);
                     e.printStackTrace();
-                    throw new UnsopportedMediaTypeException();
+                    throw new UnsupportedMediaTypeException();
                 } catch (MagicException e) {
                     logger.error(e.getMessage(),e);
-                    throw new UnsopportedMediaTypeException();
+                    throw new UnsupportedMediaTypeException();
                 } catch (MagicParseException e) {
                     logger.error(e.getMessage(),e);
-                    throw new UnsopportedMediaTypeException();
+                    throw new UnsupportedMediaTypeException();
                 }
 
                 return InputUtils.getUserData(file.getInputStream());
             } catch (IOException e) {
-                throw new UnsopportedMediaTypeException();
+                throw new UnsupportedMediaTypeException();
             } catch (ParserException e) {
                 e.printStackTrace();
             }
         }
-        throw new UnsopportedMediaTypeException();
+        throw new UnsupportedMediaTypeException();
     }
 
     public UserData getUserDataFromURL(String url){
@@ -235,7 +235,7 @@ public class AnalysisHelper {
                     throw new RequestEntityTooLargeException();
                 }
                 if(!isAcceptedContentType(conn.getContentType())){
-                    throw new UnsopportedMediaTypeException();
+                    throw new UnsupportedMediaTypeException();
                 }
             } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
 
@@ -244,12 +244,12 @@ public class AnalysisHelper {
             try {
                 return InputUtils.getUserData(is);
             } catch (IOException e) {
-                throw new UnsopportedMediaTypeException();
+                throw new UnsupportedMediaTypeException();
             } catch (ParserException e) {
                 e.printStackTrace();
             }
         }
-        throw new UnsopportedMediaTypeException();
+        throw new UnsupportedMediaTypeException();
     }
 
     public String getFileNameFromURL(String url){
