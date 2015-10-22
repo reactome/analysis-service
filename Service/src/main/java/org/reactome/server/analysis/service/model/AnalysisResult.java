@@ -29,6 +29,8 @@ public class AnalysisResult {
 
     private List<ResourceSummary> resourceSummary;
 
+    private List<String> warnings;
+
     public AnalysisResult(AnalysisStoredResult storedResult, List<PathwaySummary> pathways){
         this.summary = storedResult.getSummary();
         this.pathways = pathways;
@@ -36,10 +38,15 @@ public class AnalysisResult {
         this.pathwaysFound = storedResult.getPathways().size();
         this.expression = storedResult.getExpressionSummary();
         this.resourceSummary = storedResult.getResourceSummary();
+        this.warnings = storedResult.getWarnings();
     }
 
     public AnalysisSummary getSummary() {
         return summary;
+    }
+
+    public List<String> getWarnings() {
+        return warnings;
     }
 
     public Integer getPathwaysFound() {
