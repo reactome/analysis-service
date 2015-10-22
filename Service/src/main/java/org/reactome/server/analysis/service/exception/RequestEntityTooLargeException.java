@@ -1,15 +1,15 @@
 package org.reactome.server.analysis.service.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-@ResponseStatus(value = HttpStatus.REQUEST_ENTITY_TOO_LARGE)
-public class RequestEntityTooLargeException extends RuntimeException {
+//Do NOT annotate it with "ResponseStatus" because it is treated in "HandlerExceptionResolverImpl"
+public final class RequestEntityTooLargeException extends AnalysisServiceException {
 
     public RequestEntityTooLargeException() {
-        super();
+        super(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE);
     }
+
 }
