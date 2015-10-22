@@ -7,13 +7,15 @@ import org.apache.log4j.Logger;
 import org.reactome.server.analysis.core.model.AnalysisIdentifier;
 import org.reactome.server.analysis.parser.exception.ParserException;
 import org.reactome.server.analysis.parser.response.Response;
-import org.springframework.util.DigestUtils;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -91,7 +93,7 @@ public class InputFormat {
 
             if (hasHeaderLine(headerLine)) {
                 // parse header line
-                List<String> headers = getHeaderLabel(headerLine);
+                List<String> headers = getHeaderLabel(headerLine); //TODO: Is it used?
                 hasHeader = true;
             } else {
                 warningResponses.add(Response.getMessage(Response.MALFORMED_HEADER));
@@ -193,11 +195,11 @@ public class InputFormat {
                     for (int j = 1; j < data.length; j++) {
                         try {
                             rtn.add(Double.valueOf(data[j].trim()));
-                            analysisIdentifierSet.add(rtn);
                         } catch (NumberFormatException nfe) {
                             warningResponses.add(Response.getMessage(Response.INLINE_PROBLEM, i + 1, j + 1));
                         }
                     }
+                    analysisIdentifierSet.add(rtn);
                 } else {
                     errorResponses.add(Response.getMessage(Response.COLUMN_MISMATCH, i + 1, thresholdColumn, data.length));
                 }
