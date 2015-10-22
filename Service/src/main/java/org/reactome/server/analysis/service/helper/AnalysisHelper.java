@@ -8,6 +8,7 @@ import org.reactome.server.analysis.core.components.SpeciesComparison;
 import org.reactome.server.analysis.core.exception.SpeciesNotFoundException;
 import org.reactome.server.analysis.core.model.*;
 import org.reactome.server.analysis.core.util.InputUtils;
+import org.reactome.server.analysis.parser.exception.ParserException;
 import org.reactome.server.analysis.service.exception.*;
 import org.reactome.server.analysis.service.model.AnalysisSummary;
 import org.reactome.server.analysis.service.report.AnalysisReport;
@@ -169,6 +170,16 @@ public class AnalysisHelper {
         return rtn;
     }
 
+    public UserData getUserData(String input){
+        try {
+            return InputUtils.getUserData(input);
+        } catch (IOException e) {
+            throw new UnsopportedMediaTypeException();
+        } catch (ParserException e) {
+            throw new DataFormatException(e.getErrorMessages());
+        }
+    }
+
     @SuppressWarnings("TryWithIdenticalCatches")
     public UserData getUserData(MultipartFile file){
         if(!file.isEmpty()){
@@ -196,6 +207,8 @@ public class AnalysisHelper {
                 return InputUtils.getUserData(file.getInputStream());
             } catch (IOException e) {
                 throw new UnsopportedMediaTypeException();
+            } catch (ParserException e) {
+                e.printStackTrace();
             }
         }
         throw new UnsopportedMediaTypeException();
@@ -232,6 +245,8 @@ public class AnalysisHelper {
                 return InputUtils.getUserData(is);
             } catch (IOException e) {
                 throw new UnsopportedMediaTypeException();
+            } catch (ParserException e) {
+                e.printStackTrace();
             }
         }
         throw new UnsopportedMediaTypeException();
