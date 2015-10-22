@@ -1,7 +1,5 @@
 package org.reactome.server.analysis.core.model;
 
-import org.reactome.server.analysis.parser.InputFormat;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;

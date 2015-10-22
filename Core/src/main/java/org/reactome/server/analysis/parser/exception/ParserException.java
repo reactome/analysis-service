@@ -3,19 +3,18 @@ package org.reactome.server.analysis.parser.exception;
 import java.util.List;
 
 /**
- * Created by gsviteri on 09/10/2015.
  * @author gsviteri
  */
 public class ParserException extends Exception {
 
-    private List<String> errorMessage;
+    private List<String> errorMessages;
 
-    public ParserException(String message, List<String> errorMessage){
+    public ParserException(String message, List<String> errorMessages) {
         super(message);
-        this.errorMessage = errorMessage;
+        this.errorMessages = errorMessages;
     }
 
-    public List<String> getErrorMessage() {
-        return errorMessage;
+    public List<String> getErrorMessages() {
+        return errorMessages;
     }
 }
