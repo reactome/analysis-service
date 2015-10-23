@@ -11,7 +11,7 @@ import java.util.List;
 public abstract class AnalysisServiceException extends RuntimeException {
 
     private HttpStatus httpStatus;
-    private List<String> errorMessages;
+    private List<String> errorMessages = new LinkedList<>();
 
     AnalysisServiceException(HttpStatus httpStatus) {
         super(httpStatus.getReasonPhrase());
@@ -21,17 +21,16 @@ public abstract class AnalysisServiceException extends RuntimeException {
     public AnalysisServiceException(HttpStatus httpStatus, String message) {
         super(httpStatus.getReasonPhrase());
         this.httpStatus = httpStatus;
-        this.errorMessages = new LinkedList<>();
         this.errorMessages.add(message);
     }
 
     public AnalysisServiceException(HttpStatus httpStatus, List<String> errorMessages) {
         super(httpStatus.getReasonPhrase());
         this.httpStatus = httpStatus;
-        this.errorMessages = new LinkedList<>();
-        this.errorMessages = errorMessages;
+        if(errorMessages!=null){
+            this.errorMessages = errorMessages;
+        }
     }
-
 
     public HttpStatus getHttpStatus() {
         return httpStatus;
