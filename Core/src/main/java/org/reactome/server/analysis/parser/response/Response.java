@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * Class that builds the Response.
- * Created by gsviteri on 09/10/2015.
+ * @author Guilherme Viteri <gviteri@ebi.ac.uk>
  */
 public class Response {
 
@@ -32,7 +32,7 @@ public class Response {
     private final static String MESSAGE_MALFORMED_HEADER = "Malformed header.";
     private final static String MESSAGE_INLINE_PROBLEM = "Line {0} has been removed. Invalid value found on Column {1}.";
     private final static String MESSAGE_EMPTY_LINE = "The line {0} is empty and has been ignored.";
-    private final static String MESSAGE_POTENTIAL_HEADER = "The first line seems to be a header. Make sure it is being initialized by # or //.";
+    private final static String MESSAGE_POTENTIAL_HEADER = "The first line seems to be a header. Make sure it is being initialised by # or //.";
     private final static String MESSAGE_COLUMN_MISMATCH = "Line {0} does not have {1} column(s). {2} Column(s) found.";
 
     /**
