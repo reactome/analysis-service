@@ -1,6 +1,5 @@
 package org.reactome.server.analysis.parser;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -8,10 +7,7 @@ import org.reactome.server.analysis.core.model.AnalysisIdentifier;
 import org.reactome.server.analysis.parser.exception.ParserException;
 import org.reactome.server.analysis.parser.response.Response;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -23,6 +19,14 @@ import java.util.regex.Pattern;
 public class InputFormat {
 
     private static Logger logger = Logger.getLogger(InputFormat.class.getName());
+
+    /**
+     * This is the default header for oneline file and multiple line file
+     * Changing here will propagate in both.
+     */
+    private static final String DEFAULT_IDENTIFIER_HEADER = "";
+    private static final String DEFAULT_EXPRESSION_HEADER = "col";
+
 
     private List<String> headerColumnNames = new LinkedList<>();
     private Set<AnalysisIdentifier> analysisIdentifierSet = new LinkedHashSet<>();
@@ -46,7 +50,7 @@ public class InputFormat {
     /**
      * This is the core method. Start point for calling other features.
      * It is split in header and data.
-     *
+     * <p>
      * ParserException is thrown only when there are errors.
      *
      * @param input file already converted into a String.
@@ -60,10 +64,11 @@ public class InputFormat {
             errorResponses.add(Response.getMessage(Response.EMPTY_FILE));
         } else {
             // Split lines
-            String[] lines = input.split("\\r?\\n");
+//            String[] lines = input.split("\\r?\\n");
+            String[] lines = input.split("[\r\n]+");
 
             // check and parser whether one line file is present.
-            boolean isOneLine = analyseOneLineFile(lines);
+            boolean isOneLine = isOneLineFile(lines);
             if (!isOneLine) {
                 // Prepare header
                 analyseHeaderColumns(lines);
@@ -85,7 +90,7 @@ public class InputFormat {
     }
 
     /**
-     * ---- FOR SOME SPECIFIC CASES ----
+     * ---- FOR VERY SPECIFIC CASES, BUT VERY USEFUL FOR REACTOME ----
      * There're cases where the user inputs a file with one single line to be analysed
      * This method performs a quick view into the file and count the lines. It stops if file has more than one line.
      * p.s empty lines are always ignored
@@ -96,12 +101,14 @@ public class InputFormat {
      * @param input the file
      * @return true if file has one line, false otherwise.
      */
-    private boolean analyseOneLineFile(String[] input) {
+    private boolean isOneLineFile(String[] input) {
+
         int countNonEmptyLines = 0;
         String validLine = "";
+
         for (int i = 0; i < input.length; i++) {
             // Cleaning the line in other to eliminate blank or spaces spread in the file
-            String cleanLine = input[i].replaceAll("[\\s,;:]+", "");
+            String cleanLine = input[i].trim();
             if (StringUtils.isNotEmpty(cleanLine) || StringUtils.isNotBlank(cleanLine)) {
                 countNonEmptyLines++;
 
@@ -116,11 +123,111 @@ public class InputFormat {
         }
 
         hasHeader = false;
-        thresholdColumn = validLine.split("[\\s,;:]+").length;
 
-        analyseContent(new String[]{validLine});
+        analyseOneLineFile(validLine);
 
         return true;
+    }
+
+    /**
+     * For single line files the rules are:
+     * - Cannot start with number
+     * - Cannot start with #, comments
+     * - Must match this "regular expression" (\delim)?ID((\delimID)* | (\delimNUMBER)* )
+     *     - where \delim can be space, comma, colon, semi-colon or tab.
+     */
+    private void analyseOneLineFile(String line) {
+        long start = System.nanoTime();
+
+        /** Note also that using + instead of * avoids replacing empty strings and therefore might also speed up the process. **/
+        String regexp = "[\\s,;:]+";
+
+        Pattern p = Pattern.compile(regexp);
+
+        // Line cannot start with # or //
+        if (hasHeaderLine(line)) {
+            errorResponses.add(Response.getMessage(Response.START_WITH_HASH));
+            return;
+        }
+
+        /** Note that using String.replaceAll() will compile the regular expression each time you call it. **/
+        line = p.matcher(line).replaceAll(" ");
+
+
+        /** StringTokenizer has more performance to offer than String.slit. **/
+        StringTokenizer st = new StringTokenizer(line); //space is default delimiter.
+
+        int tokens = st.countTokens();
+        if (tokens > 0) {
+            String first = st.nextToken().trim();
+
+            if (isNumeric(first)) {
+                errorResponses.add(Response.getMessage(Response.START_WITH_NUMBER));
+                return;
+            }
+
+            boolean hasExpressionValues = false;
+            boolean hasOnlyIdentifiers = false;
+
+            boolean matches = true;
+
+            while (st.hasMoreTokens()) {
+                String token = st.nextToken().trim();
+
+                if (isNumeric(token)) {
+                    if (hasOnlyIdentifiers) {
+                        errorResponses.add(Response.getMessage(Response.INVALID_SINGLE_LINE));
+                        matches = false;
+                        break;
+                    }
+
+                    hasExpressionValues = true;
+                } else {
+                    if (hasExpressionValues) {
+                        errorResponses.add(Response.getMessage(Response.INVALID_SINGLE_LINE));
+                        matches = false;
+                        break;
+                    }
+
+                    hasOnlyIdentifiers = true;
+                }
+
+            }
+
+            if (matches) {
+                st = new StringTokenizer(line);
+                if (hasOnlyIdentifiers) {
+                    headerColumnNames.add(DEFAULT_IDENTIFIER_HEADER);
+                    while (st.hasMoreTokens()) {
+                        AnalysisIdentifier rtn = new AnalysisIdentifier(st.nextToken().trim());
+                        analysisIdentifierSet.add(rtn);
+                    }
+                } else {
+                    buildDefaultHeader(st.countTokens());
+
+                    while (st.hasMoreTokens()) {
+                        AnalysisIdentifier rtn = new AnalysisIdentifier(st.nextToken().trim());
+
+                        int j = 0;
+                        while (st.hasMoreTokens()) {
+                            String token = st.nextToken().trim();
+                            if (isNumeric(token)) {
+                                rtn.add(Double.valueOf(token));
+                            } else {
+                                warningResponses.add(Response.getMessage(Response.INLINE_PROBLEM, 1, j + 1));
+                            }
+                            j++;
+                        }
+
+                        analysisIdentifierSet.add(rtn);
+
+                    }
+                }
+            }
+        }
+
+        long end = System.nanoTime();
+        logger.debug("Elapsed time on AnalyseContent: " + (end - start) + ".ms");
     }
 
     /**
@@ -185,32 +292,32 @@ public class InputFormat {
             }
         }
 
+        thresholdColumn = data.length;
+
         if (errorInARow >= 3) {
             hasHeader = true;
             warningResponses.add(Response.getMessage(Response.POTENTIAL_HEADER));
-
-            thresholdColumn = columnNames.size();
 
             headerColumnNames = columnNames;
         } else {
             // just skip the predictable header and use the default one
             warningResponses.add(Response.getMessage(Response.NO_HEADER));
-            //buildDefaultHeader(firstLine);
-            buildDefaultHeader(data);
+
+            buildDefaultHeader(data.length);
         }
     }
 
     /**
      * The default header will be built based on the first line.
      *
-     * @param cols
+     * @param colsLength
      */
-    private void buildDefaultHeader(String[] cols) {
-        thresholdColumn = cols.length;
+    private void buildDefaultHeader(Integer colsLength) {
+        thresholdColumn = colsLength;
 
-        headerColumnNames.add("Probeset");
-        for (int i = 1; i < cols.length; i++) {
-            headerColumnNames.add("col" + i);
+        headerColumnNames.add(DEFAULT_IDENTIFIER_HEADER);
+        for (int i = 1; i < colsLength; i++) {
+            headerColumnNames.add(DEFAULT_EXPRESSION_HEADER + i);
         }
     }
 
@@ -296,57 +403,6 @@ public class InputFormat {
         }
     }
 
-    public static void main(String args[]) throws Exception {
-
-        File analysisDir = new File("/Users/gsviteri/Google Drive/Reactome/analysis/sample-files/");
-
-//        File f = new File("/Users/gsviteri/Google Drive/Reactome/analysis/sample-files/onesingleline.txt");
-
-        Map<String, Long> results = new TreeMap<>();
-
-        for (int i = 0; i < 5; i++) {
-            for (File f : analysisDir.listFiles()) {
-                System.out.println("Analysing file: " + f.getName() + " - Filesize: " + f.length());
-
-                long start = System.currentTimeMillis();
-
-                InputFormat format = new InputFormat();
-
-                InputStream fis = new FileInputStream(f);
-
-                try {
-                    format.parseData(IOUtils.toString(fis));
-                    for (String s : format.getWarningResponses()) {
-                        System.out.println(s);
-                    }
-                } catch (ParserException p) {
-                    System.out.println(p.getMessage());
-                    for (String s : p.getErrorMessages()) {
-                        System.out.println(s);
-                    }
-                }
-
-                long end = System.currentTimeMillis();
-
-                System.out.println("Elapsed Time: " + (end - start) + ".ms\n");
-
-                if (results.containsKey(f.getName())) {
-                    Long x = results.get(f.getName());
-                    Long t = (end - start) + x;
-                    results.put(f.getName(), t);
-                } else {
-                    results.put(f.getName(), (end - start));
-                }
-            }
-        }
-
-        for (String key : results.keySet()) {
-            Long x = results.get(key) / 5L;
-            System.out.println(key + " avg. " + x);
-
-        }
-    }
-
     public List<String> getHeaderColumnNames() {
         return headerColumnNames;
     }
@@ -383,4 +439,23 @@ public class InputFormat {
         return warningResponses;
     }
 
+    /**
+     * Instead of calling the Double.valueOf(...) in a try-catch statement and many of the checks to fail due to
+     * not being a number then performance of this mechanism will not be great, since you're relying upon
+     * exceptions being thrown for each failure, which is a fairly expensive operation.
+     * <p>
+     * An alternative approach may be to use a regular expression to check for validity of being a number:
+     *
+     * @param str
+     * @return true if is Number
+     */
+    public boolean isNumeric(String str) {
+        if (str == null) {
+            return false;
+        }
+
+        return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+    }
+
 }
+

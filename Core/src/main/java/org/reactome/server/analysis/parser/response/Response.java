@@ -22,6 +22,9 @@ public class Response {
     public final static Integer EMPTY_LINE = 455;
     public final static Integer POTENTIAL_HEADER = 456;
     public final static Integer COLUMN_MISMATCH = 457;
+    public final static Integer START_WITH_NUMBER = 458;
+    public final static Integer START_WITH_HASH = 459;
+    public final static Integer INVALID_SINGLE_LINE = 460;
 
     /**
      * messages - Strings
@@ -34,6 +37,9 @@ public class Response {
     private final static String MESSAGE_EMPTY_LINE = "The line {0} is empty and has been ignored.";
     private final static String MESSAGE_POTENTIAL_HEADER = "The first line seems to be a header. Make sure it is being initialised by # or //.";
     private final static String MESSAGE_COLUMN_MISMATCH = "Line {0} does not have {1} column(s). {2} Column(s) found.";
+    private final static String MESSAGE_START_WITH_NUMBER = "A single line input cannot start with number.";
+    private final static String MESSAGE_START_WITH_HASH = "A single line input cannot start with hash or comment.";
+    private final static String MESSAGE_INVALID_SINGLE_LINE = "A single line input is invalid. Found proteins and values together.";
 
     /**
      * handles Error codes to Message strings
@@ -52,7 +58,9 @@ public class Response {
         codeToMessage.put(EMPTY_LINE, MESSAGE_EMPTY_LINE);
         codeToMessage.put(POTENTIAL_HEADER, MESSAGE_POTENTIAL_HEADER);
         codeToMessage.put(COLUMN_MISMATCH, MESSAGE_COLUMN_MISMATCH);
-
+        codeToMessage.put(START_WITH_NUMBER, MESSAGE_START_WITH_NUMBER);
+        codeToMessage.put(START_WITH_HASH, MESSAGE_START_WITH_HASH);
+        codeToMessage.put(INVALID_SINGLE_LINE, MESSAGE_INVALID_SINGLE_LINE);
     }
 
     /**
