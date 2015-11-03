@@ -27,6 +27,7 @@ public class InputFormat {
     private static final String DEFAULT_IDENTIFIER_HEADER = "";
     private static final String DEFAULT_EXPRESSION_HEADER = "col";
 
+    private static final String HEADER_SPLIT_REGEX = "[\\t,;:]+";
 
     private List<String> headerColumnNames = new LinkedList<>();
     private Set<AnalysisIdentifier> analysisIdentifierSet = new LinkedHashSet<>();
@@ -279,7 +280,7 @@ public class InputFormat {
         List<String> columnNames = new LinkedList<>();
 
         firstLine = firstLine.replaceAll("^(#|//)", "");
-        String[] data = firstLine.split("[\\s,;:]+");
+        String[] data = firstLine.split(HEADER_SPLIT_REGEX);
 
         if (data.length > 0) {
             for (String col : data) {
@@ -394,7 +395,7 @@ public class InputFormat {
         line = line.replaceAll("^(#|//)", "");
 
         // Split header line by our known delimiters
-        String[] cols = line.split("[\\s,;:]+");
+        String[] cols = line.split(HEADER_SPLIT_REGEX);
 
         thresholdColumn = cols.length;
 
@@ -456,6 +457,4 @@ public class InputFormat {
 
         return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
     }
-
 }
-
