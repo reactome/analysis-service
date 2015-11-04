@@ -34,7 +34,7 @@ public class Response {
     private final static String MESSAGE_EMPTY_FILE = "There is no file to be analysed.";
     private final static String MESSAGE_MALFORMED_HEADER = "Malformed header.";
     private final static String MESSAGE_INLINE_PROBLEM = "Line {0} has been removed. Invalid value found on Column {1}.";
-    private final static String MESSAGE_EMPTY_LINE = "The line {0} is empty and has been ignored.";
+    private final static String MESSAGE_EMPTY_LINE = "Line {0} is empty and has been ignored.";
     private final static String MESSAGE_POTENTIAL_HEADER = "The first line seems to be a header. Make sure it is being initialised by # or //.";
     private final static String MESSAGE_COLUMN_MISMATCH = "Line {0} does not have {1} column(s). {2} Column(s) found.";
     private final static String MESSAGE_START_WITH_NUMBER = "A single line input cannot start with number.";

@@ -66,7 +66,8 @@ public class InputFormat {
         } else {
             // Split lines
 //            String[] lines = input.split("\\r?\\n");
-            String[] lines = input.split("[\r\n]+");
+//            String[] lines = input.split("[\r\n]+");  <-- The + is also removing the empty lines
+            String[] lines = input.split("[\r\n]");
 
             // check and parser whether one line file is present.
             boolean isOneLine = isOneLineFile(lines);
@@ -340,8 +341,8 @@ public class InputFormat {
         Pattern p = Pattern.compile(regexp);
 
         for (int i = startOnLine; i < content.length; ++i) {
-            String line = content[i];
-            if (StringUtils.isBlank(line)) {
+            String line = content[i].trim();
+            if (line.isEmpty()) {
                 warningResponses.add(Response.getMessage(Response.EMPTY_LINE, i + 1));
                 continue;
             }
