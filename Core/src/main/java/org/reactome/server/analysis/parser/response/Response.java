@@ -17,7 +17,6 @@ public class Response {
 
     public final static Integer NO_HEADER = 451;
     public final static Integer EMPTY_FILE = 452;
-    public final static Integer MALFORMED_HEADER = 453;
     public final static Integer INLINE_PROBLEM = 454;
     public final static Integer EMPTY_LINE = 455;
     public final static Integer POTENTIAL_HEADER = 456;
@@ -32,7 +31,6 @@ public class Response {
     private final static String MESSAGE_UNEXPECTED_ERROR = "Unexpected Error";
     private final static String MESSAGE_NO_HEADER = "Missing header. Using a default one.";
     private final static String MESSAGE_EMPTY_FILE = "There is no file to be analysed.";
-    private final static String MESSAGE_MALFORMED_HEADER = "Malformed header.";
     private final static String MESSAGE_INLINE_PROBLEM = "Line {0} has been removed. Invalid value found on Column {1}.";
     private final static String MESSAGE_EMPTY_LINE = "Line {0} is empty and has been ignored.";
     private final static String MESSAGE_POTENTIAL_HEADER = "The first line seems to be a header. Make sure it is being initialised by # or //.";
@@ -47,13 +45,12 @@ public class Response {
     public final static Map<Integer, String> codeToMessage;
 
     static {
-        codeToMessage = new HashMap<>(8);
+        codeToMessage = new HashMap<>(11);
 
         codeToMessage.put(UNEXPECTED_ERROR, MESSAGE_UNEXPECTED_ERROR);
 
         codeToMessage.put(NO_HEADER, MESSAGE_NO_HEADER);
         codeToMessage.put(EMPTY_FILE, MESSAGE_EMPTY_FILE);
-        codeToMessage.put(MALFORMED_HEADER, MESSAGE_MALFORMED_HEADER);
         codeToMessage.put(INLINE_PROBLEM, MESSAGE_INLINE_PROBLEM);
         codeToMessage.put(EMPTY_LINE, MESSAGE_EMPTY_LINE);
         codeToMessage.put(POTENTIAL_HEADER, MESSAGE_POTENTIAL_HEADER);
