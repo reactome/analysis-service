@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-core</artifactId>
-            <version>1.4.3-SNAPSHOT</version>
+            <version>1.4.3</version>
         </dependency>
 
         <dependency>
@@ -137,6 +137,24 @@
             <groupId>jmimemagic</groupId>
             <artifactId>jmimemagic</artifactId>
             <version>0.1.2</version>
+        </dependency>
+
+        <!-- Pride Utils -->
+        <dependency>
+            <groupId>uk.ac.ebi.pride.web</groupId>
+            <artifactId>pride-web-utils</artifactId>
+            <version>1.3.11</version>
+            <!-- It is causing maven conflicts -->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>ch.qos.logback</groupId>-->
+                    <!--<artifactId>logback-classic</artifactId>-->
+                <!--</exclusion>-->
+                <!--<exclusion>-->
+                    <!--<groupId>org.apache.httpcomponents</groupId>-->
+                    <!--<artifactId>httpclient</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
         </dependency>
 
         <!--Documentation generator-->

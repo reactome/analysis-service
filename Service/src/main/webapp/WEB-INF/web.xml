@@ -30,4 +30,25 @@
         <filter-name>cors</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+    <servlet>
+        <servlet-name>Wordpress</servlet-name>
+        <servlet-class>uk.ac.ebi.pride.web.util.servlet.proxy.ProxyServlet</servlet-class>
+        <init-param>
+            <param-name>proxyHost</param-name>
+            <param-value>reactomedev.oicr.on.ca</param-value>
+        </init-param>
+        <init-param>
+            <param-name>proxyPort</param-name>
+            <param-value>80</param-value>
+        </init-param>
+        <init-param>
+            <param-name>proxyPath</param-name>
+            <param-value>/wordpress</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Wordpress</servlet-name>
+        <url-pattern>/wordpress/*</url-pattern>
+    </servlet-mapping>
 </web-app>
