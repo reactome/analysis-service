@@ -517,6 +517,12 @@ public class AnalysisTests {
 
 
     }
+
+    @Test
+    public void testOneLineWarningHeader() {
+
+    }
+
     private InputFormat parser(File file) throws ParserException {
         InputFormat format = new InputFormat();
 

@@ -27,7 +27,8 @@ public class InputFormat {
     private static final String DEFAULT_IDENTIFIER_HEADER = "";
     private static final String DEFAULT_EXPRESSION_HEADER = "col";
 
-    private static final String HEADER_SPLIT_REGEX = "[\\t,;:]+";
+    /** Pride is using colon, we decided to remove it from the parser **/
+    private static final String HEADER_SPLIT_REGEX = "[\\t,;]+";
 
     private List<String> headerColumnNames = new LinkedList<>();
     private Set<AnalysisIdentifier> analysisIdentifierSet = new LinkedHashSet<>();

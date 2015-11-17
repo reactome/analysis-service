@@ -1,4 +1,4 @@
-#Probeset	10h control	10h After	14h Over	18h And Over	24h Again
+#Probeset:expression	10h control:morning	10h After	14h Over	18h And Over	24h Again
 1053_at    	   8.040078	 7.147358	 6.706705	 6.794622	 7.475157
 1729_at    	   6.869688	  6.99104	 7.129922	 7.112222	  7.04721
 1861_at    	   6.437999	 6.620092	  6.20117	 6.407735	 5.717815
