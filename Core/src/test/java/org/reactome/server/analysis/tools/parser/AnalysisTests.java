@@ -38,6 +38,7 @@ public class AnalysisTests {
     private static final String COLUMN_MISMATCH_CONTENT = PATH.concat("column_mismatch_content.txt");
     private static final String MULTIPLE_WARNINGS = PATH.concat("multiple_warnings.txt");
     private static final String BROKEN_FILE = PATH.concat("broken_file.txt");
+    private static final String PRIDE_SAMPLE = PATH.concat("pride_sample.txt");
 
     /**
      * SINGLE LINE INPUTS
@@ -653,6 +654,24 @@ public class AnalysisTests {
         }
 
         return file;
+    }
+
+    @Test
+    public void testPrideSample() {
+        File file = getFileFromResources(PRIDE_SAMPLE);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(PRIDE_SAMPLE + " has failed.");
+        }
+
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertTrue("Header format in Pride file",format.getHeaderColumnNames().contains("PRIDE assay:27929"));
+        Assert.assertEquals(3, format.getAnalysisIdentifierSet().size());
+        Assert.assertEquals(0, format.getWarningResponses().size());
+
     }
 }
 
