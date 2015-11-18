@@ -27,7 +27,8 @@ public class InputFormat {
     private static final String DEFAULT_IDENTIFIER_HEADER = "";
     private static final String DEFAULT_EXPRESSION_HEADER = "col";
 
-    private static final String HEADER_SPLIT_REGEX = "[\\t,;:]+";
+    /** Pride is using colon, we decided to remove it from the parser **/
+    private static final String HEADER_SPLIT_REGEX = "[\\t,;]+";
 
     private List<String> headerColumnNames = new LinkedList<>();
     private Set<AnalysisIdentifier> analysisIdentifierSet = new LinkedHashSet<>();
@@ -60,13 +61,14 @@ public class InputFormat {
     public void parseData(String input) throws IOException, ParserException {
         long start = System.currentTimeMillis();
 
-        if (input == null || input.equalsIgnoreCase("")) {
+        String clean = input.trim();
+        if (clean == null || clean.equalsIgnoreCase("")) {
             // no data to be analysed
             errorResponses.add(Response.getMessage(Response.EMPTY_FILE));
         } else {
             // Split lines
 //            String[] lines = input.split("\\r?\\n");
-//            String[] lines = input.split("[\r\n]+");  <-- The + is also removing the empty lines
+            //String[] lines = input.split("[\r\n]+");  <-- The + is also removing the empty lines
             String[] lines = input.split("[\r\n]");
 
             // check and parser whether one line file is present.
