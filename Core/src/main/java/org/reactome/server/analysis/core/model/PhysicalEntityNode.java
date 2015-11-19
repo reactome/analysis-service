@@ -96,10 +96,17 @@ public class PhysicalEntityNode {
     }
 
     public Set<PhysicalEntityNode> getChildren() {
-        if(children==null){
-            return new HashSet<PhysicalEntityNode>();
+        if (children == null) {
+            return new HashSet<>();
         }
         return children;
+    }
+
+    public Set<PhysicalEntityNode> getParents() {
+        if (parents == null) {
+            return new HashSet<>();
+        }
+        return parents;
     }
 
     public PhysicalEntityNode getProjection(SpeciesNode species){

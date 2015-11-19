@@ -26,7 +26,7 @@ import java.util.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Component
-public class Exporter {
+public class PathwayLevelExporter {
     @Autowired
     private AnalysisData analysisData;
 

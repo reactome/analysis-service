@@ -7,7 +7,8 @@ import org.reactome.core.factory.DatabaseObjectFactory;
 import org.reactome.server.Main;
 import org.reactome.server.analysis.core.data.AnalysisData;
 import org.reactome.server.analysis.core.model.resource.ResourceFactory;
-import org.reactome.server.analysis.tools.components.exporter.Exporter;
+import org.reactome.server.analysis.tools.components.exporter.PathwayLevelExporter;
+import org.reactome.server.analysis.tools.components.exporter.ReactionLevelExporter;
 import org.reactome.server.analysis.util.FileUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -39,6 +40,8 @@ public class ExporterTool {
                             "The file containing the data structure for the analysis." )
                         ,new FlaggedOption( "output", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'o', "output",
                             "The file where the results are written to.")
+                        ,new FlaggedOption( "type", JSAP.STRING_PARSER, "pathways", JSAP.NOT_REQUIRED, 't', "type",
+                            "The type of elements to export (pathways|reactions).")
                         ,new QualifiedSwitch( "all", JSAP.BOOLEAN_PARSER, null, JSAP.NOT_REQUIRED, 'a', "all",
                             "Exports data for all the levels in the hierarchy." )
                 }
@@ -68,9 +71,20 @@ public class ExporterTool {
             AnalysisData analysisData = context.getBean(AnalysisData.class);
             analysisData.setFileName(config.getString("input"));
 
-            Boolean all = config.getBoolean("all");
-            Exporter exporter = context.getBean(Exporter.class);
-            exporter.export(dba, mainResource, fileName, all);
+            String type = config.getString("type");
+            switch (type){
+                case "pathways":
+                    Boolean all = config.getBoolean("all");
+                    PathwayLevelExporter exporter = context.getBean(PathwayLevelExporter.class);
+                    exporter.export(dba, mainResource, fileName, all);
+                    break;
+                case "reactions":
+                    ReactionLevelExporter reactionLevelExporter = context.getBean(ReactionLevelExporter.class);
+                    reactionLevelExporter.export(dba, mainResource, fileName);
+                    break;
+                default:
+                    System.err.println("Invalid type " + type + ". Available options are (pathways|reactions)");
+            }
 
         }else{
             System.err.println("Invalid resource " + resource + ". Available options are: " + getAvailableResources());
