@@ -40,8 +40,6 @@ public class ReactionLevelExporter {
 
     @SuppressWarnings("ConstantConditions")
     public void export(MySQLAdaptor dba, ResourceFactory.MAIN resource, String fileName) throws FileNotFoundException {
-        System.out.println("ReactionLevelExporter");
-
         //THIS IS NEEDED HERE
         this.helper.setDba(dba);
 
@@ -88,8 +86,11 @@ public class ReactionLevelExporter {
         //Resource based Identifier
         StringBuilder sb = new StringBuilder(resource);
 
-        //LINK
+        //Stable identifier
         StableIdentifier stableIdentifier = reaction.getStableIdentifier().load();
+        sb.append("\t").append(stableIdentifier.getIdentifier());
+
+        //LINK
         sb.append("\t").append(pbUrl).append(stableIdentifier.getIdentifier());
 
         //Pathway name
