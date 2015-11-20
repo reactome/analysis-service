@@ -83,7 +83,7 @@ References to all level pathways:
 
 References to all reactions:
     
-    $$java -jar tools-jar-with-dependencies.jar export -r MirBase -t reactions -d {db} -u {user} -p {passwd} -i pathTO/analysis_vXX.bin -o pathTO/MirBase2ReactomeReactions.txt
+    $java -jar tools-jar-with-dependencies.jar export -r MirBase -t reactions -d {db} -u {user} -p {passwd} -i pathTO/analysis_vXX.bin -o pathTO/MirBase2ReactomeReactions.txt
 
 
 
