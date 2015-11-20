@@ -38,7 +38,7 @@ References to all level pathways:
     
 References to all reactions:
 
-    $$java -jar tools-jar-with-dependencies.jar export -r UniProt -t reactions -d {db} -u {user} -p {passwd} -i pathTO/analysis_vXX.bin -o pathTO/UniProt2ReactomeReactions.txt
+    $java -jar tools-jar-with-dependencies.jar export -r UniProt -t reactions -d {db} -u {user} -p {passwd} -i pathTO/analysis_vXX.bin -o pathTO/UniProt2ReactomeReactions.txt
 
 
 #### ChEBI Exporter
@@ -53,7 +53,7 @@ References to all level pathways:
     
 References to all reactions:
     
-    $$java -jar tools-jar-with-dependencies.jar export -r chEBI -t reactions -d {db} -u {user} -p {passwd} -i pathTO/analysis_vXX.bin -o pathTO/ChEBI2ReactomeReactions.txt
+    $java -jar tools-jar-with-dependencies.jar export -r chEBI -t reactions -d {db} -u {user} -p {passwd} -i pathTO/analysis_vXX.bin -o pathTO/ChEBI2ReactomeReactions.txt
 
 
 #### Ensembl Exporter
@@ -68,7 +68,7 @@ References to all level pathways:
 
 References to all reactions:
     
-    $$java -jar tools-jar-with-dependencies.jar export -r Ensembl -t reactions -d {db} -u {user} -p {passwd} -i pathTO/analysis_vXX.bin -o pathTO/Ensembl2ReactomeReactions.txt
+    $java -jar tools-jar-with-dependencies.jar export -r Ensembl -t reactions -d {db} -u {user} -p {passwd} -i pathTO/analysis_vXX.bin -o pathTO/Ensembl2ReactomeReactions.txt
 
 
 #### MirBase Exporter
