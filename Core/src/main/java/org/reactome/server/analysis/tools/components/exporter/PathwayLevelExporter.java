@@ -34,7 +34,7 @@ public class PathwayLevelExporter {
     private DatabaseObjectHelper helper;
 
     class Selection {
-        final static String pbUrl = "http://www.reactome.org/PathwayBrowser/#";
+        final static String pbUrl = "http://www.reactome.org/PathwayBrowser/#/";
 
         String pathwayId;
         String subpathwayId;
