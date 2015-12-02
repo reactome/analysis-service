@@ -3,6 +3,7 @@ package org.reactome.server.analysis.tools.parser;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.reactome.server.analysis.core.model.AnalysisIdentifier;
 import org.reactome.server.analysis.parser.InputFormat;
 import org.reactome.server.analysis.parser.exception.ParserException;
 
@@ -39,6 +40,7 @@ public class AnalysisTests {
     private static final String MULTIPLE_WARNINGS = PATH.concat("multiple_warnings.txt");
     private static final String BROKEN_FILE = PATH.concat("broken_file.txt");
     private static final String PRIDE_SAMPLE = PATH.concat("pride_sample.txt");
+    private static final String ONLY_IDENTIFIERS = PATH.concat("only_identifiers.txt");
 
     /**
      * SINGLE LINE INPUTS
@@ -53,6 +55,25 @@ public class AnalysisTests {
     private static final String ONELINE_START_WITH_SPACES = PATH.concat("oneline_start_with_spaces.txt");
     private static final String ONELINE_BUT_NOT_IN_FIRST_LINE = PATH.concat("oneline_but_not_in_first_line.txt");
     private static final String ONELINE_RANDOM_CHARACTERS = PATH.concat("oneline_random_characters.txt");
+    private static final String ONELINE_ONE_IDENTIFIER = PATH.concat("oneline_one_identifier.txt");
+
+    /**
+     * ONE LINE FILE WITH EXPRESSION VALUES. HEADER MUST BE PRESENT - SO, IT IS A 2 LINES FILES
+     */
+    private static final String ONELINE_WITH_HEADER = PATH.concat("oneline_with_header.txt");
+
+    /**
+     * Analysis Portal Samples
+     */
+    private static final String SAMPLE = PATH.concat("samples/");
+    private static final String GENE_NAME_LIST = SAMPLE.concat("gene_name_list.txt");
+    private static final String GENE_NCBI = SAMPLE.concat("gene_ncbi.txt");
+    private static final String METABOLOMICS_DATA = SAMPLE.concat("metabolomics_data.txt");
+    private static final String MICROARRAY_DATA = SAMPLE.concat("microarray_data.txt");
+    private static final String SMALL_MOLECULES_CHEBI = SAMPLE.concat("small_molecules_chebi.txt");
+    private static final String SMALL_MOLECULES_KEGG = SAMPLE.concat("small_molecules_kegg.txt");
+    private static final String UNIPROT_ACCESSION_LIST = SAMPLE.concat("uniprot_accession_list.txt");
+
 
     @Test
     public void testEmptyLines() {
@@ -301,6 +322,57 @@ public class AnalysisTests {
 
     }
 
+    @Test
+    public void testBrokenFile() {
+        File file = getFileFromResources(BROKEN_FILE);
+
+        try {
+            parser(file);
+
+            Assert.fail(BROKEN_FILE + " should fail.");
+        } catch (ParserException e) {
+            Assert.assertEquals(5, e.getErrorMessages().size());
+        }
+
+    }
+
+    @Test
+    public void testMaxFileSize() {
+        File file = writeHugeFile();
+
+        InputFormat format = null;
+
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail("10MB file has failed.");
+        } finally {
+            file.deleteOnExit();
+        }
+
+        Assert.assertEquals(4, format.getHeaderColumnNames().size());
+        Assert.assertEquals(310000, format.getAnalysisIdentifierSet().size());
+        Assert.assertEquals(0, format.getWarningResponses().size());
+
+    }
+
+    @Test
+    public void testOnlyIdentifiers() {
+        File file = getFileFromResources(ONLY_IDENTIFIERS);
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(ONLY_IDENTIFIERS + " has failed.");
+        }
+
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertTrue("Looking for header Gene names from liver", format.getHeaderColumnNames().contains("Gene names from liver"));
+        Assert.assertEquals(5, format.getAnalysisIdentifierSet().size());
+        Assert.assertTrue("Looking for A2M Identifier", format.getAnalysisIdentifierSet().contains(new AnalysisIdentifier("A2M")));
+        Assert.assertEquals(0, format.getWarningResponses().size());
+    }
+
     /**
      * ONE LINE TESTS
      **/
@@ -308,15 +380,16 @@ public class AnalysisTests {
     @Test
     public void testOneLineStartingWithNumber() {
         File file = getFileFromResources(ONELINE_START_WITH_NUMBER);
-
+        InputFormat format = null;
         try {
-            parser(file);
-
-            Assert.fail(ONELINE_START_WITH_NUMBER + " should fail");
+            format = parser(file);
         } catch (ParserException e) {
-            Assert.assertTrue("Expecting start with number", e.getErrorMessages().contains("A single line input cannot start with number."));
+            Assert.fail(ONELINE_START_WITH_NUMBER + " has failed.");
         }
 
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertEquals(7, format.getAnalysisIdentifierSet().size());
+        Assert.assertEquals(0, format.getWarningResponses().size());
     }
 
     @Test
@@ -350,6 +423,10 @@ public class AnalysisTests {
     }
 
     @Test
+    /**
+     * For ONE LINE file --> NO EXPRESSION VALUES
+     * Every token in this file will be consider as an Identifier
+     */
     public void testOneLineIdAndExpressions() { //success
         File file = getFileFromResources(ONELINE_ID_EXPRESSIONS);
 
@@ -360,8 +437,8 @@ public class AnalysisTests {
             Assert.fail(ONELINE_ID_EXPRESSIONS + " has failed.");
         }
 
-        Assert.assertEquals(6, format.getHeaderColumnNames().size());
-        Assert.assertEquals(1, format.getAnalysisIdentifierSet().size());
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertEquals(6, format.getAnalysisIdentifierSet().size());
         Assert.assertEquals(0, format.getWarningResponses().size());
 
     }
@@ -370,13 +447,18 @@ public class AnalysisTests {
     public void testOneLineIdAndExpressionsMixed() {
         File file = getFileFromResources(ONELINE_ID_EXPRESSIONS_MIXED);
 
+        InputFormat format = null;
         try {
-            parser(file);
+            format = parser(file);
 
-            Assert.fail(ONELINE_ID_EXPRESSIONS_MIXED + " should fail.");
         } catch (ParserException e) {
-            Assert.assertTrue(e.getErrorMessages().contains("A single line input is invalid. Found proteins and values together."));
+            Assert.fail(ONELINE_ID_EXPRESSIONS_MIXED + " has failed.");
         }
+
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertEquals(7, format.getAnalysisIdentifierSet().size());
+        Assert.assertEquals(0, format.getWarningResponses().size());
+
     }
 
     @Test
@@ -458,42 +540,8 @@ public class AnalysisTests {
             Assert.fail(ONELINE_RANDOM_CHARACTERS + " has failed.");
         }
 
-        Assert.assertTrue(format.getHeaderColumnNames().size() == 1);
-        Assert.assertTrue(format.getAnalysisIdentifierSet().size() == 4);
-        Assert.assertTrue(format.getWarningResponses().size() == 0);
-
-    }
-
-    @Test
-    public void testBrokenFile() {
-        File file = getFileFromResources(BROKEN_FILE);
-
-        try {
-            parser(file);
-
-            Assert.fail(BROKEN_FILE + " should fail.");
-        } catch (ParserException e) {
-            Assert.assertEquals(5, e.getErrorMessages().size());
-        }
-
-    }
-
-    @Test
-    public void testMaxFileSize() {
-        File file = writeHugeFile();
-
-        InputFormat format = null;
-
-        try {
-            format = parser(file);
-        } catch (ParserException e) {
-            Assert.fail("10MB file has failed.");
-        } finally {
-            file.deleteOnExit();
-        }
-
-        Assert.assertEquals(4, format.getHeaderColumnNames().size());
-        Assert.assertEquals(310000, format.getAnalysisIdentifierSet().size());
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertEquals(4, format.getAnalysisIdentifierSet().size());
         Assert.assertEquals(0, format.getWarningResponses().size());
 
     }
@@ -515,12 +563,179 @@ public class AnalysisTests {
         Assert.assertEquals(1, format.getHeaderColumnNames().size());
         Assert.assertEquals(750000, format.getAnalysisIdentifierSet().size());
         Assert.assertEquals(0, format.getWarningResponses().size());
+    }
 
+    @Test
+    public void testOneLineWithHeader() {
+        /**
+         * Remember this is not an ONE LINE file.
+         * A ONE LINE file cannot have EXPRESSION VALUES
+         */
+        File file = getFileFromResources(ONELINE_WITH_HEADER);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(ONELINE_WITH_HEADER + " has failed.");
+        }
+
+        Assert.assertEquals(6, format.getHeaderColumnNames().size());
+        Assert.assertEquals(1, format.getAnalysisIdentifierSet().size());
+        Assert.assertEquals(0, format.getWarningResponses().size());
 
     }
 
     @Test
-    public void testOneLineWarningHeader() {
+    public void testOneLineOneIdentifier() {
+        File file = getFileFromResources(ONELINE_ONE_IDENTIFIER);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(ONELINE_ONE_IDENTIFIER + " has failed.");
+        }
+
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertEquals(1, format.getAnalysisIdentifierSet().size());
+        Assert.assertTrue("Looking for PTEN", format.getAnalysisIdentifierSet().contains(new AnalysisIdentifier("PTEN")));
+        Assert.assertEquals(0, format.getWarningResponses().size());
+
+    }
+
+    /**
+     * SAMPLES - These is testing the same samples we provide in the Portal
+     */
+    @Test
+    public void testMetabolomicsData() {
+        File file = getFileFromResources(METABOLOMICS_DATA);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(METABOLOMICS_DATA + " has failed.");
+        }
+
+        Assert.assertEquals(5, format.getHeaderColumnNames().size());
+        Assert.assertTrue("Looking for header Molecules", format.getHeaderColumnNames().contains("Molecules"));
+        Assert.assertEquals(899, format.getAnalysisIdentifierSet().size());
+        Assert.assertTrue("Looking for C00137", format.getAnalysisIdentifierSet().contains(new AnalysisIdentifier("C00137")));
+        Assert.assertEquals(0, format.getWarningResponses().size());
+
+    }
+
+    @Test
+    public void testGeneNameList() {
+        File file = getFileFromResources(GENE_NAME_LIST);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(GENE_NAME_LIST + " has failed.");
+        }
+
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertTrue("Looking for header Gene names from liver", format.getHeaderColumnNames().contains("Gene names from liver"));
+        Assert.assertEquals(230, format.getAnalysisIdentifierSet().size());
+        Assert.assertTrue("Looking for ALDH4A1", format.getAnalysisIdentifierSet().contains(new AnalysisIdentifier("ALDH4A1")));
+        Assert.assertEquals(0, format.getWarningResponses().size());
+    }
+
+    @Test
+    public void testGeneNcbi() {
+        File file = getFileFromResources(GENE_NCBI);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(GENE_NCBI + " has failed.");
+        }
+
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertTrue("Looking for header 12 Tumours NCBI gene", format.getHeaderColumnNames().contains("12 Tumours NCBI gene"));
+        Assert.assertEquals(128, format.getAnalysisIdentifierSet().size());
+        Assert.assertTrue("Looking for 89795", format.getAnalysisIdentifierSet().contains(new AnalysisIdentifier("89795")));
+        Assert.assertEquals(0, format.getWarningResponses().size());
+
+    }
+
+    @Test
+    public void testMicroarrayData() {
+        File file = getFileFromResources(MICROARRAY_DATA);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(MICROARRAY_DATA + " has failed.");
+        }
+
+        Assert.assertEquals(6, format.getHeaderColumnNames().size());
+        Assert.assertTrue("Looking for header Probeset", format.getHeaderColumnNames().contains("Probeset"));
+        Assert.assertEquals(1203, format.getAnalysisIdentifierSet().size());
+        Assert.assertTrue("Looking for 200000_s_at", format.getAnalysisIdentifierSet().contains(new AnalysisIdentifier("200000_s_at")));
+        Assert.assertEquals(0, format.getWarningResponses().size());
+
+    }
+
+    @Test
+    public void testSmallMoleculesChebi() {
+        File file = getFileFromResources(SMALL_MOLECULES_CHEBI);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(SMALL_MOLECULES_CHEBI + " has failed.");
+        }
+
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertTrue("Looking for header Small_molecules_chEBI", format.getHeaderColumnNames().contains("Small_molecules_chEBI"));
+        Assert.assertEquals(336, format.getAnalysisIdentifierSet().size());
+        Assert.assertTrue("Looking for 1604", format.getAnalysisIdentifierSet().contains(new AnalysisIdentifier("1604")));
+        Assert.assertEquals(0, format.getWarningResponses().size());
+
+    }
+
+    @Test
+    public void testSmallMoleculesKegg() {
+        File file = getFileFromResources(SMALL_MOLECULES_KEGG);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(SMALL_MOLECULES_KEGG + " has failed.");
+        }
+
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertTrue("Looking for header Small_molecules_KEGG", format.getHeaderColumnNames().contains("Small_molecules_KEGG"));
+        Assert.assertEquals(899, format.getAnalysisIdentifierSet().size());
+        Assert.assertTrue("Looking for C00010", format.getAnalysisIdentifierSet().contains(new AnalysisIdentifier("C00010")));
+        Assert.assertEquals(0, format.getWarningResponses().size());
+
+    }
+
+    @Test
+    public void testUniprotAccessionList() {
+        File file = getFileFromResources(UNIPROT_ACCESSION_LIST);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(UNIPROT_ACCESSION_LIST + " has failed.");
+        }
+
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertTrue("Looking for header GBM Uniprot", format.getHeaderColumnNames().contains("GBM Uniprot"));
+        Assert.assertEquals(184, format.getAnalysisIdentifierSet().size());
+        Assert.assertTrue("Looking for Q96GD4", format.getAnalysisIdentifierSet().contains(new AnalysisIdentifier("Q96GD4")));
+        Assert.assertEquals(0, format.getWarningResponses().size());
 
     }
 
