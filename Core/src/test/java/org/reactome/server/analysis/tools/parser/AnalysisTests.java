@@ -41,6 +41,9 @@ public class AnalysisTests {
     private static final String BROKEN_FILE = PATH.concat("broken_file.txt");
     private static final String PRIDE_SAMPLE = PATH.concat("pride_sample.txt");
     private static final String ONLY_IDENTIFIERS = PATH.concat("only_identifiers.txt");
+    private static final String SAMPLE_WITH_SPACES_WITHOUT_HEADER = PATH.concat("sample_with_spaces_without_header.txt");
+    private static final String SAMPLE_WITH_TAB_WITHOUT_HEADER = PATH.concat("sample_with_tab_without_header.txt");
+    private static final String SAMPLE_WITH_COLON_WITHOUT_HEADER = PATH.concat("sample_with_colon_without_header.txt");
 
     /**
      * SINGLE LINE INPUTS
@@ -280,7 +283,7 @@ public class AnalysisTests {
 
         Assert.assertEquals(6, format.getHeaderColumnNames().size());
         Assert.assertEquals(6, format.getAnalysisIdentifierSet().size());
-        Assert.assertEquals(35, format.getWarningResponses().size());
+        Assert.assertEquals(36, format.getWarningResponses().size());
 
         int emptyLines = 0;
         for (String warn : format.getWarningResponses()){
@@ -490,7 +493,7 @@ public class AnalysisTests {
         }
 
         Assert.assertEquals(1, format.getHeaderColumnNames().size());
-        Assert.assertEquals(7, format.getAnalysisIdentifierSet().size());
+        Assert.assertEquals(6, format.getAnalysisIdentifierSet().size());
         Assert.assertEquals(0, format.getWarningResponses().size());
 
     }
@@ -886,6 +889,58 @@ public class AnalysisTests {
         Assert.assertTrue("Header format in Pride file",format.getHeaderColumnNames().contains("PRIDE assay:27929"));
         Assert.assertEquals(3, format.getAnalysisIdentifierSet().size());
         Assert.assertEquals(0, format.getWarningResponses().size());
+
+
+    }
+
+    @Test
+    public void testSampleWithSpacesWithoutHeader() {
+        File file = getFileFromResources(SAMPLE_WITH_SPACES_WITHOUT_HEADER);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(SAMPLE_WITH_SPACES_WITHOUT_HEADER + " has failed.");
+        }
+
+        Assert.assertEquals(2, format.getHeaderColumnNames().size());
+        Assert.assertEquals(2, format.getAnalysisIdentifierSet().size());
+        Assert.assertEquals(1, format.getWarningResponses().size());
+
+    }
+
+    @Test
+    public void testSampleWithTabWithoutHeader() {
+        File file = getFileFromResources(SAMPLE_WITH_TAB_WITHOUT_HEADER);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(SAMPLE_WITH_TAB_WITHOUT_HEADER + " has failed.");
+        }
+
+        Assert.assertEquals(2, format.getHeaderColumnNames().size());
+        Assert.assertEquals(2, format.getAnalysisIdentifierSet().size());
+        Assert.assertEquals(1, format.getWarningResponses().size());
+
+    }
+
+    @Test
+    public void testSampleWithColonWithoutHeader() {
+        File file = getFileFromResources(SAMPLE_WITH_COLON_WITHOUT_HEADER);
+
+        InputFormat format = null;
+        try {
+            format = parser(file);
+        } catch (ParserException e) {
+            Assert.fail(SAMPLE_WITH_COLON_WITHOUT_HEADER + " has failed.");
+        }
+
+        Assert.assertEquals(1, format.getHeaderColumnNames().size());
+        Assert.assertEquals(2, format.getAnalysisIdentifierSet().size());
+        Assert.assertEquals(1, format.getWarningResponses().size());
 
     }
 }
