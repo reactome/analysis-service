@@ -30,6 +30,12 @@ public class InputFormat {
     /** Pride is using colon, we decided to remove it from the parser **/
     private static final String HEADER_SPLIT_REGEX = "[\\t,;]+";
 
+    /** Regex used to split the content of a single line file **/
+    private static final String ONE_LINE_CONTENT_SPLIT_REGEX = "[\\s,;:]+";
+
+    /** Regex used to split the content of a multiple line file **/
+    private static final String MULTI_LINE_CONTENT_SPLIT_REGEX = "[\\s,;:]+";
+
     private List<String> headerColumnNames = new LinkedList<>();
     private Set<AnalysisIdentifier> analysisIdentifierSet = new LinkedHashSet<>();
     private boolean hasHeader = false;
@@ -62,14 +68,12 @@ public class InputFormat {
         long start = System.currentTimeMillis();
 
         String clean = input.trim();
-        if (clean == null || clean.equalsIgnoreCase("")) {
+        if (clean.equalsIgnoreCase("")) {
             // no data to be analysed
             errorResponses.add(Response.getMessage(Response.EMPTY_FILE));
         } else {
             // Split lines
-//            String[] lines = input.split("\\r?\\n");
-            //String[] lines = input.split("[\r\n]+");  <-- The + is also removing the empty lines
-            String[] lines = input.split("[\r\n]");
+            String[] lines = input.split("[\r\n]"); // Do not add + here. It will remove empty lines
 
             // check and parser whether one line file is present.
             boolean isOneLine = isOneLineFile(lines);
@@ -135,7 +139,7 @@ public class InputFormat {
 
     /**
      * For single line files the rules are:
-     * - Cannot start with number
+     * - No Expressions Values
      * - Cannot start with #, comments
      * - Must match this "regular expression" (\delim)?ID((\delimID)* | (\delimNUMBER)* )
      *     - where \delim can be space, comma, colon, semi-colon or tab.
@@ -144,7 +148,7 @@ public class InputFormat {
         long start = System.nanoTime();
 
         /** Note also that using + instead of * avoids replacing empty strings and therefore might also speed up the process. **/
-        String regexp = "[\\s,;:]+";
+        String regexp = ONE_LINE_CONTENT_SPLIT_REGEX;
 
         Pattern p = Pattern.compile(regexp);
 
@@ -157,76 +161,15 @@ public class InputFormat {
         /** Note that using String.replaceAll() will compile the regular expression each time you call it. **/
         line = p.matcher(line).replaceAll(" ");
 
-
         /** StringTokenizer has more performance to offer than String.slit. **/
         StringTokenizer st = new StringTokenizer(line); //space is default delimiter.
 
         int tokens = st.countTokens();
         if (tokens > 0) {
-            String first = st.nextToken().trim();
-
-            if (isNumeric(first)) {
-                errorResponses.add(Response.getMessage(Response.START_WITH_NUMBER));
-                return;
-            }
-
-            boolean hasExpressionValues = false;
-            boolean hasOnlyIdentifiers = false;
-
-            boolean matches = true;
-
+            headerColumnNames.add(DEFAULT_IDENTIFIER_HEADER);
             while (st.hasMoreTokens()) {
-                String token = st.nextToken().trim();
-
-                if (isNumeric(token)) {
-                    if (hasOnlyIdentifiers) {
-                        errorResponses.add(Response.getMessage(Response.INVALID_SINGLE_LINE));
-                        matches = false;
-                        break;
-                    }
-
-                    hasExpressionValues = true;
-                } else {
-                    if (hasExpressionValues) {
-                        errorResponses.add(Response.getMessage(Response.INVALID_SINGLE_LINE));
-                        matches = false;
-                        break;
-                    }
-
-                    hasOnlyIdentifiers = true;
-                }
-
-            }
-
-            if (matches) {
-                st = new StringTokenizer(line);
-                if (hasOnlyIdentifiers) {
-                    headerColumnNames.add(DEFAULT_IDENTIFIER_HEADER);
-                    while (st.hasMoreTokens()) {
-                        AnalysisIdentifier rtn = new AnalysisIdentifier(st.nextToken().trim());
-                        analysisIdentifierSet.add(rtn);
-                    }
-                } else {
-                    buildDefaultHeader(st.countTokens());
-
-                    while (st.hasMoreTokens()) {
-                        AnalysisIdentifier rtn = new AnalysisIdentifier(st.nextToken().trim());
-
-                        int j = 0;
-                        while (st.hasMoreTokens()) {
-                            String token = st.nextToken().trim();
-                            if (isNumeric(token)) {
-                                rtn.add(Double.valueOf(token));
-                            } else {
-                                warningResponses.add(Response.getMessage(Response.INLINE_PROBLEM, 1, j + 1));
-                            }
-                            j++;
-                        }
-
-                        analysisIdentifierSet.add(rtn);
-
-                    }
-                }
+                AnalysisIdentifier rtn = new AnalysisIdentifier(st.nextToken().trim());
+                analysisIdentifierSet.add(rtn);
             }
         }
 
@@ -288,9 +231,7 @@ public class InputFormat {
         if (data.length > 0) {
             for (String col : data) {
                 columnNames.add(col.trim());
-                try {
-                    Double.valueOf(col.trim());
-                } catch (NumberFormatException nfe) {
+                if(!isNumeric(col.trim())){
                     errorInARow++;
                 }
             }
@@ -338,7 +279,7 @@ public class InputFormat {
         }
 
         /** Note also that using + instead of * avoids replacing empty strings and therefore might also speed up the process. **/
-        String regexp = "[\\s,;:]+";
+        String regexp = MULTI_LINE_CONTENT_SPLIT_REGEX;
 
         Pattern p = Pattern.compile(regexp);
 
@@ -366,9 +307,10 @@ public class InputFormat {
                     AnalysisIdentifier rtn = new AnalysisIdentifier(first);
                     int j = 1;
                     while (st.hasMoreTokens()) {
-                        try {
-                            rtn.add(Double.valueOf(st.nextToken().trim()));
-                        } catch (NumberFormatException nfe) {
+                        String token = st.nextToken().trim();
+                        if(isNumeric(token)){
+                            rtn.add(Double.valueOf(token));
+                        }else {
                             warningResponses.add(Response.getMessage(Response.INLINE_PROBLEM, i + 1, j + 1));
                         }
                         j++;

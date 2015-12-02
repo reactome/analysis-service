@@ -1,0 +1,6 @@
+#Gene names from liver
+A2M
+ABCB4
+ABCB8
+ABCB9
+ABCC2
