@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-core</artifactId>
-            <version>1.4.3</version>
+            <version>1.4.4</version>
         </dependency>
 
         <dependency>
