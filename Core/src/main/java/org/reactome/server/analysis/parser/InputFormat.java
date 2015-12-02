@@ -30,11 +30,14 @@ public class InputFormat {
     /** Pride is using colon, we decided to remove it from the parser **/
     private static final String HEADER_SPLIT_REGEX = "[\\t,;]+";
 
+    /** Regex for parsing the content when we do not have the header, trying to build a default one **/
+    private static final String NO_HEADER_DEFAULT_REGEX = "[\\s,;]+";
+
     /** Regex used to split the content of a single line file **/
-    private static final String ONE_LINE_CONTENT_SPLIT_REGEX = "[\\s,;:]+";
+    private static final String ONE_LINE_CONTENT_SPLIT_REGEX = "[\\s,;]+";
 
     /** Regex used to split the content of a multiple line file **/
-    private static final String MULTI_LINE_CONTENT_SPLIT_REGEX = "[\\s,;:]+";
+    private static final String MULTI_LINE_CONTENT_SPLIT_REGEX = "[\\s,;]+";
 
     private List<String> headerColumnNames = new LinkedList<>();
     private Set<AnalysisIdentifier> analysisIdentifierSet = new LinkedHashSet<>();
@@ -226,7 +229,13 @@ public class InputFormat {
         List<String> columnNames = new LinkedList<>();
 
         firstLine = firstLine.replaceAll("^(#|//)", "");
-        String[] data = firstLine.split(HEADER_SPLIT_REGEX);
+
+        /**
+         * We cannot use the HEADER REGEX for parsing the header and prepare the default
+         * Why? Tab is a delimiter for header, but space isn't. Colon is a delimiter fo the content
+         * but not for the header.
+         **/
+        String[] data = firstLine.split(NO_HEADER_DEFAULT_REGEX);
 
         if (data.length > 0) {
             for (String col : data) {
