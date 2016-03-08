@@ -10,7 +10,7 @@ import java.util.Map;
  * Contains the different data structures for the binary data and also provides
  * methods to initialize the data structure after loading from file and to
  * "prepare" the data structure for serialising
- *
+ * <p/>
  * PLEASE NOTE
  * The pathway location map is kept separately because at some point splitting
  * or cloning the pathway hierarchies will be needed, so keeping a map will
@@ -28,22 +28,28 @@ public class DataContainer implements Serializable {
     MapSet<Long, PathwayNode> pathwayLocation;
 
     //A radix-tree with (identifier -> HierarchyNode)
-    IdentifiersMap identifiersMap;
+    IdentifiersMap<PhysicalEntityNode> entitiesMap;
+
+    IdentifiersMap<InteractorNode> interactorsMap;
+
     //A double link graph with the representation of the physical entities
     PhysicalEntityGraph physicalEntityGraph;
 
     public DataContainer(Map<SpeciesNode, PathwayHierarchy> pathwayHierarchies,
                          PhysicalEntityGraph physicalEntityGraph,
                          MapSet<Long, PathwayNode> pathwayLocation,
-                         IdentifiersMap identifiersMap) {
+                         IdentifiersMap<PhysicalEntityNode> entitiesMap,
+                         IdentifiersMap<InteractorNode> interactorsMap) {
         this.pathwayHierarchies = pathwayHierarchies;
         this.physicalEntityGraph = physicalEntityGraph;
         this.pathwayLocation = pathwayLocation;
-        this.identifiersMap = identifiersMap;
+        this.entitiesMap = entitiesMap;
+        this.interactorsMap = interactorsMap;
     }
 
     /**
      * Returns a clone of the clean version of the hierarchies
+     *
      * @return a clone of the clean version of the hierarchies
      */
     public HierarchiesData getHierarchiesData() {
@@ -56,20 +62,25 @@ public class DataContainer implements Serializable {
         return physicalEntityGraph;
     }
 
-    public IdentifiersMap getIdentifiersMap() {
-        return identifiersMap;
+    public IdentifiersMap<PhysicalEntityNode> getEntitiesMap() {
+        return entitiesMap;
     }
 
-    public void initialize(){
+    public IdentifiersMap<InteractorNode> getInteractorsMap() {
+        return interactorsMap;
+    }
+
+    public void initialize() {
         this.physicalEntityGraph.setLinkToParent();
         this.physicalEntityGraph.setOrthologiesCrossLinks();
     }
 
     /**
      * Avoids cycles when serialising the graph and reduces the space needed in memory
+     *
      * @return the DataContainer without graph cycles and size reduced
      */
-    public DataContainer prepareToSerialise(){
+    public DataContainer prepareToSerialise() {
         this.physicalEntityGraph.prepareToSerialise();
         return this;
     }

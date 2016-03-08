@@ -44,17 +44,17 @@ public class EnrichmentAnalysis {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void analyse(HierarchiesData hierarchies, Set<AnalysisIdentifier> identifiers, SpeciesNode speciesNode){
+    private void analyse(HierarchiesData hierarchies, Set<AnalysisIdentifier> identifiers, SpeciesNode speciesNode) {
         Integer originalSampleSize = identifiers.size();
-        IdentifiersMap identifiersMap = analysisData.getIdentifiersMap();
+        IdentifiersMap<PhysicalEntityNode> entitiesMap = analysisData.getEntitiesMap();
 
-        logger.trace(String.format("Analysing %d identifiers%s...", originalSampleSize, speciesNode!=null ?" projecting to " + speciesNode.getName() : ""));
+        logger.trace(String.format("Analysing %d identifiers%s...", originalSampleSize, speciesNode != null ? " projecting to " + speciesNode.getName() : ""));
         long start = System.currentTimeMillis();
 
         Set<MainIdentifier> newSample = new HashSet<MainIdentifier>();
         for (AnalysisIdentifier identifier : identifiers) {
-            MapSet<Resource, PhysicalEntityNode> resourceEntities = identifiersMap.get(identifier);
-            if(resourceEntities.isEmpty()){
+            MapSet<Resource, PhysicalEntityNode> resourceEntities = entitiesMap.get(identifier);
+            if (resourceEntities.isEmpty()) {
                 hierarchies.addNotFound(identifier);
                 continue;
             }
@@ -62,17 +62,17 @@ public class EnrichmentAnalysis {
             for (Resource resource : resourceEntities.keySet()) {
                 OtherIdentifier otherIdentifier = new OtherIdentifier(resource, identifier);
                 for (PhysicalEntityNode node : resourceEntities.getElements(resource)) {
-                    if(speciesNode!=null) node = node.getProjection(speciesNode);
-                    if(node==null) continue;
+                    if (speciesNode != null) node = node.getProjection(speciesNode);
+                    if (node == null) continue;
                     found = true;
                     MainIdentifier mainAux = node.getIdentifier();
-                    if(mainAux!=null){
+                    if (mainAux != null) {
                         //Create a copy of the main identifier and add to it the expression values of the analysed one
                         AnalysisIdentifier ai = new AnalysisIdentifier(mainAux.getValue().getId(), otherIdentifier.getValue().getExp());
                         MainIdentifier mainIdentifier = new MainIdentifier(mainAux.getResource(), ai);
                         for (Long pathwayId : node.getPathwayIds()) {
                             Set<PathwayNode> pNodes = hierarchies.getPathwayLocation().getElements(pathwayId);
-                            if(pNodes==null) continue;
+                            if (pNodes == null) continue;
                             for (PathwayNode pNode : pNodes) {
                                 Set<AnalysisReaction> reactions = node.getReactions(pathwayId);
                                 pNode.process(otherIdentifier, mainIdentifier, reactions);
@@ -82,7 +82,7 @@ public class EnrichmentAnalysis {
                     }
                 }
             }
-            if(!found){
+            if (!found) {
                 hierarchies.addNotFound(identifier);
             }
         }
@@ -92,7 +92,7 @@ public class EnrichmentAnalysis {
         Map<MainResource, Integer> sampleSizePerResource = new HashMap<MainResource, Integer>();
         for (MainIdentifier mainIdentifier : newSample) {
             Integer aux = sampleSizePerResource.get(mainIdentifier.getResource());
-            sampleSizePerResource.put(mainIdentifier.getResource(), aux==null ? 1 : aux + 1 );
+            sampleSizePerResource.put(mainIdentifier.getResource(), aux == null ? 1 : aux + 1);
         }
 
         logger.trace(String.format("Final sample size is %d identifiers", finalSampleSize));
@@ -101,16 +101,16 @@ public class EnrichmentAnalysis {
         logger.trace(String.format("Analysis for %d identifiers performed in %d ms", finalSampleSize, end - start));
     }
 
-    private void decreaseCounter(){
-        synchronized (ANALYSIS_SEMAPHORE){
-            if(--ANALYSIS_COUNT==0){
+    private void decreaseCounter() {
+        synchronized (ANALYSIS_SEMAPHORE) {
+            if (--ANALYSIS_COUNT == 0) {
                 ANALYSIS_SEMAPHORE.notify(); //Only one background producer should be using this semaphore
             }
         }
     }
 
-    private void increaseCounter(){
-        synchronized (ANALYSIS_SEMAPHORE){
+    private void increaseCounter() {
+        synchronized (ANALYSIS_SEMAPHORE) {
             ++ANALYSIS_COUNT;
         }
     }

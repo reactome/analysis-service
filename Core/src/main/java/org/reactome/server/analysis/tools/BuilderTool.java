@@ -8,8 +8,12 @@ import org.reactome.core.factory.DatabaseObjectFactory;
 import org.reactome.server.Main;
 import org.reactome.server.analysis.tools.components.filter.AnalysisBuilder;
 import org.reactome.server.analysis.util.FileUtil;
+import org.reactome.server.tools.interactors.database.InteractorsDatabase;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.io.File;
+import java.sql.SQLException;
 
 public class BuilderTool {
 
@@ -34,8 +38,10 @@ public class BuilderTool {
                                 "The password to connect to the database")
                         ,new FlaggedOption( "output", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'o', "output",
                                 "The file where the results are written to." )
+                        , new FlaggedOption("interactors-database-path", JSAP.STRING_PARSER, null, JSAP.REQUIRED, 'g', "interactors-database-path",
+                                "Interactor Database Path")
                         ,new QualifiedSwitch( "verbose", JSAP.BOOLEAN_PARSER, null, JSAP.NOT_REQUIRED, 'v', "verbose",
-                                "Requests verbose output." )
+                                "Requests verbose output.")
                 }
         );
         JSAPResult config = jsap.parse(args);
@@ -47,6 +53,19 @@ public class BuilderTool {
                 config.getString("username"),
                 config.getString("password")
         );
+
+        String database = config.getString("interactors-database-path");
+        File databaseFile = new File(database);
+        if(!databaseFile.exists()){
+            throw new Exception("Interactor database does not exist");
+        }
+
+        InteractorsDatabase interactorsDatabase = null;
+        try {
+            interactorsDatabase = new InteractorsDatabase(database);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
         GKInstance2ModelObject converter = context.getBean(GKInstance2ModelObject.class);
@@ -60,7 +79,7 @@ public class BuilderTool {
         logger.trace("Starting the data container creation...");
         long start = System.currentTimeMillis();
         AnalysisBuilder builder = context.getBean(AnalysisBuilder.class);
-        builder.build(dba, fileName);
+        builder.build(dba, interactorsDatabase, fileName);
         long end = System.currentTimeMillis();
         logger.trace(String.format("Data container creation finished in %d minutes", Math.round((end - start) / 60000L)));
     }

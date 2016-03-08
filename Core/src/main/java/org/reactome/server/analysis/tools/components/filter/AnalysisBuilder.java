@@ -5,6 +5,7 @@ import org.reactome.server.analysis.core.data.AnalysisDataUtils;
 import org.reactome.server.analysis.core.model.*;
 import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
 import org.reactome.server.analysis.core.util.MapSet;
+import org.reactome.server.tools.interactors.database.InteractorsDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,6 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-@SuppressWarnings("UnusedDeclaration")
 @Component
 public class AnalysisBuilder {
     @Autowired
@@ -23,11 +23,14 @@ public class AnalysisBuilder {
     private ReactionLikeEventBuilder rleBuilder;
     @Autowired
     private PhysicalEntityHierarchyBuilder peBuilder;
+    @Autowired
+    private InteractorsBuilder interactorsBuilder;
 
-    public void build(MySQLAdaptor dba, String fileName){
+    public void build(MySQLAdaptor dba, InteractorsDatabase interactorsDatabase, String fileName){
         this.pathwaysBuilder.build(dba);
         this.rleBuilder.build(dba, this.pathwaysBuilder.getPathwayLocation());
         this.peBuilder.build(dba, rleBuilder.getEntityPathwayReaction());
+        this.interactorsBuilder.build(peBuilder.getPhysicalEntityGraph(), interactorsDatabase);
         this.peBuilder.setOrthologous();
         //Pre-calculates the counters for each MainResource/PathwayNode
         this.calculateNumbersInHierarchyNodesForMainResources();
@@ -35,13 +38,13 @@ public class AnalysisBuilder {
         DataContainer container = new DataContainer(getHierarchies(),
                                                     getPhysicalEntityGraph(),
                                                     getPathwayLocation(),
-                                                    getIdentifierMap());
+                                                    getEntitiesMap(),
+                                                    getInteractorsMap());
         AnalysisDataUtils.kryoSerialisation(container, fileName);
     }
 
     private void calculateNumbersInHierarchyNodesForMainResources(){
         MapSet<Long, PathwayNode> pathwayLocation = getPathwayLocation();
-        IdentifiersMap identifiersMap = this.getIdentifierMap();
 
         for (PhysicalEntityNode physicalEntityNode : getPhysicalEntityGraph().getAllNodes()) {
             MainIdentifier mainIdentifier = physicalEntityNode.getIdentifier();
@@ -63,8 +66,12 @@ public class AnalysisBuilder {
         return pathwaysBuilder.getHierarchies();
     }
 
-    public IdentifiersMap getIdentifierMap(){
-        return peBuilder.getIdentifiersMap();
+    public IdentifiersMap<PhysicalEntityNode> getEntitiesMap(){
+        return peBuilder.getEntitiesMap();
+    }
+
+    public IdentifiersMap<InteractorNode> getInteractorsMap(){
+        return this.interactorsBuilder.getInteractorsMap();
     }
 
     public MapSet<Long, PathwayNode> getPathwayLocation(){

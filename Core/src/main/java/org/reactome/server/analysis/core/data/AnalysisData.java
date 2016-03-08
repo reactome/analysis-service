@@ -15,12 +15,12 @@ import java.util.Map;
  * (either in a local execution or deployed in a server). The default constructor uses
  * the Kryo deserializer in AnalysisDataUtils to create the DataContainer and from this
  * moment on, the AnalysisData object is a PROXY to the DataContainer.
- *
+ * <p/>
  * *** IMPORTANT ***
  * Please note that every time that getHierarchiesData method is called, it retrieves a
  * clone of the HierarchiesData contained in DataContainer so the changes in it doesn't
  * happen to other instances of HierarchiesData
- *
+ * <p/>
  * *** NOTE ****
  * AnalysisData is the object to be used in the code, PLEASE avoid using the DataContainer
  * directly in the analysis (unless there is a good reason).
@@ -37,18 +37,19 @@ public class AnalysisData {
     public AnalysisData() {
     }
 
-    private DataContainer getContainer(){
-        if(container==null){
+    private DataContainer getContainer() {
+        if (container == null) {
             String msg = "DataContainer has not been initialized.";
             logger.error(msg, new NullPointerException(msg));
             System.err.println(getClass().getName() + " [ERROR] : " + msg);
-            System.exit( 1 );
+            System.exit(1);
         }
         return container;
     }
 
     /**
      * Returns the physical entity graph with all the complexes, sets and proteins in Reactome
+     *
      * @return the physical entity graph with all the complexes, sets and proteins in Reactome
      */
     public PhysicalEntityGraph getPhysicalEntityGraph() {
@@ -57,22 +58,24 @@ public class AnalysisData {
 
     /**
      * Returns a map from identifier to [resource, [PhysicalEntityNode]]
+     *
      * @return a map from identifier to [resource, [PhysicalEntityNode]]
      */
-    public IdentifiersMap getIdentifiersMap() {
-        return this.getContainer().getIdentifiersMap();
+    public IdentifiersMap<PhysicalEntityNode> getEntitiesMap() {
+        return this.getContainer().getEntitiesMap();
     }
 
-    public Map<SpeciesNode, PathwayHierarchy> getPathwayHierarchies(){
+    public Map<SpeciesNode, PathwayHierarchy> getPathwayHierarchies() {
         return this.getContainer().getHierarchiesData().getPathwayHierarchies();
     }
 
     /**
      * Initialise the AnalysisData object loading the content of the file into the container
+     *
      * @param fileName the binary file containing the data structures for the analysis
      */
-    public void setFileName(String fileName){
-        if(container!=null){
+    public void setFileName(String fileName) {
+        if (container != null) {
             logger.warn("Attempt to load the content file when previously loaded");
             return;
         }
@@ -80,11 +83,11 @@ public class AnalysisData {
             InputStream file = new FileInputStream(fileName);
             container = AnalysisDataUtils.getDataContainer(file);
             HierarchiesDataProducer.initializeProducer(container);
-        }catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             String msg = String.format("%s has not been found. Please check the settings", fileName);
             logger.fatal(msg, e);
             System.err.println(msg);
-            System.exit( 1 );
+            System.exit(1);
         }
     }
 }

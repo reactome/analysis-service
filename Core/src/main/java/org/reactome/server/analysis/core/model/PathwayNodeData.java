@@ -25,7 +25,11 @@ public class PathwayNodeData {
         Double entitiesPValue;
         Double entitiesFDR;
 
-        //TP-Based analysis (this is in beta)
+        Integer totalInteractors = 0; //Pre-calculated in setCounters method
+        Integer foundInteractors = 0;
+        Double interactorsRatio;
+
+        //TP-Based analysis
         Integer totalReactions = 0; //Pre-calculated in setCounters method
         Integer foundReactions = 0;
         Double reactionsRatio;

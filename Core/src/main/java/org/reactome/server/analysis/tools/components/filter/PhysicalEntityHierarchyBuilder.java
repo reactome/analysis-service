@@ -35,12 +35,12 @@ public class PhysicalEntityHierarchyBuilder {
     private Map<Long, PhysicalEntityNode> physicalEntityBuffer = new HashMap<Long, PhysicalEntityNode>();
 
     //Will contain the RADIX-TREE with the map (identifiers -> [PhysicalEntityNode])
-    private IdentifiersMap identifiersMap;
+    private IdentifiersMap<PhysicalEntityNode> entitiesMap;
     //A graph representation of the PhysicalEntities in Reactome
     private PhysicalEntityGraph physicalEntityGraph;
 
     public PhysicalEntityHierarchyBuilder() {
-        this.identifiersMap = new IdentifiersMap();
+        this.entitiesMap = new IdentifiersMap<>();
         this.physicalEntityGraph = new PhysicalEntityGraph();
     }
 
@@ -72,8 +72,8 @@ public class PhysicalEntityHierarchyBuilder {
         }
     }
 
-    public IdentifiersMap getIdentifiersMap() {
-        return this.identifiersMap;
+    public IdentifiersMap<PhysicalEntityNode> getEntitiesMap() {
+        return this.entitiesMap;
     }
 
     public PhysicalEntityGraph getPhysicalEntityGraph() {
@@ -135,7 +135,7 @@ public class PhysicalEntityHierarchyBuilder {
                 for (String identifier : resourceIdentifiers.getElements(resource)) {
                     //create the corresponding entries in the RADIX TREE for all the (identifier, resource, node)
                     if(identifier!=null) {
-                        this.identifiersMap.add(identifier, resource, node);
+                        this.entitiesMap.add(identifier, resource, node);
                     }else{
                         logger.error("Identifier not found for " + node.getId());
                     }
