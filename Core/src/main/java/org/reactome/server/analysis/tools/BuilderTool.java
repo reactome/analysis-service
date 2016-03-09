@@ -19,6 +19,7 @@ public class BuilderTool {
 
     private static Logger logger = Logger.getLogger(BuilderTool.class.getName());
     public static boolean VERBOSE;
+    public static boolean TEST_HUMAN = true;
 
 
     public static void main(String[] args) throws Exception {
@@ -37,7 +38,7 @@ public class BuilderTool {
                         ,new FlaggedOption( "password", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'p', "password",
                                 "The password to connect to the database")
                         ,new FlaggedOption( "output", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'o', "output",
-                                "The file where the results are written to." )
+                                "The file where the results are written to" )
                         , new FlaggedOption("interactors-database-path", JSAP.STRING_PARSER, null, JSAP.REQUIRED, 'g', "interactors-database-path",
                                 "Interactor Database Path")
                         ,new QualifiedSwitch( "verbose", JSAP.BOOLEAN_PARSER, null, JSAP.NOT_REQUIRED, 'v', "verbose",

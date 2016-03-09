@@ -63,7 +63,7 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
     }
 
     protected Set<PathwayNode> getHitNodes(){
-        Set<PathwayNode> rtn = new HashSet<PathwayNode>();
+        Set<PathwayNode> rtn = new HashSet<>();
         if(this.data.hasResult()){
             rtn.add(this);
             for (PathwayNode node : children) {
@@ -113,11 +113,11 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
         }
     }
 
-    public void setResultStatistics(Map<MainResource, Integer> sampleSizePerResource, Integer notFound){
+    public void setResultStatistics(Map<MainResource, Integer> sampleSizePerResource, Integer notFound, boolean includeInteractors){
         for (PathwayNode child : this.children) {
-            child.setResultStatistics(sampleSizePerResource, notFound);
+            child.setResultStatistics(sampleSizePerResource, notFound, includeInteractors);
         }
-        this.data.setResultStatistics(sampleSizePerResource, notFound);
+        this.data.setResultStatistics(sampleSizePerResource, notFound, includeInteractors);
     }
 
     public void process(MainIdentifier mainIdentifier, Set<AnalysisReaction> reactions){
@@ -129,6 +129,18 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
         this.data.addReactions(mainIdentifier.getResource(), reactions);
         if(this.parent!=null){
             this.parent.process(identifier, mainIdentifier, reactions);
+        }
+    }
+
+    public void processInteractor(Identifier identifier, MainIdentifier mainIdentifier, Set<AnalysisReaction> reactions){
+        if(reactions!=null && !reactions.isEmpty()) {
+            data.addInteractors(mainIdentifier, identifier);
+            data.addReactions(mainIdentifier.getResource(), reactions);
+            if (parent != null) {
+                parent.processInteractor(identifier, mainIdentifier, reactions);
+            }
+        }else{
+            System.err.println("Interactions for " + identifier.getValue() +" not taken into account for " + getName());
         }
     }
 

@@ -1,8 +1,8 @@
 package org.reactome.server.analysis.core.model;
 
-import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
-import org.reactome.server.analysis.core.model.resource.MainResource;
-import org.reactome.server.analysis.core.util.MapSet;
+import org.reactome.server.analysis.core.model.identifier.Identifier;
+import org.reactome.server.analysis.core.model.identifier.OtherIdentifier;
+import org.reactome.server.analysis.core.model.resource.Resource;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,28 +12,36 @@ import java.util.Set;
  */
 public class InteractorNode {
 
-
-    private MainIdentifier identifier;
+    private Identifier identifier;
 
     private Set<PhysicalEntityNode> interactsWith;
 
     //We DO NOT use PathwayNode here because at some point cloning the hierarchies
     //structure will be needed and keeping this separate will help to maintain the
     //links between both structures easy through the pathway location map
-    private MapSet<Long, AnalysisReaction> pathwayReactions = null;
+//    private MapSet<Long, AnalysisReaction> pathwayReactions;
 
-    public InteractorNode(MainResource resource, String accession) {
+    public InteractorNode(Resource resource, String accession) {
         this.interactsWith = new HashSet<>();
-        this.identifier = new MainIdentifier(resource, new AnalysisIdentifier(accession));
+        this.identifier = new OtherIdentifier(resource, new AnalysisIdentifier(accession));
+//        this.pathwayReactions = pathwayReactions;
     }
 
     public void addInteractsWith(PhysicalEntityNode interactsWith) {
         this.interactsWith.add(interactsWith);
     }
 
+    public Identifier getIdentifier() {
+        return identifier;
+    }
+
     public Set<PhysicalEntityNode> getInteractsWith() {
         return interactsWith;
     }
+
+//    public MapSet<Long, AnalysisReaction> getPathwayReactions() {
+//        return pathwayReactions;
+//    }
 
     @Override
     public boolean equals(Object o) {

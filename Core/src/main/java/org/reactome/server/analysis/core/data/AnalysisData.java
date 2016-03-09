@@ -62,7 +62,16 @@ public class AnalysisData {
      * @return a map from identifier to [resource, [PhysicalEntityNode]]
      */
     public IdentifiersMap<PhysicalEntityNode> getEntitiesMap() {
-        return this.getContainer().getEntitiesMap();
+        return getContainer().getEntitiesMap();
+    }
+
+    /**
+     * Returns a map from identifier to [resource, [InteractorNode]]
+     *
+     * @return a map from identifier to [resource, [InteractorNode]]
+     */
+    public IdentifiersMap<InteractorNode> getInteractorsMap() {
+        return getContainer().getInteractorsMap();
     }
 
     public Map<SpeciesNode, PathwayHierarchy> getPathwayHierarchies() {

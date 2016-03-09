@@ -41,7 +41,9 @@ public class PathwayHierarchyBuilder {
         List<Species> speciess = this.helper.getSpeciesList();
         int i = 0; int tot = speciess.size();
         for (Species species : speciess) {
-//            if(!species.getDbId().equals(48887L)) break;
+            //FOR TEST PURPOSES
+            if(BuilderTool.TEST_HUMAN && !species.getDbId().equals(48887L)) break;
+
             if(BuilderTool.VERBOSE) {
                 System.out.print("\rCreating the pathway hierarchies >> " + ++i + "/" + tot + " ");
             }

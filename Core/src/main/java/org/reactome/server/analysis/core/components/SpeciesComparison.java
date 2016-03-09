@@ -24,7 +24,7 @@ public class SpeciesComparison {
 
     public HierarchiesData speciesComparison(SpeciesNode speciesFrom, SpeciesNode speciesTo) throws SpeciesNotFoundException {
         UserData ud = getSyntheticUserData(speciesFrom);
-        return enrichmentAnalysis.overRepresentation(ud.getIdentifiers(), speciesTo);
+        return enrichmentAnalysis.overRepresentation(ud.getIdentifiers(), speciesTo, false);
     }
 
     public UserData getSyntheticUserData(SpeciesNode species) throws SpeciesNotFoundException {

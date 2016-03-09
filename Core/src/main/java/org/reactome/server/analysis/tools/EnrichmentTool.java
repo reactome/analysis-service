@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@SuppressWarnings("Duplicates")
 public class EnrichmentTool {
 
     public static void main(String[] args) throws Exception {
@@ -30,6 +31,8 @@ public class EnrichmentTool {
                                 "The file containing the data structure for the analysis." )
                         ,new FlaggedOption( "output", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'o', "output",
                                 "The file where the results are written to." )
+                        ,new QualifiedSwitch( "interactors", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 't', "interactors",
+                                "Use interactors data to perform the analysis." )
                         ,new QualifiedSwitch( "verbose", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'v', "verbose",
                                 "Requests verbose output." )
                 }
@@ -48,9 +51,10 @@ public class EnrichmentTool {
         UserData ud = InputUtils.getUserData(new FileInputStream(input));
 
         SpeciesNode human = SpeciesNodeFactory.getHumanNode();
+        boolean includeInteractors = config.getBoolean("interactors");
 
         EnrichmentAnalysis enrichmentAnalysis = context.getBean(EnrichmentAnalysis.class);
-        HierarchiesData hierarchiesData = enrichmentAnalysis.overRepresentation(ud.getIdentifiers(), human);
+        HierarchiesData hierarchiesData = enrichmentAnalysis.overRepresentation(ud.getIdentifiers(), human, includeInteractors);
 
         for (PathwayNode node : hierarchiesData.getUniqueHitPathways(human)) {
             print(node);
@@ -68,9 +72,9 @@ public class EnrichmentTool {
         PathwayNodeData data = node.getPathwayNodeData();
 
         for (MainResource resource : data.getResources()) {
-            Integer found = data.getEntitiesFound(resource);
+            Integer found = data.getEntitiesFound(resource) + data.getInteractorsFound(resource);
             if(found==0) continue;
-            Integer total = data.getEntitiesCount(resource);
+            Integer total = data.getInteractorsCount(resource);
             System.out.print(node.getSpecies().getName() + " >> " + resource.getName() + " >> " + name + " (" + found + "/" + total + ")");
             Double pValue = data.getEntitiesPValue(resource); Double ratio = data.getEntitiesRatio(resource); Double fdr = data.getEntitiesFDR(resource);
             if(pValue!=null && ratio!=null && fdr!=null){

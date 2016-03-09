@@ -17,6 +17,7 @@ import java.io.FileInputStream;
  */
 public class ExpressionTool {
 
+    @SuppressWarnings("Duplicates")
     public static void main(String[] args) throws Exception {
         SimpleJSAP jsap = new SimpleJSAP(
                 BuilderTool.class.getName(),
@@ -30,6 +31,8 @@ public class ExpressionTool {
                                 "The file containing the data structure for the analysis." )
                         ,new FlaggedOption( "output", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'o', "output",
                                 "The file where the results are written to." )
+                        ,new QualifiedSwitch( "interactors", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 't', "interactors",
+                                "Use interactors data to perform the analysis." )
                         ,new QualifiedSwitch( "verbose", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'v', "verbose",
                                 "Requests verbose output." )
                 }
@@ -48,9 +51,10 @@ public class ExpressionTool {
         UserData ud = InputUtils.getUserData(new FileInputStream(input));
 
         SpeciesNode human = SpeciesNodeFactory.getHumanNode();
+        boolean includeInteractors = config.getBoolean("interactors");
 
         EnrichmentAnalysis enrichmentAnalysis = context.getBean(EnrichmentAnalysis.class);
-        HierarchiesData hierarchiesData = enrichmentAnalysis.overRepresentation(ud.getIdentifiers(), human);
+        HierarchiesData hierarchiesData = enrichmentAnalysis.overRepresentation(ud.getIdentifiers(), human, includeInteractors);
 
         for (PathwayNode node : hierarchiesData.getUniqueHitPathways(human)) {
             print(node);

@@ -26,8 +26,8 @@ public class HierarchiesData {
     }
 
     public List<PathwayNode> getUniqueHitPathways(SpeciesNode species){
-        Set<SpeciesPathway> found = new HashSet<SpeciesPathway>();
-        List<PathwayNode> rtn = new LinkedList<PathwayNode>();
+        Set<SpeciesPathway> found = new HashSet<>();
+        List<PathwayNode> rtn = new LinkedList<>();
         for (PathwayNode pathwayNode : this.getHitPathways()) {
             if(species==null || pathwayNode.getSpecies().equals(species)){
                 SpeciesPathway sp = new SpeciesPathway(pathwayNode);
@@ -46,7 +46,7 @@ public class HierarchiesData {
     }
 
     private Set<PathwayNode> getHitPathways(){
-        Set<PathwayNode> rtn = new HashSet<PathwayNode>();
+        Set<PathwayNode> rtn = new HashSet<>();
         for (SpeciesNode species : pathwayHierarchies.keySet()) {
             rtn.addAll(pathwayHierarchies.get(species).getHitPathways());
         }
@@ -62,11 +62,11 @@ public class HierarchiesData {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void setResultStatistics(Map<MainResource, Integer> sampleSizePerResource, Integer notFound){
+    public void setResultStatistics(Map<MainResource, Integer> sampleSizePerResource, Integer notFound, boolean includeInteractors){
         for (SpeciesNode species : this.pathwayHierarchies.keySet()) {
             PathwayHierarchy hierarchy = this.pathwayHierarchies.get(species);
             for (PathwayRoot node : hierarchy.getChildren()) {
-                node.setResultStatistics(sampleSizePerResource, notFound);
+                node.setResultStatistics(sampleSizePerResource, notFound, includeInteractors);
             }
             /*
             FDR has to be calculated after the pValues for each pathway because it uses all the pValues.

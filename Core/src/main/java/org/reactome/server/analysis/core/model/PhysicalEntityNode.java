@@ -141,6 +141,10 @@ public class PhysicalEntityNode {
     }
 
     public Set<AnalysisReaction> getReactions(Long pathwayId){
+        return getReactions(pathwayId, true);
+    }
+
+    public Set<AnalysisReaction> getReactions(Long pathwayId, boolean useParents){
         Set<AnalysisReaction> rtn = new HashSet<AnalysisReaction>();
         if(this.pathwayReactions!=null){
             Set<AnalysisReaction> reactions = this.pathwayReactions.getElements(pathwayId);
@@ -148,7 +152,7 @@ public class PhysicalEntityNode {
                 rtn.addAll(reactions);
             }
         }
-        if(this.parents!=null){
+        if(useParents && this.parents!=null){
             for (PhysicalEntityNode parent : this.parents) {
                 rtn.addAll(parent.getReactions(pathwayId));
             }
@@ -171,6 +175,14 @@ public class PhysicalEntityNode {
             rtn.addAll(this.pathwayReactions.keySet());
         }
         return rtn;
+    }
+
+    public MapSet<Long, AnalysisReaction> getPathwayReactions() {
+        return pathwayReactions;
+    }
+
+    public boolean isDirectlyInADiagram(){
+        return pathwayReactions != null && !pathwayReactions.keySet().isEmpty();
     }
 
     protected void removeLinkToParent(){

@@ -41,7 +41,7 @@ public class PathwayHierarchy implements Serializable {
     }
 
     protected Set<PathwayNode> getHitPathways(){
-        Set<PathwayNode> rtn = new HashSet<PathwayNode>();
+        Set<PathwayNode> rtn = new HashSet<>();
         for (PathwayNode node : this.children) {
             rtn.addAll(node.getHitNodes());
         }

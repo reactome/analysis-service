@@ -6,24 +6,23 @@ import java.util.*;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-@SuppressWarnings("UnusedDeclaration")
 public class MapSet<S,T> implements Serializable {
 
-    protected Map<S, Set<T>> map = new HashMap<S, Set<T>>();
+    protected Map<S, Set<T>> map = new HashMap<>();
 
-    public void add(S identifier, T elem){
+    public boolean add(S identifier, T elem){
         Set<T> aux = getOrCreate(identifier);
-        aux.add(elem);
+        return aux.add(elem);
     }
 
-    public void add(S identifier, Set<T> set){
+    public boolean add(S identifier, Set<T> set){
         Set<T> aux = getOrCreate(identifier);
-        aux.addAll(set);
+        return aux.addAll(set);
     }
 
-    public void add(S identifier, List<T> list){
+    public boolean add(S identifier, List<T> list){
         Set<T> aux = getOrCreate(identifier);
-        aux.addAll(list);
+        return aux.addAll(list);
     }
 
     public void addAll(MapSet<S,T> map){
@@ -56,5 +55,13 @@ public class MapSet<S,T> implements Serializable {
 
     public Set<T> remove(S key){
         return this.map.remove(key);
+    }
+
+    public Set<T> values() {
+        Set<T> rtn = new HashSet<>();
+        for (Set<T> ts : map.values()) {
+            rtn.addAll(ts);
+        }
+        return rtn;
     }
 }

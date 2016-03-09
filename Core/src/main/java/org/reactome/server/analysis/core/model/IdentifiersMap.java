@@ -32,10 +32,11 @@ public class IdentifiersMap<T> implements Serializable {
         return map;
     }
 
-    public void add(String identifier, Resource resource, T node) {
+    public boolean add(String identifier, Resource resource, T node) {
+        if (identifier == null || resource == null || node == null) return false;
         String id = identifier.trim().toUpperCase();
         MapSet<Resource, T> map = getOrCreateResourceEntitiesMap(id);
-        map.add(resource, node);
+        return map.add(resource, node);
     }
 
     public MapSet<Resource, T> get(AnalysisIdentifier identifier) {
@@ -71,9 +72,17 @@ public class IdentifiersMap<T> implements Serializable {
         return keySet;
     }
 
+    public Set<T> values() {
+        Set<T> rtn = new HashSet<>();
+        for (String s : keySet()) {
+            rtn.addAll(get(s).values());
+        }
+        return rtn;
+    }
+
     private Set<AnalysisIdentifier> expandIdentifierWithPolimorfism(AnalysisIdentifier identifier) {
         //The compiler takes care of replacing this where the variables are used, so no worries for performance
-        String UNIPROT = "([O,P,Q][0-9][A-Z, 0-9]{3}[0-9]|[A-N,R-Z]([0-9][A-Z][A-Z,0-9]{2}){1,2}[0-9])";
+        String UNIPROT = "[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}";
 //        String UNIPROT_POLIMORFISM = UNIPROT + "\\-\\d+$";
 
         Set<AnalysisIdentifier> rtn = new HashSet<AnalysisIdentifier>();

@@ -40,7 +40,12 @@ public class ReactionLikeEventBuilder {
 
         Collection<?> instances;
         try {
-            instances = dba.fetchInstancesByClass(ReactomeJavaConstants.ReactionlikeEvent);
+            if (BuilderTool.TEST_HUMAN) {
+                GKInstance hs = dba.fetchInstance(48887L);
+                instances = dba.fetchInstanceByAttribute(ReactomeJavaConstants.ReactionlikeEvent, ReactomeJavaConstants.species, "=", hs);
+            } else {
+                instances = dba.fetchInstancesByClass(ReactomeJavaConstants.ReactionlikeEvent);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return;

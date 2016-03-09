@@ -5,10 +5,10 @@ import org.reactome.server.analysis.core.model.InteractorNode;
 import org.reactome.server.analysis.core.model.PhysicalEntityGraph;
 import org.reactome.server.analysis.core.model.PhysicalEntityNode;
 import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
-import org.reactome.server.analysis.core.model.resource.MainResource;
 import org.reactome.server.analysis.core.model.resource.Resource;
 import org.reactome.server.analysis.core.model.resource.ResourceFactory;
 import org.reactome.server.analysis.core.util.MapSet;
+import org.reactome.server.analysis.tools.BuilderTool;
 import org.reactome.server.tools.interactors.database.InteractorsDatabase;
 import org.reactome.server.tools.interactors.exception.InvalidInteractionResourceException;
 import org.reactome.server.tools.interactors.model.Interaction;
@@ -50,26 +50,29 @@ public class InteractorsBuilder {
             return;
         }
 
-        for (PhysicalEntityNode entityNode : entities.getAllNodes()) {
+        Set<PhysicalEntityNode> allNodes = entities.getAllNodes();
+        int i = 0, tot = allNodes.size();
+        for (PhysicalEntityNode entityNode : allNodes) {
+            if(BuilderTool.VERBOSE) {
+                System.out.print("\rInteractors for -> " + entityNode.getId() + " >> " + (++i) + "/" + tot);
+            }
+            if(!entityNode.isDirectlyInADiagram()) continue;
             MainIdentifier identifier = entityNode.getIdentifier();
             if (identifier != null) {
                 String acc = identifier.getValue().getId();
                 for (Interactor interactor : getInteractors(acc)) {
                     InteractorResource aux = resourceMap.get(interactor.getInteractorResourceId());
-                    Resource resource = ResourceFactory.getResource(aux.getName().replace("KB", ""));
-                    if (resource instanceof MainResource) {
-                        InteractorNode interactorNode = getOrCreate((MainResource) resource, interactor.getAcc());
-                        interactorNode.addInteractsWith(entityNode);
-                        interactorsMap.add(interactor.getAlias(), resource, interactorNode);
-                        interactorsMap.add(interactor.getAliasWithoutSpecies(false), resource, interactorNode);
-                        for (String synonym : interactor.getSynonyms().split("\\$")) {
-                            interactorsMap.add(synonym, resource, interactorNode);
-                        }
-                    } else {
-                        System.err.println("Not know resource for: " + interactor);
-                    }
+                    Resource resource = ResourceFactory.getResource(aux.getName());
+                    InteractorNode interactorNode = getOrCreate(resource, interactor.getAcc());
+                    interactorNode.addInteractsWith(entityNode);
+                    interactorsMap.add(interactor.getAlias(), resource, interactorNode);
+                    interactorsMap.add(interactor.getAliasWithoutSpecies(false), resource, interactorNode);
+                    //for (String synonym : interactor.getSynonyms().split("\\$")) interactorsMap.add(synonym, resource, interactorNode);
                 }
             }
+        }
+        if(BuilderTool.VERBOSE){
+            System.out.println("\r" + n + " interactors successfully added to Reactome");
         }
     }
 
@@ -91,12 +94,14 @@ public class InteractorsBuilder {
         return rtn;
     }
 
-    private InteractorNode getOrCreate(MainResource resource, String identifier){
+    private int n = 0;
+    private InteractorNode getOrCreate(Resource resource, String identifier){
         MapSet<Resource, InteractorNode> map = interactorsMap.get(identifier);
         Set<InteractorNode> interactors = map.getElements(resource);
-        if (interactors.isEmpty()) {
+        if(interactors == null || interactors.isEmpty()) {
             InteractorNode interactorNode = new InteractorNode(resource, identifier);
             interactorsMap.add(identifier, resource, interactorNode);
+            n++;
             return interactorNode;
         } else {
             //Using IdentifiersMap causes this "oddity" here, but is a minor inconvenient
