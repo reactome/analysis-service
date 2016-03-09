@@ -33,17 +33,17 @@ public abstract class Tokenizer {
 
     private static final String DATE_PATTERN = "yyyyMMddHHmmss";
 
-    public static String getOrCreateToken(String md5, boolean toHuman){
-        String token = md5ToToken.get(md5 + toHuman);
+    public static String getOrCreateToken(String md5, boolean toHuman, boolean includeInteractors){
+        String token = md5ToToken.get(md5 + toHuman + includeInteractors);
         if(token==null){
             token = getToken();
-            md5ToToken.put(md5 + toHuman, token);
+            md5ToToken.put(md5 + toHuman + includeInteractors, token);
         }
         return token;
     }
 
-    public static boolean hasToken(String md5, boolean toHuman){
-        return md5ToToken.containsKey(md5 + toHuman);
+    public static boolean hasToken(String md5, boolean toHuman, boolean includeInteractors){
+        return md5ToToken.containsKey(md5 + toHuman + includeInteractors);
     }
 
     public static String getName(String token){

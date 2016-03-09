@@ -30,6 +30,8 @@ public class IdentifiersController {
     @ResponseBody
     public AnalysisResult getPostTextToHuman( @ApiParam(name = "input", required = true, value = "Identifiers to analyse followed by their expression (when applies)")
                                              @RequestBody String input,
+                                              @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
+                                             @RequestParam(required = false, defaultValue = "false") Boolean interactors,
                                               @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
                                              @RequestParam(required = false) Integer pageSize,
                                               @ApiParam(name = "page", value = "page number", defaultValue = "1")
@@ -41,7 +43,7 @@ public class IdentifiersController {
                                               @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         UserData ud = controller.getUserData(input);
-        return controller.analyse(ud, true).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, true, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the post identifiers over the different species",
@@ -53,6 +55,8 @@ public class IdentifiersController {
     @ResponseBody
     public AnalysisResult getPostText( @ApiParam(name = "input", required = true, value = "Identifiers to analyse followed by their expression (when applies)")
                                       @RequestBody String input,
+                                       @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
+                                      @RequestParam(required = false, defaultValue = "false") Boolean interactors,
                                        @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
                                       @RequestParam(required = false) Integer pageSize,
                                        @ApiParam(name = "page", value = "page number", defaultValue = "1")
@@ -64,7 +68,7 @@ public class IdentifiersController {
                                        @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                       @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         UserData ud = controller.getUserData(input);
-        return controller.analyse(ud, false).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, false, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the identifiers in the file over the different species and projects the result to Homo Sapiens",
@@ -80,6 +84,8 @@ public class IdentifiersController {
     @ResponseBody
     public AnalysisResult getPostFileToHuman( @ApiParam(name = "file", required = true, value = "A file with the data to be analysed")
                                              @RequestParam(required = true) MultipartFile file,
+                                              @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
+                                             @RequestParam(required = false, defaultValue = "false") Boolean interactors,
                                               @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
                                              @RequestParam(required = false) Integer pageSize,
                                               @ApiParam(name = "page", value = "page number", defaultValue = "1")
@@ -91,7 +97,7 @@ public class IdentifiersController {
                                               @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         UserData ud = controller.getUserData(file);
-        return controller.analyse(ud, true, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, true, interactors, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the identifiers in the file over the different species",
@@ -106,6 +112,8 @@ public class IdentifiersController {
     @ResponseBody
     public AnalysisResult getPostFile( @ApiParam(name = "file", required = true, value = "A file with the data to be analysed")
                                       @RequestParam(required = true) MultipartFile file,
+                                       @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
+                                      @RequestParam(required = false, defaultValue = "false") Boolean interactors,
                                        @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
                                       @RequestParam(required = false) Integer pageSize,
                                        @ApiParam(name = "page", value = "page number", defaultValue = "1")
@@ -117,7 +125,7 @@ public class IdentifiersController {
                                        @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                       @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         UserData ud = controller.getUserData(file);
-        return controller.analyse(ud, false, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, false, interactors, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the identifiers contained in the provided url over the different species and projects the result to Homo Sapiens",
@@ -134,6 +142,8 @@ public class IdentifiersController {
     @ResponseBody
     public AnalysisResult getPostURLToHuman( @ApiParam(name = "url", required = true, value = "A URL pointing to the data to be analysed")
                                             @RequestBody String url,
+                                             @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
+                                            @RequestParam(required = false, defaultValue = "false") Boolean interactors,
                                              @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
                                             @RequestParam(required = false) Integer pageSize,
                                              @ApiParam(name = "page", value = "page number", defaultValue = "1")
@@ -146,7 +156,7 @@ public class IdentifiersController {
                                             @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         UserData ud = controller.getUserDataFromURL(url);
         String fileName = controller.getFileNameFromURL(url);
-        return controller.analyse(ud, true, fileName).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, true, interactors, fileName).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the identifiers contained in the provided url over the different species",
@@ -162,6 +172,8 @@ public class IdentifiersController {
     @ResponseBody
     public AnalysisResult getPostURL( @ApiParam(name = "url", required = true, value = "A URL pointing to the data to be analysed")
                                      @RequestBody String url,
+                                      @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
+                                     @RequestParam(required = false, defaultValue = "false") Boolean interactors,
                                       @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
                                      @RequestParam(required = false) Integer pageSize,
                                       @ApiParam(name = "page", value = "page number", defaultValue = "1")
@@ -174,6 +186,6 @@ public class IdentifiersController {
                                      @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         UserData ud = controller.getUserDataFromURL(url);
         String fileName = controller.getFileNameFromURL(url);
-        return controller.analyse(ud, false, fileName).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, false, interactors, fileName).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 }

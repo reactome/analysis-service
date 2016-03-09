@@ -11,6 +11,7 @@ public class ReportParameters {
     private AnalysisHelper.Type type;
     private String name;
     private Boolean toHuman;
+    private Boolean includeInteractors;
     private int ids;
     private int found;
     private long milliseconds;
@@ -19,9 +20,10 @@ public class ReportParameters {
         this.type = type;
     }
 
-    public ReportParameters(AnalysisHelper.Type type, Boolean toHuman){
+    public ReportParameters(AnalysisHelper.Type type, Boolean toHuman, Boolean includeInteractors){
         this.type = type;
         this.toHuman = toHuman;
+        this.includeInteractors = includeInteractors;
     }
 
     public ReportParameters(AnalysisStoredResult analysisStoredResult) {

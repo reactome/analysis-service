@@ -73,30 +73,30 @@ public class AnalysisHelper {
     @Autowired
     private SpeciesComparison speciesComparison;
 
-    public AnalysisStoredResult analyse(UserData userData, boolean toHuman){
-        return analyse(userData, toHuman, null);
+    public AnalysisStoredResult analyse(UserData userData, boolean toHuman, boolean includeInteractors){
+        return analyse(userData, toHuman, includeInteractors, null);
     }
 
-    public AnalysisStoredResult analyse(UserData userData, boolean toHuman, String userFileName){
+    public AnalysisStoredResult analyse(UserData userData, Boolean toHuman, Boolean includeInteractors, String userFileName){
         Type type =  userData.getExpressionColumnNames().isEmpty() ? Type.OVERREPRESENTATION : Type.EXPRESSION;
-        ReportParameters reportParams = new ReportParameters(type, toHuman);
+        ReportParameters reportParams = new ReportParameters(type, toHuman, includeInteractors);
         SpeciesNode speciesNode = toHuman ? SpeciesNodeFactory.getHumanNode() : null;
-        if(Tokenizer.hasToken(userData.getInputMD5(), toHuman)){
-            String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman);
+        if(Tokenizer.hasToken(userData.getInputMD5(), toHuman, includeInteractors)){
+            String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman, includeInteractors);
             AnalysisSummary summary = getAnalysisSummary(token, userData.getSampleName(), type, userFileName);
             try {
                 String fileName = getFileName(token);
                 return ResultDataUtils.getAnalysisResult(fileName, reportParams);
             } catch (FileNotFoundException e) {
                 logger.trace("No TOKEN found. Analysing...");
-                return analyse(summary, userData, speciesNode, reportParams);
+                return analyse(summary, userData, speciesNode, includeInteractors, reportParams);
             } catch (Exception e){
                 logger.error("Error retrieving the result from the MD5 token. Analysing again...");
             }
         }
-        String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman);
+        String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman, includeInteractors);
         AnalysisSummary summary = getAnalysisSummary(token, userData.getSampleName(), type, userFileName);
-        return analyse(summary, userData, speciesNode, reportParams);
+        return analyse(summary, userData, speciesNode, includeInteractors, reportParams);
     }
 
     public AnalysisStoredResult compareSpecies(Long from, Long to){
@@ -106,8 +106,8 @@ public class AnalysisHelper {
         ReportParameters reportParams = new ReportParameters(Type.SPECIES_COMPARISON);
         String fakeMD5 = this.getFakedMD5(speciesFrom, speciesTo);
         boolean human = from.equals(SpeciesNodeFactory.getHumanNode().getSpeciesID());
-        if(Tokenizer.hasToken(fakeMD5, human)){
-            String token = Tokenizer.getOrCreateToken(fakeMD5, human);
+        if(Tokenizer.hasToken(fakeMD5, human, false)){
+            String token = Tokenizer.getOrCreateToken(fakeMD5, human, false);
             try {
                 String fileName = getFileName(token);
                 return ResultDataUtils.getAnalysisResult(fileName, reportParams);
@@ -118,9 +118,9 @@ public class AnalysisHelper {
 
         try {
             UserData ud = speciesComparison.getSyntheticUserData(speciesTo);
-            String token = Tokenizer.getOrCreateToken(fakeMD5, human);
+            String token = Tokenizer.getOrCreateToken(fakeMD5, human, false);
             AnalysisSummary summary = new AnalysisSummary(token, null, Type.SPECIES_COMPARISON, to);
-            return analyse(summary, ud, speciesFrom, reportParams);
+            return analyse(summary, ud, speciesFrom, null, reportParams);
         } catch (SpeciesNotFoundException e) {
             throw new ResourceNotFoundException();
         }
@@ -268,10 +268,10 @@ public class AnalysisHelper {
         this.pathDirectory = pathDirectory;
     }
 
-    private AnalysisStoredResult analyse(AnalysisSummary summary, UserData userData, SpeciesNode speciesNode, ReportParameters reportParams){
+    private AnalysisStoredResult analyse(AnalysisSummary summary, UserData userData, SpeciesNode speciesNode, Boolean includeInteractors, ReportParameters reportParams){
         long start = System.currentTimeMillis();
         Set<AnalysisIdentifier> identifiers = userData.getIdentifiers();
-        HierarchiesData resAux = this.enrichmentAnalysis.overRepresentation(identifiers, speciesNode);
+        HierarchiesData resAux = this.enrichmentAnalysis.overRepresentation(identifiers, speciesNode, includeInteractors);
 
         AnalysisStoredResult result = new AnalysisStoredResult(userData, resAux);
         result.setSummary(summary);

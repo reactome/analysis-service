@@ -29,6 +29,8 @@ public class IdentifierController {
     @ResponseBody
     public AnalysisResult getIdentifierToHuman( @ApiParam(name = "id", required = true, value = "The identifier of the element to be retrieved")
                                               @PathVariable String id,
+                                                @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
+                                              @RequestParam(required = false, defaultValue = "false") Boolean interactors,
                                                @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
                                               @RequestParam(required = false) Integer pageSize,
                                                @ApiParam(name = "page", value = "page number", defaultValue = "1")
@@ -40,7 +42,7 @@ public class IdentifierController {
                                                @ApiParam(name = "resource", value = "resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                               @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         UserData ud = controller.getUserData(id);
-        return controller.analyse(ud, true).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, true, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the identifier over the different species in the database",
@@ -51,6 +53,8 @@ public class IdentifierController {
     @ResponseBody
     public AnalysisResult getIdentifier( @ApiParam(name = "id" , required = true, value = "The identifier of the element to be retrieved")
                                        @PathVariable String id,
+                                         @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
+                                       @RequestParam(required = false, defaultValue = "false") Boolean interactors,
                                         @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
                                        @RequestParam(required = false) Integer pageSize,
                                         @ApiParam(name = "page", value = "page number", defaultValue = "1")
@@ -62,6 +66,6 @@ public class IdentifierController {
                                         @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                        @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         UserData ud = controller.getUserData(id);
-        return controller.analyse(ud, false).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, false, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 }
