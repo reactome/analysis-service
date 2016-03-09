@@ -39,7 +39,8 @@ public class AnalysisStoredResult {
         for (PathwayNode pathwayNode : pathwayNodes) {
             total++;
             for (MainResource mainResource : pathwayNode.getPathwayNodeData().getResources()) {
-                if(pathwayNode.getPathwayNodeData().getEntitiesFound(mainResource)>0){
+                PathwayNodeData data = pathwayNode.getPathwayNodeData();
+                if (data.getEntitiesFound(mainResource) > 0 || data.getInteractorsFound(mainResource) > 0) {
                     Integer n = aux.get(mainResource.getName());
                     aux.put(mainResource.getName(), n == null ? 1 : n + 1 );
                 }
