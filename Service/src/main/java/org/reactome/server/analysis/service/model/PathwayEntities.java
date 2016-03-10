@@ -10,25 +10,25 @@ import java.util.*;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class PathwayIdentifiers {
+public class PathwayEntities {
 
-    private List<PathwayIdentifier> identifiers;
+    private List<PathwayEntity> identifiers;
     private Set<String> resources;
     private List<String> expNames;
     private Integer found;
 
-    private PathwayIdentifiers(List<PathwayIdentifier> identifiers, Set<String> resources, List<String> expNames, Integer found) {
+    private PathwayEntities(List<PathwayEntity> identifiers, Set<String> resources, List<String> expNames, Integer found) {
         this.identifiers = identifiers;
         this.resources = resources;
         this.expNames = expNames;
         this.found = found;
     }
 
-    public PathwayIdentifiers(PathwayNodeSummary nodeSummary, List<String> expNames) {
+    public PathwayEntities(PathwayNodeSummary nodeSummary, List<String> expNames) {
         this.expNames = expNames;
 
         this.resources = new HashSet<String>();
-        this.identifiers = new LinkedList<PathwayIdentifier>();
+        this.identifiers = new LinkedList<PathwayEntity>();
         MapSet<Identifier, MainIdentifier> identifierMap = nodeSummary.getData().getIdentifierMap();
         for (Identifier identifier : identifierMap.keySet()) {
 
@@ -46,22 +46,22 @@ public class PathwayIdentifiers {
             }
 
             boolean added = false;
-            for (PathwayIdentifier pathwayIdentifier : this.identifiers) {
-                if(pathwayIdentifier.getIdentifier().equals(is.getId())){
-                    pathwayIdentifier.merge(maps);
+            for (PathwayEntity pathwayEntity : this.identifiers) {
+                if(pathwayEntity.getIdentifier().equals(is.getId())){
+                    pathwayEntity.merge(maps);
                     added = true;
                     break;
                 }
             }
             if(!added){
-                this.identifiers.add(new PathwayIdentifier(is, maps));
+                this.identifiers.add(new PathwayEntity(is, maps));
             }
         }
         //IMPORTANT TO BE HERE!
         this.found = this.identifiers.size();
     }
 
-    public List<PathwayIdentifier> getIdentifiers() {
+    public List<PathwayEntity> getIdentifiers() {
         return identifiers;
     }
 
@@ -77,40 +77,50 @@ public class PathwayIdentifiers {
         return found;
     }
 
-    private List<PathwayIdentifier> filterByResource(String resource){
-        List<PathwayIdentifier> rtn = new LinkedList<PathwayIdentifier>();
-        for (PathwayIdentifier identifier : identifiers) {
+    private List<PathwayEntity> filterByResource(String resource){
+        List<PathwayEntity> rtn = new LinkedList<PathwayEntity>();
+        for (PathwayEntity identifier : identifiers) {
             for (IdentifierMap identifierMap : identifier.getMapsTo()) {
                 if(identifierMap.getResource().equals(resource)){
-                    rtn.add(new PathwayIdentifier(identifier, resource));
+                    rtn.add(new PathwayEntity(identifier, resource));
                 }
             }
         }
         return rtn;
     }
 
-    public PathwayIdentifiers filter(String resource, Integer pageSize, Integer page) {
+    public PathwayEntities filter(String resource){
+        List<PathwayEntity> identifiers;
+        if(resource.equals("TOTAL")){
+            identifiers = this.identifiers;
+        }else{
+            identifiers = filterByResource(resource.toUpperCase());
+        }
+        return new PathwayEntities(identifiers, resources, expNames, identifiers.size());
+    }
+
+    public PathwayEntities filter(String resource, Integer pageSize, Integer page) {
         resource = resource.toUpperCase();
 
-        List<PathwayIdentifier> aux;
+        List<PathwayEntity> identifiers;
         if(resource.equals("TOTAL")){
-            aux = this.identifiers;
+            identifiers = this.identifiers;
         }else{
-            aux = filterByResource(resource.toUpperCase());
+            identifiers = filterByResource(resource.toUpperCase());
         }
 
-        pageSize = (pageSize==null) ? aux.size() : pageSize ;
+        pageSize = (pageSize==null) ? identifiers.size() : pageSize ;
         pageSize = pageSize < 0 ? 0 : pageSize;
 
         page = (page==null) ? 1 : page;
         page = page < 0 ? 0 : page;
 
         int from = pageSize * (page - 1);
-        if(from < aux.size() && from > -1){
+        if(from < identifiers.size() && from > -1){
             int to = from + pageSize;
-            to = to > aux.size() ? aux.size() : to;
+            to = to > identifiers.size() ? identifiers.size() : to;
             Set<String> resources = resource.equals("TOTAL") ? this.resources : new HashSet<String>(Arrays.asList(resource));
-            return new PathwayIdentifiers(aux.subList(from, to), resources, this.expNames, aux.size());
+            return new PathwayEntities(identifiers.subList(from, to), resources, this.expNames, identifiers.size());
         }else{
             return null;
         }

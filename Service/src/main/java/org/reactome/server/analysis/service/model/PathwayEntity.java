@@ -1,25 +1,22 @@
 package org.reactome.server.analysis.service.model;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class PathwayIdentifier {
+public class PathwayEntity extends Identifier {
 
-    private String identifier;
-    private List<Double> exp;
     private Set<IdentifierMap> mapsTo;
 
-    public PathwayIdentifier(IdentifierSummary is, Set<IdentifierMap> mapsTo) {
+    public PathwayEntity(IdentifierSummary is, Set<IdentifierMap> mapsTo) {
         this.identifier = is.getId();
         this.exp = is.getExp();
         this.mapsTo = mapsTo;
     }
 
-    public PathwayIdentifier(PathwayIdentifier pi, String resource){
+    public PathwayEntity(PathwayEntity pi, String resource){
         this.identifier = pi.identifier;
         this.exp = pi.exp;
         this.mapsTo = new HashSet<>();
@@ -28,14 +25,6 @@ public class PathwayIdentifier {
                 this.mapsTo.add(identifierMap);
             }
         }
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public List<Double> getExp() {
-        return exp;
     }
 
     public Set<IdentifierMap> getMapsTo() {
@@ -63,7 +52,7 @@ public class PathwayIdentifier {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PathwayIdentifier that = (PathwayIdentifier) o;
+        PathwayEntity that = (PathwayEntity) o;
 
         //noinspection RedundantIfStatement
         if (identifier != null ? !identifier.equals(that.identifier) : that.identifier != null) return false;
