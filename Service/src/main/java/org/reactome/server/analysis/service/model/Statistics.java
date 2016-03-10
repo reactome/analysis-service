@@ -31,4 +31,8 @@ public abstract class Statistics {
     public Double getRatio() {
         return ratio;
     }
+
+    public void setRatio(Double ratio) {
+        this.ratio = ratio;
+    }
 }
