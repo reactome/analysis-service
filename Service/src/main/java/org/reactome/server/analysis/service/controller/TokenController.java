@@ -1,5 +1,6 @@
 package org.reactome.server.analysis.service.controller;
 
+import com.mangofactory.swagger.annotations.ApiIgnore;
 import com.wordnik.swagger.annotations.*;
 import org.reactome.server.analysis.core.model.AnalysisIdentifier;
 import org.reactome.server.analysis.service.exception.ResourceNotFoundException;
@@ -114,24 +115,93 @@ public class TokenController {
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "No result corresponding to the token was found"),
             @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
-    @RequestMapping(value = "/{token}/summary/{pathway}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/{token}/found/all/{pathway}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public PathwayIdentifiers getTokenSummaryPathway( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
-                                                     @PathVariable String token,
-                                                      @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
-                                                     @PathVariable Long pathway,
-                                                      @ApiParam(name = "page", value = "page number", defaultValue = "1")
-                                                     @RequestParam(required = false) Integer page,
-                                                      @ApiParam(name = "pageSize", value = "identifiers per page", defaultValue = "20")
-                                                     @RequestParam(required = false) Integer pageSize,
-                                                      @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
-                                                     @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+    public FoundElements getTokenHitEntitiesPathway(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+                                                  @PathVariable String token,
+                                                    @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
+                                                  @PathVariable Long pathway,
+                                                    @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
+                                                  @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         AnalysisStoredResult result = controller.getFromToken(token);
         PathwayNodeSummary aux = result.getPathway(pathway);
-        if(aux!=null){
+        if (aux != null) {
             List<String> columnNames = result.getExpressionSummary().getColumnNames();
-            PathwayIdentifiers pi = (new PathwayIdentifiers(aux, columnNames)).filter(resource, pageSize, page);
-            if(pi!=null){
+            PathwayEntities identifiers = (new PathwayEntities(aux, columnNames)).filter(resource);
+            PathwayInteractors interactors = (new PathwayInteractors(aux, columnNames)).filter(resource);
+            if (identifiers != null || interactors != null) {
+                return new FoundElements(identifiers, interactors, columnNames);
+            }
+        }
+        throw new ResourceNotFoundException();
+    }
+
+    @ApiOperation(value = "Returns a summary of the contained identifiers for a pathway in the result for a given token",
+            notes = "The identifiers submitted by the user that have a match in Reactome database. It also retrieves " +
+                    "the mapping to the main identifiers for those that have been found.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 404, message = "No result corresponding to the token was found"),
+            @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
+    @RequestMapping(value = "/{token}/found/entities/{pathway}", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public PathwayEntities getTokenIdentifiersPathway(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+                                                         @PathVariable String token,
+                                                      @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
+                                                         @PathVariable Long pathway,
+                                                      @ApiParam(name = "page", value = "page number", defaultValue = "1")
+                                                         @RequestParam(required = false) Integer page,
+                                                      @ApiParam(name = "pageSize", value = "identifiers per page", defaultValue = "20")
+                                                         @RequestParam(required = false) Integer pageSize,
+                                                      @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
+                                                         @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+        AnalysisStoredResult result = controller.getFromToken(token);
+        PathwayNodeSummary aux = result.getPathway(pathway);
+        if (aux != null) {
+            List<String> columnNames = result.getExpressionSummary().getColumnNames();
+            PathwayEntities pi = (new PathwayEntities(aux, columnNames)).filter(resource, pageSize, page);
+            if (pi != null) {
+                return pi;
+            }
+        }
+        throw new ResourceNotFoundException();
+    }
+
+    /*
+     We keep this method for backwards compatibility but the idea is to get rid of it in future versions
+     */
+    @ApiIgnore
+    @Deprecated
+    @RequestMapping(value = "/{token}/summary/{pathway}", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public PathwayEntities getTokenSummaryPathway(@PathVariable String token, @PathVariable Long pathway,
+                                                  @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+        return getTokenIdentifiersPathway(token, pathway, page, pageSize, resource);
+    }
+
+    @ApiOperation(value = "Returns a summary of the contained interactors for a pathway in the result for a given token",
+            notes = "The identifiers submitted by the user that have a match with an interactor in Reactome database. It also retrieves " +
+                    "the mapping to the main identifiers (the one interacting with) for those that have been found.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 404, message = "No result corresponding to the token was found"),
+            @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
+    @RequestMapping(value = "/{token}/found/interactors/{pathway}", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public PathwayInteractors getTokenInteractorsPathway( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+                                                         @PathVariable String token,
+                                                          @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
+                                                         @PathVariable Long pathway,
+                                                          @ApiParam(name = "page", value = "page number", defaultValue = "1")
+                                                         @RequestParam(required = false) Integer page,
+                                                          @ApiParam(name = "pageSize", value = "identifiers per page", defaultValue = "20")
+                                                         @RequestParam(required = false) Integer pageSize,
+                                                          @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
+                                                         @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+        AnalysisStoredResult result = controller.getFromToken(token);
+        PathwayNodeSummary aux = result.getPathway(pathway);
+        if (aux != null) {
+            List<String> columnNames = result.getExpressionSummary().getColumnNames();
+            PathwayInteractors pi = (new PathwayInteractors(aux, columnNames)).filter(resource, pageSize, page);
+            if (pi != null) {
                 return pi;
             }
         }
