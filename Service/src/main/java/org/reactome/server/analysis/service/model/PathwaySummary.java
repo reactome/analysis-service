@@ -50,6 +50,11 @@ public class PathwaySummary {
                     d.getEntitiesFDR(),
                     d.getExpressionValuesAvg()
             );
+            if (d.getInteractorsFound() > 0) {
+                this.entities.setRatio(d.getInteractorsRatio());
+                this.entities.setInteractorsTotal(d.getInteractorsCount());
+                this.entities.setInteractorsFound(d.getInteractorsFound());
+            }
             this.reactions = new ReactionStatistics(
                     "TOTAL",
                     d.getReactionsCount(),
@@ -68,6 +73,11 @@ public class PathwaySummary {
                             d.getEntitiesFDR(mr),
                             d.getExpressionValuesAvg(mr)
                     );
+                    if (d.getInteractorsCount(mr) > 0) {
+                        this.entities.setRatio(d.getInteractorsRatio(mr));
+                        this.entities.setInteractorsTotal(d.getInteractorsCount(mr));
+                        this.entities.setInteractorsFound(d.getInteractorsFound(mr));
+                    }
                     this.reactions = new ReactionStatistics(
                             mr.getName(),
                             d.getReactionsCount(mr),
