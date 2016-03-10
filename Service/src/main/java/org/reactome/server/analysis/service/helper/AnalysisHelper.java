@@ -83,7 +83,7 @@ public class AnalysisHelper {
         SpeciesNode speciesNode = toHuman ? SpeciesNodeFactory.getHumanNode() : null;
         if(Tokenizer.hasToken(userData.getInputMD5(), toHuman, includeInteractors)){
             String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman, includeInteractors);
-            AnalysisSummary summary = getAnalysisSummary(token, userData.getSampleName(), type, userFileName);
+            AnalysisSummary summary = getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName);
             try {
                 String fileName = getFileName(token);
                 return ResultDataUtils.getAnalysisResult(fileName, reportParams);
@@ -95,7 +95,7 @@ public class AnalysisHelper {
             }
         }
         String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman, includeInteractors);
-        AnalysisSummary summary = getAnalysisSummary(token, userData.getSampleName(), type, userFileName);
+        AnalysisSummary summary = getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName);
         return analyse(summary, userData, speciesNode, includeInteractors, reportParams);
     }
 
@@ -119,7 +119,7 @@ public class AnalysisHelper {
         try {
             UserData ud = speciesComparison.getSyntheticUserData(speciesTo);
             String token = Tokenizer.getOrCreateToken(fakeMD5, human, false);
-            AnalysisSummary summary = new AnalysisSummary(token, null, Type.SPECIES_COMPARISON, to);
+            AnalysisSummary summary = new AnalysisSummary(token, null, null,  null, Type.SPECIES_COMPARISON, to);
             return analyse(summary, ud, speciesFrom, null, reportParams);
         } catch (SpeciesNotFoundException e) {
             throw new ResourceNotFoundException();
@@ -127,11 +127,11 @@ public class AnalysisHelper {
 
     }
 
-    private AnalysisSummary getAnalysisSummary(String token, String sampleName, Type type, String userFileName){
+    private AnalysisSummary getAnalysisSummary(String token, Boolean projection, Boolean interactors, String sampleName, Type type, String userFileName){
         if(userFileName!=null && !userFileName.isEmpty()){
-            return new AnalysisSummary(token, sampleName, type, userFileName);
+            return new AnalysisSummary(token, projection, interactors, sampleName, type, userFileName);
         }else{
-            return new AnalysisSummary(token, sampleName, type, true);
+            return new AnalysisSummary(token, projection, interactors, sampleName, type, true);
         }
     }
 
