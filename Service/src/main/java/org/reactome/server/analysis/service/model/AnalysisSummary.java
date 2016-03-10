@@ -7,35 +7,47 @@ import org.reactome.server.analysis.service.helper.AnalysisHelper;
  */
 public class AnalysisSummary {
     private String token;
+    private Boolean projection;
+    private Boolean interactors;
     private String type;
     private String sampleName;
     private Long species;
     private boolean text = false;
     private String fileName;
 
-    AnalysisSummary(String token, String sampleName, AnalysisHelper.Type type) {
+    AnalysisSummary(String token, Boolean projection, Boolean interactors, String sampleName, AnalysisHelper.Type type) {
         this.token = token;
         this.type = type.toString();
         this.sampleName = sampleName;
+        this.projection = projection;
+        this.interactors = interactors;
     }
 
-    public AnalysisSummary(String token, String sampleName, AnalysisHelper.Type type, String fileName) {
-        this(token, sampleName, type);
+    public AnalysisSummary(String token, Boolean projection, Boolean interactors, String sampleName, AnalysisHelper.Type type, String fileName) {
+        this(token, projection, interactors, sampleName, type);
         this.fileName = fileName;
     }
 
-    public AnalysisSummary(String token, String sampleName, AnalysisHelper.Type type, Long species) {
-        this(token, sampleName, type);
+    public AnalysisSummary(String token, Boolean projection, Boolean interactors, String sampleName, AnalysisHelper.Type type, Long species) {
+        this(token, projection, interactors, sampleName, type);
         this.species = species;
     }
 
-    public AnalysisSummary(String token, String sampleName, AnalysisHelper.Type type, boolean text) {
-        this(token, sampleName, type);
+    public AnalysisSummary(String token, Boolean projection, Boolean interactors, String sampleName, AnalysisHelper.Type type, boolean text) {
+        this(token, projection, interactors, sampleName, type);
         this.text = text;
     }
 
     public String getToken() {
         return token;
+    }
+
+    public Boolean isProjection() {
+        return projection;
+    }
+
+    public Boolean isInteractors() {
+        return interactors;
     }
 
     public String getType() {
