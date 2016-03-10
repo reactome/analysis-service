@@ -7,6 +7,9 @@ import java.util.List;
  */
 //@ApiModel(value = "EntityStatistics", description = "Statistics for an entity type")
 public class EntityStatistics extends Statistics {
+    private Integer interactorsTotal;
+    private Integer interactorsFound;
+
     private Double pValue;
     private Double fdr;
     private List<Double> exp = null;
@@ -19,6 +22,26 @@ public class EntityStatistics extends Statistics {
         super(resource, total, found, ratio);
         this.pValue = pValue;
         this.fdr = fdr;
+    }
+
+    public void setInteractorsTotal(Integer interactorsTotal) {
+        this.interactorsTotal = interactorsTotal;
+    }
+
+    public void setInteractorsFound(Integer interactorsFound) {
+        this.interactorsFound = interactorsFound;
+    }
+
+    public void setpValue(Double pValue) {
+        this.pValue = pValue;
+    }
+
+    public Integer getInteractorsTotal() {
+        return interactorsTotal;
+    }
+
+    public Integer getInteractorsFound() {
+        return interactorsFound;
     }
 
     public Double getpValue() {
