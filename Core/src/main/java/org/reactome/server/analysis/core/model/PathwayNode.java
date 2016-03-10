@@ -139,8 +139,6 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
             if (parent != null) {
                 parent.processInteractor(identifier, mainIdentifier, reactions);
             }
-        }else{
-            System.err.println("Interactions for " + identifier.getValue() +" not taken into account for " + getName());
         }
     }
 
