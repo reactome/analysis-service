@@ -390,21 +390,17 @@ public class PathwayNodeData {
         map = new MapSet<>();
 
         //INTERACTORS
-        aux = new MapSet<>();
+        MapSet<MainResource, AnalysisIdentifier> temp = new MapSet<>();
         //To ensure the main resource is present, we take into account the resource of the molecule PRESENT in the diagram
         for (MainIdentifier mainIdentifier : interactors.keySet()) {
             for (Identifier identifier : interactors.getElements(mainIdentifier)) {
-                aux.add(mainIdentifier.getResource(), identifier.getValue());
+                temp.add(mainIdentifier.getResource(), identifier.getValue());
             }
         }
-//        for (Identifier identifier : interactors.values()) {
-//            if(identifier.getResource() instanceof MainResource){
-//                aux.add((MainResource) identifier.getResource(), identifier.getValue());
-//            }
-//        }
         for (MainResource mainResource : aux.keySet()) {
             Counter counter = this.getOrCreateCounter(mainResource);
-            counter.totalInteractors = aux.getElements(mainResource).size();
+            Set<AnalysisIdentifier> interactors = temp.getElements(mainResource);
+            counter.totalInteractors = interactors == null ? 0 : interactors.size();
             counter.interactorsRatio = (counter.totalEntities + counter.totalInteractors) / (double) (speciesData.getEntitiesCount(mainResource) + speciesData.getInteractorsCount(mainResource)) ;
             combinedResult.totalInteractors += counter.totalInteractors;
         }
