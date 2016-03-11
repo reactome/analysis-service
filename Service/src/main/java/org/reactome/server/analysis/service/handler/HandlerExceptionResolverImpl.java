@@ -73,6 +73,13 @@ public class HandlerExceptionResolverImpl implements HandlerExceptionResolver {
 
         ex.printStackTrace();
 
-        return null;
+        response.setStatus(500);
+        AnalysisError error = new AnalysisError(HttpStatus.INTERNAL_SERVER_ERROR, "Please get in touch with our help desk (help@reactome.org) for more details about this problem");
+        try {
+            response.getWriter().println(error);
+        } catch (IOException e) {
+            logger.error("Error writing to output stream", e);
+        }
+        return new ModelAndView();
     }
 }
