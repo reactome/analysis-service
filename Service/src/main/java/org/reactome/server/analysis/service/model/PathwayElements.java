@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class FoundElements {
+public class PathwayElements {
 
     private List<PathwayEntity> entities;
     private List<PathwayInteractor> interactors;
@@ -16,7 +16,7 @@ public class FoundElements {
     private Integer foundEntities;
     private Integer foundInteractors;
 
-    public FoundElements(PathwayEntities entities, PathwayInteractors interactors, List<String> expNames) {
+    public PathwayElements(PathwayEntities entities, PathwayInteractors interactors, List<String> expNames) {
         this.resources = new HashSet<>();
         this.expNames = expNames;
         if(entities !=null){
