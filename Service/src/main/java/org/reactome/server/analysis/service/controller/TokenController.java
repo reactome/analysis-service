@@ -117,11 +117,11 @@ public class TokenController {
             @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
     @RequestMapping(value = "/{token}/found/all/{pathway}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public FoundElements getTokenHitEntitiesPathway(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+    public PathwayElements getTokenHitEntitiesPathway(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
                                                   @PathVariable String token,
-                                                    @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
+                                                      @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
                                                   @PathVariable Long pathway,
-                                                    @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
+                                                      @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                                   @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         AnalysisStoredResult result = controller.getFromToken(token);
         PathwayNodeSummary aux = result.getPathway(pathway);
@@ -130,7 +130,7 @@ public class TokenController {
             PathwayEntities identifiers = (new PathwayEntities(aux, columnNames)).filter(resource);
             PathwayInteractors interactors = (new PathwayInteractors(aux, columnNames)).filter(resource);
             if (identifiers != null || interactors != null) {
-                return new FoundElements(identifiers, interactors, columnNames);
+                return new PathwayElements(identifiers, interactors, columnNames);
             }
         }
         throw new ResourceNotFoundException();
