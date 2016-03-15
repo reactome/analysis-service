@@ -16,6 +16,11 @@ public class IdentifierSummary {
         this.exp = identifier.getExp();
     }
 
+    public IdentifierSummary(String id, List<Double> exp) {
+        this.id = id;
+        this.exp = exp;
+    }
+
     public String getId() {
         return id;
     }

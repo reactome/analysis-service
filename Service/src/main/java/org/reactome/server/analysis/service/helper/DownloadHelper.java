@@ -4,11 +4,13 @@ import org.reactome.server.analysis.core.model.AnalysisIdentifier;
 import org.reactome.server.analysis.core.model.AnalysisReaction;
 import org.reactome.server.analysis.core.model.PathwayNodeData;
 import org.reactome.server.analysis.core.model.identifier.Identifier;
+import org.reactome.server.analysis.core.model.identifier.InteractorIdentifier;
 import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
 import org.reactome.server.analysis.core.model.resource.MainResource;
 import org.reactome.server.analysis.core.model.resource.Resource;
 import org.reactome.server.analysis.core.model.resource.ResourceFactory;
 import org.reactome.server.analysis.core.util.MapSet;
+import org.reactome.server.analysis.service.model.AnalysisSummary;
 import org.reactome.server.analysis.service.report.AnalysisReport;
 import org.reactome.server.analysis.service.report.ReportParameters;
 import org.reactome.server.analysis.service.result.AnalysisSortType;
@@ -37,20 +39,21 @@ public class DownloadHelper {
         List<PathwayNodeSummary> pathways = filterPathwaysByResource(asr.getPathways(), resource);
         Collections.sort(pathways, getComparator("ENTITIES_PVALUE", "ASC", resource));
         fw.write(getAnalysisResultHeader(asr));
-        if(resource.toUpperCase().equals("TOTAL")){
+        if (resource.toUpperCase().equals("TOTAL")) {
             for (PathwayNodeSummary summary : pathways) {
-                fw.write(getPathwayNodeSummaryTotalRow(summary));
+                fw.write(getPathwayNodeSummaryTotalRow(asr.getSummary(), summary));
             }
-        }else{
+        } else {
             Resource r = ResourceFactory.getResource(resource);
-            if(r instanceof MainResource){
+            if (r instanceof MainResource) {
                 MainResource mainResource = (MainResource) r;
                 for (PathwayNodeSummary summary : pathways) {
-                    fw.write(getPathwayNodeSummaryResourceRow(summary, mainResource));
+                    fw.write(getPathwayNodeSummaryResourceRow(asr.getSummary(), summary, mainResource));
                 }
             }
         }
-        fw.flush(); fw.close();
+        fw.flush();
+        fw.close();
 
         ReportParameters reportParams = new ReportParameters(asr);
         reportParams.setMilliseconds(System.currentTimeMillis() - start);
@@ -66,7 +69,7 @@ public class DownloadHelper {
         StringBuilder sb = new StringBuilder();
 
         MapSet<String, MainIdentifier> projection = new MapSet<String, MainIdentifier>();
-        if(resource.toUpperCase().equals("TOTAL")){
+        if (resource.toUpperCase().equals("TOTAL")) {
             sb.append("Submitted identifier").append(DELIMITER).append("Found identifier").append(DELIMITER).append("Resource\n");
             fw.write(sb.toString());
 
@@ -83,11 +86,11 @@ public class DownloadHelper {
                     fw.write(line.toString());
                 }
             }
-        }else{
+        } else {
             sb.append("Submitted identifier").append(DELIMITER).append("Found identifier\n");
             fw.write(sb.toString());
             Resource r = ResourceFactory.getResource(resource);
-            if(r instanceof MainResource){
+            if (r instanceof MainResource) {
                 MainResource mainResource = (MainResource) r;
                 MapSet<Identifier, MainIdentifier> aux = asr.getFoundEntitiesMap(mainResource);
                 for (Identifier identifier : aux.keySet()) {
@@ -104,7 +107,8 @@ public class DownloadHelper {
                 }
             }
         }
-        fw.flush(); fw.close();
+        fw.flush();
+        fw.close();
 
         ReportParameters reportParams = new ReportParameters(asr);
         reportParams.setMilliseconds(System.currentTimeMillis() - start);
@@ -128,11 +132,13 @@ public class DownloadHelper {
         for (AnalysisIdentifier analysisIdentifier : asr.getNotFound()) {
             fw.write(analysisIdentifier.getId());
             for (Double val : analysisIdentifier.getExp()) {
-                fw.write(DELIMITER);fw.write(val.toString());
+                fw.write(DELIMITER);
+                fw.write(val.toString());
             }
             fw.write("\n");
         }
-        fw.flush(); fw.close();
+        fw.flush();
+        fw.close();
 
         ReportParameters reportParams = new ReportParameters(asr);
         reportParams.setMilliseconds(System.currentTimeMillis() - start);
@@ -141,17 +147,23 @@ public class DownloadHelper {
         return new FileSystemResource(f);
     }
 
-    private static String getAnalysisResultHeader(AnalysisStoredResult asr){
+    private static String getAnalysisResultHeader(AnalysisStoredResult asr) {
         StringBuilder line = new StringBuilder("Pathway identifier");
         line.append(DELIMITER).append("Pathway name");
 
-        line.append(DELIMITER).append("# Entities found");
-        line.append(DELIMITER).append("# Entities total");
+        line.append(DELIMITER).append("#Entities found");
+        line.append(DELIMITER).append("#Entities total");
+
+        if (asr.getSummary().isInteractors()) {
+            line.append(DELIMITER).append("#Interactors found");
+            line.append(DELIMITER).append("#Interactors total");
+        }
+
         line.append(DELIMITER).append("Entities ratio");
         line.append(DELIMITER).append("Entities pValue");
         line.append(DELIMITER).append("Entities FDR");
-        line.append(DELIMITER).append("# Reactions found");
-        line.append(DELIMITER).append("# Reactions total");
+        line.append(DELIMITER).append("#Reactions found");
+        line.append(DELIMITER).append("#Reactions total");
         line.append(DELIMITER).append("Reactions ratio");
         for (String colName : asr.getExpressionSummary().getColumnNames()) {
             line.append(DELIMITER).append(colName);
@@ -163,19 +175,28 @@ public class DownloadHelper {
         line.append(DELIMITER).append("Submitted entities found");
         line.append(DELIMITER).append("Mapped entities");
 
+        if(asr.getSummary().isInteractors()) {
+            line.append(DELIMITER).append("Submitted entities hit interactor");
+            line.append(DELIMITER).append("Interacts with");
+        }
+
         line.append(DELIMITER).append("Found reaction identifiers");
         return line.append("\n").toString();
     }
 
-    private static String getPathwayNodeSummaryTotalRow(PathwayNodeSummary summary){
+    private static String getPathwayNodeSummaryTotalRow(AnalysisSummary analysisSummary, PathwayNodeSummary summary) {
         String stId = summary.getStId();
-        String id = (stId!=null && !summary.getStId().isEmpty()) ? stId : summary.getPathwayId().toString();
+        String id = (stId != null && !summary.getStId().isEmpty()) ? stId : summary.getPathwayId().toString();
         StringBuilder line = new StringBuilder(id);
         line.append(DELIMITER).append("\"").append(summary.getName()).append("\"");
 
         PathwayNodeData data = summary.getData();
         line.append(DELIMITER).append(data.getEntitiesFound());
         line.append(DELIMITER).append(data.getEntitiesCount());
+        if (analysisSummary.isInteractors()) {
+            line.append(DELIMITER).append(data.getInteractorsFound());
+            line.append(DELIMITER).append(data.getInteractorsCount());
+        }
         line.append(DELIMITER).append(data.getEntitiesRatio());
         line.append(DELIMITER).append(data.getEntitiesPValue());
         line.append(DELIMITER).append(data.getEntitiesFDR());
@@ -189,45 +210,70 @@ public class DownloadHelper {
         line.append(DELIMITER).append(summary.getSpecies().getSpeciesID());
         line.append(DELIMITER).append(summary.getSpecies().getName());
 
-        StringBuilder submited = new StringBuilder();
+        StringBuilder submitted = new StringBuilder();
         for (Identifier identifier : summary.getData().getIdentifierMap().keySet()) {
-            submited.append(identifier.getValue()).append(";");
+            submitted.append(identifier.getValue()).append(";");
         }
-        if(submited.length()>0){
-            submited.delete(submited.length()-1, submited.length());
+        if (submitted.length() > 0) {
+            submitted.delete(submitted.length() - 1, submitted.length());
         }
-        line.append(DELIMITER).append("\"").append(submited.toString()).append("\"");
+        line.append(DELIMITER).append("\"").append(submitted.toString()).append("\"");
 
         StringBuilder entities = new StringBuilder();
-        for (AnalysisIdentifier identifier : summary.getData().getEntities()) {
-            entities.append(identifier.getId()).append(";");
+        if(summary.getData().getInteractorsFound()>0) {
+            for (AnalysisIdentifier identifier : summary.getData().getEntities()) {
+                entities.append(identifier.getId()).append(";");
+            }
         }
-        if(entities.length()>0){
-            entities.delete(entities.length()-1, entities.length());
+        if (entities.length() > 0) {
+            entities.delete(entities.length() - 1, entities.length());
         }
         line.append(DELIMITER).append("\"").append(entities.toString()).append("\"");
+
+        if(analysisSummary.isInteractors()) {
+            StringBuilder interactors = new StringBuilder();
+            StringBuilder interactsWith = new StringBuilder();
+            if (data.getInteractorsFound() > 0) {
+                for (InteractorIdentifier hitInteractors : data.getInteractorMap().values()) {
+                    interactors.append(hitInteractors.getId()).append(";");
+                }
+                interactors.delete(interactors.length() - 1, interactors.length());
+                for (MainIdentifier identifier : data.getInteractorMap().keySet()) {
+                    interactsWith.append(identifier.getValue().getId()).append(";");
+                }
+                interactsWith.delete(interactsWith.length() - 1, interactsWith.length());
+            }
+            line.append(DELIMITER).append(interactors.toString());
+            line.append(DELIMITER).append(interactsWith.toString());
+        }
 
         StringBuilder reactions = new StringBuilder();
         for (AnalysisReaction reaction : summary.getData().getReactions()) {
             reactions.append(reaction.toString()).append(";");
         }
-        if(reactions.length()>0){
-            reactions.delete(reactions.length()-1, reactions.length());
+        if (reactions.length() > 0) {
+            reactions.delete(reactions.length() - 1, reactions.length());
         }
         line.append(DELIMITER).append("\"").append(reactions.toString()).append("\"");
 
         return line.append("\n").toString();
     }
 
-    private static String getPathwayNodeSummaryResourceRow(PathwayNodeSummary summary, MainResource resource){
+    private static String getPathwayNodeSummaryResourceRow(AnalysisSummary analysisSummary, PathwayNodeSummary summary, MainResource resource) {
         String stId = summary.getStId();
-        String id = (stId!=null && !summary.getStId().isEmpty()) ? stId : summary.getPathwayId().toString();
+        String id = (stId != null && !summary.getStId().isEmpty()) ? stId : summary.getPathwayId().toString();
         StringBuilder line = new StringBuilder(id);
         line.append(DELIMITER).append("\"").append(summary.getName()).append("\"");
 
         PathwayNodeData data = summary.getData();
         line.append(DELIMITER).append(data.getEntitiesFound(resource));
         line.append(DELIMITER).append(data.getEntitiesCount(resource));
+
+        if (analysisSummary.isInteractors()) {
+            line.append(DELIMITER).append(data.getInteractorsFound(resource));
+            line.append(DELIMITER).append(data.getInteractorsCount(resource));
+        }
+
         line.append(DELIMITER).append(data.getEntitiesRatio(resource));
         line.append(DELIMITER).append(data.getEntitiesPValue(resource));
         line.append(DELIMITER).append(data.getEntitiesFDR(resource));
@@ -250,8 +296,8 @@ public class DownloadHelper {
         for (String s : uniqueSubmitted) {
             submitted.append(s).append(";");
         }
-        if(submitted.length()>0){
-            submitted.delete(submitted.length()-1, submitted.length());
+        if (submitted.length() > 0) {
+            submitted.delete(submitted.length() - 1, submitted.length());
         }
         line.append(DELIMITER).append("\"").append(submitted.toString()).append("\"");
 
@@ -259,54 +305,71 @@ public class DownloadHelper {
         for (AnalysisIdentifier identifier : summary.getData().getEntities(resource)) {
             entities.append(identifier.getId()).append(";");
         }
-        if(entities.length()>0){
-            entities.delete(entities.length()-1, entities.length());
+        if (entities.length() > 0) {
+            entities.delete(entities.length() - 1, entities.length());
         }
         line.append(DELIMITER).append("\"").append(entities.toString()).append("\"");
+
+        if(analysisSummary.isInteractors()) {
+            StringBuilder interactors = new StringBuilder();
+            StringBuilder interactsWith = new StringBuilder();
+            if (data.getInteractorsFound(resource) > 0) {
+                for (InteractorIdentifier hitInteractors : data.getInteractorMap().values()) {
+                    interactors.append(hitInteractors.getId()).append(";");
+                }
+                interactors.delete(interactors.length() - 1, interactors.length());
+                for (MainIdentifier identifier : data.getInteractorMap().keySet()) {
+                    interactsWith.append(identifier.getValue().getId()).append(";");
+                }
+                interactsWith.delete(interactsWith.length() - 1, interactsWith.length());
+            }
+            line.append(DELIMITER).append(interactors.toString());
+            line.append(DELIMITER).append(interactsWith.toString());
+        }
 
         StringBuilder reactions = new StringBuilder();
         for (AnalysisReaction reaction : summary.getData().getReactions(resource)) {
             reactions.append(reaction.toString()).append(";");
         }
-        if(reactions.length()>0){
-            reactions.delete(reactions.length()-1, reactions.length());
+        if (reactions.length() > 0) {
+            reactions.delete(reactions.length() - 1, reactions.length());
         }
         line.append(DELIMITER).append("\"").append(reactions.toString()).append("\"");
 
         return line.append("\n").toString();
     }
 
-    private static Comparator<PathwayNodeSummary> getComparator(String sortBy, String order, String resource){
+    private static Comparator<PathwayNodeSummary> getComparator(String sortBy, String order, String resource) {
         AnalysisSortType sortType = AnalysisSortType.getSortType(sortBy);
-        if(resource!=null){
+        if (resource != null) {
             Resource r = ResourceFactory.getResource(resource);
-            if(r!=null && r instanceof MainResource){
+            if (r != null && r instanceof MainResource) {
                 MainResource mr = (MainResource) r;
-                if(order!=null && order.toUpperCase().equals("DESC")){
+                if (order != null && order.toUpperCase().equals("DESC")) {
                     return Collections.reverseOrder(ComparatorFactory.getComparator(sortType, mr));
-                }else{
+                } else {
                     return ComparatorFactory.getComparator(sortType, mr);
                 }
             }
         }
-        if(order!=null && order.toUpperCase().equals("DESC")){
+        if (order != null && order.toUpperCase().equals("DESC")) {
             return Collections.reverseOrder(ComparatorFactory.getComparator(sortType));
-        }else{
+        } else {
             return ComparatorFactory.getComparator(sortType);
         }
     }
 
-    private static List<PathwayNodeSummary> filterPathwaysByResource(List<PathwayNodeSummary> pathways, String resource){
+    private static List<PathwayNodeSummary> filterPathwaysByResource(List<PathwayNodeSummary> pathways, String resource) {
         List<PathwayNodeSummary> rtn;
-        if(resource.toUpperCase().equals("TOTAL")){
+        if (resource.toUpperCase().equals("TOTAL")) {
             rtn = pathways;
-        }else{
+        } else {
             rtn = new LinkedList<PathwayNodeSummary>();
             Resource r = ResourceFactory.getResource(resource);
-            if(r instanceof MainResource){
+            if (r instanceof MainResource) {
                 MainResource mr = (MainResource) r;
                 for (PathwayNodeSummary pathway : pathways) {
-                    if(pathway.getData().getEntitiesFound(mr)>0){
+                    if (pathway.getData().getReactionsFound(mr) > 0) { //reaction aggregates both entities and interactors found
                         rtn.add(pathway);
                     }
                 }

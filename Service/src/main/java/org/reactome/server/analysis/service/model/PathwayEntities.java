@@ -47,7 +47,7 @@ public class PathwayEntities {
 
             boolean added = false;
             for (PathwayEntity pathwayEntity : this.identifiers) {
-                if(pathwayEntity.getIdentifier().equals(is.getId())){
+                if(pathwayEntity.getId().equals(is.getId())){
                     pathwayEntity.merge(maps);
                     added = true;
                     break;

@@ -1,6 +1,6 @@
 package org.reactome.server.analysis.service.model;
 
-import org.reactome.server.analysis.core.model.identifier.Identifier;
+import org.reactome.server.analysis.core.model.identifier.InteractorIdentifier;
 import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
 import org.reactome.server.analysis.core.util.MapSet;
 import org.reactome.server.analysis.service.result.PathwayNodeSummary;
@@ -29,7 +29,7 @@ public class PathwayInteractors {
 
         this.resources = new HashSet<String>();
         this.entities = new ArrayList<>();
-        MapSet<MainIdentifier, Identifier> interactorMap = nodeSummary.getData().getInteractorMap();
+        MapSet<MainIdentifier, InteractorIdentifier> interactorMap = nodeSummary.getData().getInteractorMap();
         if(interactorMap!=null && !interactorMap.keySet().isEmpty()) {
             for (MainIdentifier mainIdentifier : interactorMap.keySet()) {
                 this.resources.add(mainIdentifier.getResource().getName());

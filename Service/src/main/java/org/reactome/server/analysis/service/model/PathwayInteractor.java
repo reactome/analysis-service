@@ -1,5 +1,6 @@
 package org.reactome.server.analysis.service.model;
 
+import org.reactome.server.analysis.core.model.identifier.InteractorIdentifier;
 import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
 
 import java.util.HashSet;
@@ -14,14 +15,14 @@ public class PathwayInteractor {
 
     private String resource;
 
-    private Set<Identifier> interactors;
+    private Set<InteractorEvidence> interactors;
 
-    public PathwayInteractor(MainIdentifier identifier, Set<org.reactome.server.analysis.core.model.identifier.Identifier> interactors) {
+    public PathwayInteractor(MainIdentifier identifier, Set<InteractorIdentifier> interactors) {
         this.identifier = identifier.getValue().getId();
         this.resource = identifier.getResource().getName();
         this.interactors = new HashSet<>();
-        for (org.reactome.server.analysis.core.model.identifier.Identifier interactor : interactors) {
-            this.interactors.add(new Identifier(interactor.getValue().getId(), interactor.getValue().getExp()));
+        for (InteractorIdentifier interactor : interactors) {
+            this.interactors.add(new InteractorEvidence(interactor));
         }
     }
 
@@ -33,7 +34,7 @@ public class PathwayInteractor {
         return resource;
     }
 
-    public Set<Identifier> getInteractors() {
+    public Set<InteractorEvidence> getInteractors() {
         return interactors;
     }
 }
