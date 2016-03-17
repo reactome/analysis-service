@@ -1,6 +1,7 @@
 package org.reactome.server.analysis.core.model;
 
 import org.reactome.server.analysis.core.model.identifier.Identifier;
+import org.reactome.server.analysis.core.model.identifier.InteractorIdentifier;
 import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
 import org.reactome.server.analysis.core.model.resource.MainResource;
 
@@ -132,7 +133,7 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
         }
     }
 
-    public void processInteractor(Identifier identifier, MainIdentifier mainIdentifier, Set<AnalysisReaction> reactions){
+    public void processInteractor(InteractorIdentifier identifier, MainIdentifier mainIdentifier, Set<AnalysisReaction> reactions){
         if(reactions!=null && !reactions.isEmpty()) {
             data.addInteractors(mainIdentifier, identifier);
             data.addReactions(mainIdentifier.getResource(), reactions);

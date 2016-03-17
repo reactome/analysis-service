@@ -99,7 +99,7 @@ public class InteractorsBuilder {
         MapSet<Resource, InteractorNode> map = interactorsMap.get(identifier);
         Set<InteractorNode> interactors = map.getElements(resource);
         if(interactors == null || interactors.isEmpty()) {
-            InteractorNode interactorNode = new InteractorNode(resource, identifier);
+            InteractorNode interactorNode = new InteractorNode(identifier);
             interactorsMap.add(identifier, resource, interactorNode);
             n++;
             return interactorNode;

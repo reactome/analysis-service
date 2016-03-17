@@ -5,6 +5,7 @@ import org.reactome.server.analysis.core.data.AnalysisData;
 import org.reactome.server.analysis.core.data.HierarchiesDataContainer;
 import org.reactome.server.analysis.core.model.*;
 import org.reactome.server.analysis.core.model.identifier.Identifier;
+import org.reactome.server.analysis.core.model.identifier.InteractorIdentifier;
 import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
 import org.reactome.server.analysis.core.model.identifier.OtherIdentifier;
 import org.reactome.server.analysis.core.model.resource.MainResource;
@@ -52,7 +53,7 @@ public class EnrichmentAnalysis {
         logger.trace(String.format("Analysing %d identifiers%s%s...", originalSampleSize, includeInteractors ? " | including interactors " : "|" , speciesNode != null ? " projecting to " + speciesNode.getName() : ""));
         long start = System.currentTimeMillis();
 
-        Set<MainIdentifier> newSample = new HashSet<MainIdentifier>();
+        Set<MainIdentifier> newSample = new HashSet<>();
         for (AnalysisIdentifier identifier : identifiers) {
             MapSet<Resource, PhysicalEntityNode> resourceEntities = entitiesMap.get(identifier);
 //            if (resourceEntities.isEmpty()) {
@@ -87,9 +88,9 @@ public class EnrichmentAnalysis {
             if (includeInteractors) {
                 MapSet<Resource, InteractorNode> interactors = interactorsMap.get(identifier);
                 for (Resource resource : interactors.keySet()) {
-                    Identifier otherIdentifier = new OtherIdentifier(resource, identifier);
                     //Note: It goes only once
                     for (InteractorNode interactorNode : interactors.getElements(resource)) {
+                        InteractorIdentifier interactorIdentifier = new InteractorIdentifier(identifier, interactorNode.getAccesion());
                         for (PhysicalEntityNode node : interactorNode.getInteractsWith()) {
                             if (speciesNode != null) node = node.getProjection(speciesNode);
                             if (node == null) continue;
@@ -97,14 +98,14 @@ public class EnrichmentAnalysis {
                             MainIdentifier mainAux = node.getIdentifier();
                             if (mainAux != null) {
                                 //Create a copy of the main identifier and add to it the expression values of the analysed one
-                                AnalysisIdentifier ai = new AnalysisIdentifier(mainAux.getValue().getId(), otherIdentifier.getValue().getExp());
+                                AnalysisIdentifier ai = new AnalysisIdentifier(mainAux.getValue().getId(), interactorIdentifier.getExp());
                                 MainIdentifier mainIdentifier = new MainIdentifier(mainAux.getResource(), ai);
                                 for (Long pathwayId : node.getPathwayIds()) {
                                     Set<PathwayNode> pNodes = hierarchies.getPathwayLocation().getElements(pathwayId);
                                     if (pNodes == null) continue;
                                     for (PathwayNode pNode : pNodes) {
                                         Set<AnalysisReaction> reactions = node.getReactions(pathwayId, false);
-                                        pNode.processInteractor(otherIdentifier, mainIdentifier, reactions);
+                                        pNode.processInteractor(interactorIdentifier, mainIdentifier, reactions);
                                         newSample.add(mainIdentifier);
                                     }
                                 }

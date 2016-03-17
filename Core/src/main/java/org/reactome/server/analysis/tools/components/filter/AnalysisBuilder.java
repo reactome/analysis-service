@@ -3,7 +3,7 @@ package org.reactome.server.analysis.tools.components.filter;
 import org.gk.persistence.MySQLAdaptor;
 import org.reactome.server.analysis.core.data.AnalysisDataUtils;
 import org.reactome.server.analysis.core.model.*;
-import org.reactome.server.analysis.core.model.identifier.Identifier;
+import org.reactome.server.analysis.core.model.identifier.InteractorIdentifier;
 import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
 import org.reactome.server.analysis.core.util.MapSet;
 import org.reactome.server.tools.interactors.database.InteractorsDatabase;
@@ -62,7 +62,7 @@ public class AnalysisBuilder {
         }
 
         for (InteractorNode interactorNode : getInteractorNodes()) {
-            Identifier identifier = interactorNode.getIdentifier();
+            InteractorIdentifier identifier = new InteractorIdentifier(interactorNode.getAccesion());
             for (PhysicalEntityNode physicalEntityNode : interactorNode.getInteractsWith()) {
                 MainIdentifier mainIdentifier = physicalEntityNode.getIdentifier();
                 if (mainIdentifier != null) {

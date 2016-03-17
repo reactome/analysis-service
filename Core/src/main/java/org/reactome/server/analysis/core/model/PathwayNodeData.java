@@ -1,6 +1,7 @@
 package org.reactome.server.analysis.core.model;
 
 import org.reactome.server.analysis.core.model.identifier.Identifier;
+import org.reactome.server.analysis.core.model.identifier.InteractorIdentifier;
 import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
 import org.reactome.server.analysis.core.model.resource.MainResource;
 import org.reactome.server.analysis.core.util.MapSet;
@@ -54,7 +55,7 @@ public class PathwayNodeData {
     1) While building the data structure it will keep track of the contained physical entities in the pathway
     2) During the analysis it will keep track of the seen elements
     */
-    private MapSet<MainIdentifier, Identifier> interactors = new MapSet<>();
+    private MapSet<MainIdentifier, InteractorIdentifier> interactors = new MapSet<>();
 
     //Analysis result containers
     private Map<MainResource, Counter> entitiesResult = new HashMap<>();
@@ -71,7 +72,7 @@ public class PathwayNodeData {
         this.reactions.add(mainResource, reactions);
     }
 
-    public void addInteractors(MainIdentifier mainIdentifier, Identifier identifier) {
+    public void addInteractors(MainIdentifier mainIdentifier, InteractorIdentifier identifier) {
         this.interactors.add(mainIdentifier, identifier);
     }
 
@@ -244,23 +245,21 @@ public class PathwayNodeData {
     }
 
 
-    public MapSet<MainIdentifier, Identifier> getInteractorMap() {
+    public MapSet<MainIdentifier, InteractorIdentifier> getInteractorMap() {
         return interactors;
     }
 
     // INTERACTORS Result
 
-    public Set<Identifier> getInteractors(){
+    public Set<InteractorIdentifier> getInteractors(){
         return interactors.values();
     }
 
     public Set<AnalysisIdentifier> getInteractors(MainResource resource){
         Set<AnalysisIdentifier> rtn = new HashSet<>();
         for (MainIdentifier mainIdentifier : interactors.keySet()) {
-            for (Identifier identifier : interactors.getElements(mainIdentifier)) {
-                if(identifier.getResource().equals(resource)){
-                    rtn.add(mainIdentifier.getValue());
-                }
+            if (mainIdentifier.getResource().equals(resource)) {
+                rtn.add(mainIdentifier.getValue());
             }
         }
         return rtn;
@@ -390,16 +389,16 @@ public class PathwayNodeData {
         map = new MapSet<>();
 
         //INTERACTORS
-        MapSet<MainResource, AnalysisIdentifier> temp = new MapSet<>();
+        MapSet<MainResource, InteractorIdentifier> temp = new MapSet<>();
         //To ensure the main resource is present, we take into account the resource of the molecule PRESENT in the diagram
         for (MainIdentifier mainIdentifier : interactors.keySet()) {
-            for (Identifier identifier : interactors.getElements(mainIdentifier)) {
-                temp.add(mainIdentifier.getResource(), identifier.getValue());
+            for (InteractorIdentifier identifier : interactors.getElements(mainIdentifier)) {
+                temp.add(mainIdentifier.getResource(), identifier);
             }
         }
         for (MainResource mainResource : aux.keySet()) {
             Counter counter = this.getOrCreateCounter(mainResource);
-            Set<AnalysisIdentifier> interactors = temp.getElements(mainResource);
+            Set<InteractorIdentifier> interactors = temp.getElements(mainResource);
             counter.totalInteractors = interactors == null ? 0 : interactors.size();
             counter.interactorsRatio = (counter.totalEntities + counter.totalInteractors) / (double) (speciesData.getEntitiesCount(mainResource) + speciesData.getInteractorsCount(mainResource)) ;
             combinedResult.totalInteractors += counter.totalInteractors;
