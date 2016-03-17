@@ -117,20 +117,20 @@ public class TokenController {
             @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
     @RequestMapping(value = "/{token}/found/all/{pathway}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public PathwayElements getTokenHitEntitiesPathway(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+    public FoundElements getTokenHitEntitiesPathway(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
                                                   @PathVariable String token,
-                                                      @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
+                                                    @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
                                                   @PathVariable Long pathway,
-                                                      @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
+                                                    @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                                   @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         AnalysisStoredResult result = controller.getFromToken(token);
         PathwayNodeSummary aux = result.getPathway(pathway);
         if (aux != null) {
             List<String> columnNames = result.getExpressionSummary().getColumnNames();
-            PathwayEntities identifiers = (new PathwayEntities(aux, columnNames)).filter(resource);
-            PathwayInteractors interactors = (new PathwayInteractors(aux, columnNames)).filter(resource);
-            if (identifiers != null || interactors != null) {
-                return new PathwayElements(identifiers, interactors, columnNames);
+            FoundEntities identifiers = (new FoundEntities(aux, columnNames)).filter(resource);
+            FoundInteractors interactors =(new FoundInteractors(aux, columnNames)).filter(resource);
+            if (identifiers != null ) {
+                return new FoundElements(identifiers, interactors, columnNames);
             }
         }
         throw new ResourceNotFoundException();
@@ -144,21 +144,21 @@ public class TokenController {
             @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
     @RequestMapping(value = "/{token}/found/entities/{pathway}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public PathwayEntities getTokenIdentifiersPathway(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+    public FoundEntities getTokenIdentifiersPathway(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
                                                          @PathVariable String token,
-                                                      @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
+                                                    @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
                                                          @PathVariable Long pathway,
-                                                      @ApiParam(name = "page", value = "page number", defaultValue = "1")
+                                                    @ApiParam(name = "page", value = "page number", defaultValue = "1")
                                                          @RequestParam(required = false) Integer page,
-                                                      @ApiParam(name = "pageSize", value = "identifiers per page", defaultValue = "20")
+                                                    @ApiParam(name = "pageSize", value = "identifiers per page", defaultValue = "20")
                                                          @RequestParam(required = false) Integer pageSize,
-                                                      @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
+                                                    @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                                          @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         AnalysisStoredResult result = controller.getFromToken(token);
         PathwayNodeSummary aux = result.getPathway(pathway);
         if (aux != null) {
             List<String> columnNames = result.getExpressionSummary().getColumnNames();
-            PathwayEntities pi = (new PathwayEntities(aux, columnNames)).filter(resource, pageSize, page);
+            FoundEntities pi = (new FoundEntities(aux, columnNames)).filter(resource, pageSize, page);
             if (pi != null) {
                 return pi;
             }
@@ -173,8 +173,8 @@ public class TokenController {
     @Deprecated
     @RequestMapping(value = "/{token}/summary/{pathway}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public PathwayEntities getTokenSummaryPathway(@PathVariable String token, @PathVariable Long pathway,
-                                                  @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+    public FoundEntities getTokenSummaryPathway(@PathVariable String token, @PathVariable Long pathway,
+                                                @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         return getTokenIdentifiersPathway(token, pathway, page, pageSize, resource);
     }
 
@@ -186,21 +186,21 @@ public class TokenController {
             @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
     @RequestMapping(value = "/{token}/found/interactors/{pathway}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public PathwayInteractors getTokenInteractorsPathway( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+    public FoundInteractors getTokenInteractorsPathway(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
                                                          @PathVariable String token,
-                                                          @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
+                                                       @ApiParam(name = "pathway", required = true, value = "The dbId of the pathway of interest")
                                                          @PathVariable Long pathway,
-                                                          @ApiParam(name = "page", value = "page number", defaultValue = "1")
+                                                       @ApiParam(name = "page", value = "page number", defaultValue = "1")
                                                          @RequestParam(required = false) Integer page,
-                                                          @ApiParam(name = "pageSize", value = "identifiers per page", defaultValue = "20")
+                                                       @ApiParam(name = "pageSize", value = "identifiers per page", defaultValue = "20")
                                                          @RequestParam(required = false) Integer pageSize,
-                                                          @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
+                                                       @ApiParam(name = "resource", value = "the resource to sort", required = false, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                                          @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         AnalysisStoredResult result = controller.getFromToken(token);
         PathwayNodeSummary aux = result.getPathway(pathway);
         if (aux != null) {
             List<String> columnNames = result.getExpressionSummary().getColumnNames();
-            PathwayInteractors pi = (new PathwayInteractors(aux, columnNames)).filter(resource, pageSize, page);
+            FoundInteractors pi = (new FoundInteractors(aux, columnNames)).filter(resource, pageSize, page);
             if (pi != null) {
                 return pi;
             }

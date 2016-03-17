@@ -6,17 +6,17 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-public class PathwayEntity extends IdentifierSummary {
+public class FoundEntity extends IdentifierSummary {
 
     private Set<IdentifierMap> mapsTo;
 
-    public PathwayEntity(IdentifierSummary is, Set<IdentifierMap> mapsTo) {
+    public FoundEntity(IdentifierSummary is, Set<IdentifierMap> mapsTo) {
         super(is.getId(), is.getExp());
 
         this.mapsTo = mapsTo;
     }
 
-    public PathwayEntity(PathwayEntity pi, String resource){
+    public FoundEntity(FoundEntity pi, String resource){
         super(pi.getId(), pi.getExp());
         this.mapsTo = new HashSet<>();
         for (IdentifierMap identifierMap : pi.mapsTo) {
