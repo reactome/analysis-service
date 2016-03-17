@@ -90,7 +90,7 @@ public class EnrichmentAnalysis {
                 for (Resource resource : interactors.keySet()) {
                     //Note: It goes only once
                     for (InteractorNode interactorNode : interactors.getElements(resource)) {
-                        InteractorIdentifier interactorIdentifier = new InteractorIdentifier(identifier, interactorNode.getAccesion());
+                        InteractorIdentifier interactorIdentifier = new InteractorIdentifier(identifier, interactorNode.getAccession());
                         for (PhysicalEntityNode node : interactorNode.getInteractsWith()) {
                             if (speciesNode != null) node = node.getProjection(speciesNode);
                             if (node == null) continue;

@@ -62,7 +62,7 @@ public class AnalysisBuilder {
         }
 
         for (InteractorNode interactorNode : getInteractorNodes()) {
-            InteractorIdentifier identifier = new InteractorIdentifier(interactorNode.getAccesion());
+            InteractorIdentifier identifier = new InteractorIdentifier(interactorNode.getAccession());
             for (PhysicalEntityNode physicalEntityNode : interactorNode.getInteractsWith()) {
                 MainIdentifier mainIdentifier = physicalEntityNode.getIdentifier();
                 if (mainIdentifier != null) {
