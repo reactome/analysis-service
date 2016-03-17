@@ -101,9 +101,12 @@ public class PathwayNodeData {
         return rtn;
     }
 
-    private List<List<Double>> groupEntitiesExpressionValues(Collection<AnalysisIdentifier> identifiers) {
+    private List<List<Double>> groupEntitiesExpressionValues(Collection<AnalysisIdentifier> identifiers, Collection<AnalysisIdentifier> interactors) {
         List<List<Double>> evss = new LinkedList<>();
-        for (AnalysisIdentifier identifier : identifiers) {
+        Collection<AnalysisIdentifier> aggregation = new HashSet<>();
+        aggregation.addAll(identifiers);
+        aggregation.addAll(interactors);
+        for (AnalysisIdentifier identifier : aggregation) {
             int i = 0;
             for (Double ev : identifier.getExp()) {
                 List<Double> evs;
@@ -163,12 +166,34 @@ public class PathwayNodeData {
         return rtn;
     }
 
+    private List<AnalysisIdentifier> getInteractorsDuplication() {
+        List<AnalysisIdentifier> rtn = new LinkedList<>();
+        for (MainIdentifier mainIdentifier : interactors.keySet()) {
+            for (InteractorIdentifier identifier : interactors.getElements(mainIdentifier)) {
+                rtn.add(identifier);
+            }
+        }
+        return rtn;
+    }
+
+    private List<AnalysisIdentifier> getInteractorsDuplication(MainResource resource) {
+        List<AnalysisIdentifier> rtn = new LinkedList<>();
+        for (MainIdentifier mainIdentifier : interactors.keySet()) {
+            if (mainIdentifier.getResource().equals(resource)) {
+                for (InteractorIdentifier identifier : interactors.getElements(mainIdentifier)) {
+                    rtn.add(identifier);
+                }
+            }
+        }
+        return rtn;
+    }
+
     public List<Double> getExpressionValuesAvg() {
-        return calculateAverage(groupEntitiesExpressionValues(getEntitiesDuplication()));
+        return calculateAverage(groupEntitiesExpressionValues(getEntitiesDuplication(), getInteractorsDuplication()));
     }
 
     public List<Double> getExpressionValuesAvg(MainResource resource) {
-        return calculateAverage(groupEntitiesExpressionValues(getEntitiesDuplication(resource)));
+        return calculateAverage(groupEntitiesExpressionValues(getEntitiesDuplication(resource), getInteractorsDuplication(resource)));
     }
 
     public Integer getEntitiesCount() {
