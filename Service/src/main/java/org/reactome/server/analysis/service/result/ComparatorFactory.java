@@ -37,6 +37,19 @@ public abstract class ComparatorFactory {
                         }
                         return rtn;                    }
                 };
+            case TOTAL_INTERACTORS:
+                return new Comparator<PathwayNodeSummary>() {
+                    @Override
+                    public int compare(PathwayNodeSummary o1, PathwayNodeSummary o2) {
+                        PathwayNodeData d1 = o1.getData(); PathwayNodeData d2 = o2.getData();
+                        Comparable t1 = d1!=null?d1.getInteractorsCount():null;
+                        Comparable t2 = d2!=null?d2.getInteractorsCount():null;
+                        int rtn = compareTo(t1, t2);
+                        if(rtn==0){
+                            return genericCompare(o1, o2);
+                        }
+                        return rtn;                    }
+                };
             case TOTAL_REACTIONS:
                 return new Comparator<PathwayNodeSummary>() {
                     @Override
@@ -57,6 +70,19 @@ public abstract class ComparatorFactory {
                         PathwayNodeData d1 = o1.getData(); PathwayNodeData d2 = o2.getData();
                         Comparable t1 = d1!=null?d1.getEntitiesFound():null;
                         Comparable t2 = d2!=null?d2.getEntitiesFound():null;
+                        int rtn = compareTo(t1, t2);
+                        if(rtn==0){
+                            return genericCompare(o1, o2);
+                        }
+                        return rtn;                    }
+                };
+            case FOUND_INTERACTORS:
+                return new Comparator<PathwayNodeSummary>() {
+                    @Override
+                    public int compare(PathwayNodeSummary o1, PathwayNodeSummary o2) {
+                        PathwayNodeData d1 = o1.getData(); PathwayNodeData d2 = o2.getData();
+                        Comparable t1 = d1!=null?d1.getInteractorsFound():null;
+                        Comparable t2 = d2!=null?d2.getInteractorsFound():null;
                         int rtn = compareTo(t1, t2);
                         if(rtn==0){
                             return genericCompare(o1, o2);
@@ -163,6 +189,20 @@ public abstract class ComparatorFactory {
                         return rtn;
                     }
                 };
+            case TOTAL_INTERACTORS:
+                return new Comparator<PathwayNodeSummary>() {
+                    @Override
+                    public int compare(PathwayNodeSummary o1, PathwayNodeSummary o2) {
+                        PathwayNodeData d1 = o1.getData(); PathwayNodeData d2 = o2.getData();
+                        Comparable t1 = d1!=null?d1.getInteractorsCount(r):null;
+                        Comparable t2 = d2!=null?d2.getInteractorsCount(r):null;
+                        int rtn = compareTo(t1, t2);
+                        if(rtn==0){
+                            return genericCompare(o1, o2, r);
+                        }
+                        return rtn;
+                    }
+                };
             case TOTAL_REACTIONS:
                 return new Comparator<PathwayNodeSummary>() {
                     @Override
@@ -184,6 +224,20 @@ public abstract class ComparatorFactory {
                         PathwayNodeData d1 = o1.getData(); PathwayNodeData d2 = o2.getData();
                         Comparable t1 = d1!=null?d1.getEntitiesFound(r):null;
                         Comparable t2 = d2!=null?d2.getEntitiesFound(r):null;
+                        int rtn = compareTo(t1, t2);
+                        if(rtn==0){
+                            return genericCompare(o1, o2, r);
+                        }
+                        return rtn;
+                    }
+                };
+            case FOUND_INTERACTORS:
+                return new Comparator<PathwayNodeSummary>() {
+                    @Override
+                    public int compare(PathwayNodeSummary o1, PathwayNodeSummary o2) {
+                        PathwayNodeData d1 = o1.getData(); PathwayNodeData d2 = o2.getData();
+                        Comparable t1 = d1!=null?d1.getInteractorsFound(r):null;
+                        Comparable t2 = d2!=null?d2.getInteractorsFound(r):null;
                         int rtn = compareTo(t1, t2);
                         if(rtn==0){
                             return genericCompare(o1, o2, r);
@@ -280,28 +334,34 @@ public abstract class ComparatorFactory {
         }
     }
 
-    static int genericCompare(PathwayNodeSummary o1, PathwayNodeSummary o2){
+    static int genericCompare(PathwayNodeSummary o1, PathwayNodeSummary o2) {
         int rtn = getReactionsPercentage(o2).compareTo(getReactionsPercentage(o1));
-        if(rtn==0){
+        if (rtn == 0) {
             rtn = getEntitiesPercentage(o2).compareTo(getEntitiesPercentage(o1));
-            if(rtn==0) {
-                rtn = o2.getData().getEntitiesCount().compareTo(o1.getData().getEntitiesCount());
-                if(rtn==0){
-                    rtn = o2.getData().getReactionsCount().compareTo(o1.getData().getReactionsCount());
+            if (rtn == 0) {
+                rtn = getInteractorsPercentage(o2).compareTo(getInteractorsPercentage(o1));
+                if (rtn == 0) {
+                    rtn = o2.getData().getEntitiesCount().compareTo(o1.getData().getEntitiesCount());
+                    if (rtn == 0) {
+                        rtn = o2.getData().getReactionsCount().compareTo(o1.getData().getReactionsCount());
+                    }
                 }
             }
         }
         return rtn;
     }
 
-    static int genericCompare(PathwayNodeSummary o1, PathwayNodeSummary o2, MainResource r){
+    static int genericCompare(PathwayNodeSummary o1, PathwayNodeSummary o2, MainResource r) {
         int rtn = getReactionsPercentage(o2, r).compareTo(getReactionsPercentage(o1, r));
-        if(rtn==0){
+        if (rtn == 0) {
             rtn = getEntitiesPercentage(o2, r).compareTo(getEntitiesPercentage(o1, r));
-            if(rtn==0) {
-                rtn = o2.getData().getEntitiesCount(r).compareTo(o1.getData().getEntitiesCount(r));
-                if(rtn==0){
-                    rtn = o2.getData().getReactionsCount(r).compareTo(o1.getData().getReactionsCount(r));
+            if (rtn == 0) {
+                rtn = getInteractorsPercentage(o2, r).compareTo(getInteractorsPercentage(o1, r));
+                if (rtn == 0) {
+                    rtn = o2.getData().getEntitiesCount(r).compareTo(o1.getData().getEntitiesCount(r));
+                    if (rtn == 0) {
+                        rtn = o2.getData().getReactionsCount(r).compareTo(o1.getData().getReactionsCount(r));
+                    }
                 }
             }
         }
@@ -314,6 +374,16 @@ public abstract class ComparatorFactory {
 
     static Double getEntitiesPercentage(PathwayNodeSummary node, MainResource r) {
         return node.getData().getEntitiesFound(r) / node.getData().getEntitiesCount(r).doubleValue();
+    }
+
+    static Double getInteractorsPercentage(PathwayNodeSummary node) {
+        if (node.getData().getInteractorsCount() == 0) return 0.0;
+        return node.getData().getInteractorsFound() / node.getData().getInteractorsCount().doubleValue();
+    }
+
+    static Double getInteractorsPercentage(PathwayNodeSummary node, MainResource r) {
+        if (node.getData().getInteractorsCount(r) == 0) return 0.0;
+        return node.getData().getInteractorsFound(r) / node.getData().getInteractorsCount(r).doubleValue();
     }
 
     static Double getReactionsPercentage(PathwayNodeSummary node) {

@@ -6,8 +6,10 @@ package org.reactome.server.analysis.service.result;
 public enum AnalysisSortType {
     NAME,
     TOTAL_ENTITIES,
+    TOTAL_INTERACTORS,
     TOTAL_REACTIONS,
     FOUND_ENTITIES,
+    FOUND_INTERACTORS,
     FOUND_REACTIONS,
     ENTITIES_RATIO,
     ENTITIES_PVALUE,
