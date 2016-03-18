@@ -92,6 +92,9 @@ public class EnrichmentAnalysis {
                     for (InteractorNode interactorNode : interactors.getElements(resource)) {
                         InteractorIdentifier interactorIdentifier = new InteractorIdentifier(identifier, interactorNode.getAccession());
                         for (PhysicalEntityNode node : interactorNode.getInteractsWith()) {
+                            //When there is projection, for the time being the hit interactors for other species are not
+                            //taken into account (please read comment bellow the following line)
+                            if(speciesNode != null && !node.getSpecies().equals(speciesNode)) continue;
                             //TODO: Projection for the interactors cannot be done until the orthologs are included in the interactors-core
                             //if (speciesNode != null) node = node.getProjection(speciesNode);
                             //if (node == null) continue;
