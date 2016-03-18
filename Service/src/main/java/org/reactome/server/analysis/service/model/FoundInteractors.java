@@ -18,11 +18,11 @@ public class FoundInteractors {
     private List<String> expNames;
     private Integer found;
 
-    private FoundInteractors(List<FoundInteractor> identifiers, Set<String> resources, List<String> expNames, Integer found) {
-        this.identifiers = identifiers;
+    private FoundInteractors(List<FoundInteractor> interactors, Set<String> resources, List<String> expNames) {
+        this.identifiers = interactors;
         this.resources = resources;
         this.expNames = expNames;
-        this.found = found;
+        this.found = identifiers.size();
     }
 
     public FoundInteractors(PathwayNodeSummary nodeSummary, List<String> expNames) {
@@ -92,7 +92,7 @@ public class FoundInteractors {
         }else{
             identifiers = filterByResource(resource.toUpperCase());
         }
-        return new FoundInteractors(identifiers, resources, expNames, identifiers.size());
+        return new FoundInteractors(identifiers, resources, expNames);
     }
 
     public FoundInteractors filter(String resource, Integer pageSize, Integer page) {
@@ -116,7 +116,7 @@ public class FoundInteractors {
             int to = from + pageSize;
             to = to > identifiers.size() ? identifiers.size() : to;
             Set<String> resources = resource.equals("TOTAL") ? this.resources : new HashSet<String>(Arrays.asList(resource));
-            return new FoundInteractors(identifiers.subList(from, to), resources, this.expNames, identifiers.size());
+            return new FoundInteractors(identifiers.subList(from, to), resources, this.expNames);
         }else{
             return null;
         }
