@@ -101,7 +101,7 @@ public class PathwayNodeData {
         return rtn;
     }
 
-    private List<List<Double>> groupEntitiesExpressionValues(Collection<AnalysisIdentifier> identifiers, Collection<AnalysisIdentifier> interactors) {
+    private List<List<Double>> groupEntitiesExpressionValues(Collection<AnalysisIdentifier> identifiers, Collection<InteractorIdentifier> interactors) {
         List<List<Double>> evss = new LinkedList<>();
         Collection<AnalysisIdentifier> aggregation = new HashSet<>();
         aggregation.addAll(identifiers);
@@ -166,8 +166,8 @@ public class PathwayNodeData {
         return rtn;
     }
 
-    private List<AnalysisIdentifier> getInteractorsDuplication() {
-        List<AnalysisIdentifier> rtn = new LinkedList<>();
+    private List<InteractorIdentifier> getInteractorsDuplication() {
+        List<InteractorIdentifier> rtn = new LinkedList<>();
         for (MainIdentifier mainIdentifier : interactors.keySet()) {
             for (InteractorIdentifier identifier : interactors.getElements(mainIdentifier)) {
                 rtn.add(identifier);
@@ -176,8 +176,8 @@ public class PathwayNodeData {
         return rtn;
     }
 
-    private List<AnalysisIdentifier> getInteractorsDuplication(MainResource resource) {
-        List<AnalysisIdentifier> rtn = new LinkedList<>();
+    private List<InteractorIdentifier> getInteractorsDuplication(MainResource resource) {
+        List<InteractorIdentifier> rtn = new LinkedList<>();
         for (MainIdentifier mainIdentifier : interactors.keySet()) {
             if (mainIdentifier.getResource().equals(resource)) {
                 for (InteractorIdentifier identifier : interactors.getElements(mainIdentifier)) {
@@ -280,11 +280,11 @@ public class PathwayNodeData {
         return interactors.values();
     }
 
-    public Set<AnalysisIdentifier> getInteractors(MainResource resource){
-        Set<AnalysisIdentifier> rtn = new HashSet<>();
+    public Set<InteractorIdentifier> getInteractors(MainResource resource){
+        Set<InteractorIdentifier> rtn = new HashSet<>();
         for (MainIdentifier mainIdentifier : interactors.keySet()) {
             if (mainIdentifier.getResource().equals(resource)) {
-                rtn.add(mainIdentifier.getValue());
+                rtn.addAll(interactors.getElements(mainIdentifier));
             }
         }
         return rtn;
@@ -303,11 +303,19 @@ public class PathwayNodeData {
     }
 
     public Integer getInteractorsFound(){
-        return getInteractors().size();
+        Set<String> mapsTo = new HashSet<>();
+        for (InteractorIdentifier interactor : getInteractors()) {
+            mapsTo.add(interactor.getMapsTo());
+        }
+        return mapsTo.size();
     }
 
     public Integer getInteractorsFound(MainResource resource){
-        return getInteractors(resource).size();
+        Set<String> mapsTo = new HashSet<>();
+        for (InteractorIdentifier interactor : getInteractors(resource)) {
+            mapsTo.add(interactor.getMapsTo());
+        }
+        return mapsTo.size();
     }
 
 
