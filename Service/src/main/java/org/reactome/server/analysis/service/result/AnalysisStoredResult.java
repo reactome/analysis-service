@@ -34,7 +34,7 @@ public class AnalysisStoredResult {
 
     public void setHitPathways(List<PathwayNode> pathwayNodes){
         //At the time we set the hit pathways, we also initialize resource summary
-        Map<String, Integer> aux = new HashMap<String, Integer>();
+        Map<String, Integer> aux = new HashMap<>();
         Integer total = 0;
         for (PathwayNode pathwayNode : pathwayNodes) {
             total++;
@@ -188,16 +188,16 @@ public class AnalysisStoredResult {
         this.filterPathwaysByResource(resource);
         Collections.sort(this.pathways, getComparator(sortBy, order, resource));
         if(pageSize==null) pageSize = PAGE_SIZE;
-        List<PathwaySummary> rtn = new LinkedList<PathwaySummary>();
+        List<PathwaySummary> rtn = new LinkedList<>();
         if(page!=null && page>0){ // && this.pathways.size()>(pageSize*(page-1))){
             int end = (pageSize * page) > this.pathways.size()? this.pathways.size() : (pageSize * page);
             for(int i = pageSize*(page-1); i<end; ++i){
                 PathwayNodeSummary pathwayNodeSummary = this.pathways.get(i);
-                rtn.add(new PathwaySummary(pathwayNodeSummary, resource.toUpperCase()));
+                rtn.add(new PathwaySummary(pathwayNodeSummary, resource.toUpperCase(), summary.isInteractors()));
             }
         }else{
             for (PathwayNodeSummary pathway : this.pathways) {
-                rtn.add(new PathwaySummary(pathway, resource.toUpperCase()));
+                rtn.add(new PathwaySummary(pathway, resource.toUpperCase(), summary.isInteractors()));
             }
         }
         return new AnalysisResult(this, rtn);
@@ -216,7 +216,7 @@ public class AnalysisStoredResult {
         List<PathwaySummary> rtn = new LinkedList<PathwaySummary>();
         for (PathwayNodeSummary pathway : this.pathways) {
             if(pathwayIds.contains(pathway.getPathwayId())){
-                rtn.add(new PathwaySummary(pathway, resource.toUpperCase()));
+                rtn.add(new PathwaySummary(pathway, resource.toUpperCase(), summary.isInteractors()));
             }
         }
         return rtn;
@@ -232,7 +232,7 @@ public class AnalysisStoredResult {
 
             for (PathwayNodeSummary pathway : this.pathways) {
                 if(pathway.getSpecies().getSpeciesID().equals(speciesId)){
-                    PathwaySummary aux = new PathwaySummary(pathway, resource.toUpperCase());
+                    PathwaySummary aux = new PathwaySummary(pathway, resource.toUpperCase(), summary.isInteractors());
                     rtn.add(new PathwayBase(aux));
 
                     List<Double> exps = new LinkedList<Double>();
@@ -284,12 +284,12 @@ public class AnalysisStoredResult {
 
     private void filterPathwaysByResource(String resource){
         if(!resource.toUpperCase().equals("TOTAL")){
-            List<PathwayNodeSummary> rtn = new LinkedList<PathwayNodeSummary>();
+            List<PathwayNodeSummary> rtn = new LinkedList<>();
             Resource r = ResourceFactory.getResource(resource);
             if(r instanceof MainResource){
                 MainResource mr = (MainResource) r;
                 for (PathwayNodeSummary pathway : this.pathways) {
-                    if(pathway.getData().getEntitiesFound(mr)>0){
+                    if (pathway.getData().getEntitiesFound(mr) > 0 || pathway.getData().getInteractorsFound(mr) > 0) {
                         rtn.add(pathway);
                     }
                 }

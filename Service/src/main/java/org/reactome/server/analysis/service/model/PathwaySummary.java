@@ -29,17 +29,17 @@ public class PathwaySummary {
 //    @ApiModelProperty(value = "Statistics for the found reactions in this pathway", notes = "", required = true )
     private ReactionStatistics reactions;
 
-    public PathwaySummary(PathwayNodeSummary node, String resource) {
+    public PathwaySummary(PathwayNodeSummary node, String resource, boolean interactors) {
         this.stId = node.getStId();
         this.dbId = node.getPathwayId();
 //        this.diagramDbId = node.getDiagramId();
         this.name = node.getName();
         this.species = new SpeciesSummary(node.getSpecies().getSpeciesID(), node.getSpecies().getName());
         this.llp = node.isLlp();
-        initialize(node.getData(), resource);
+        initialize(node.getData(), resource, interactors);
     }
 
-    private void initialize(PathwayNodeData d, String resource){
+    private void initialize(PathwayNodeData d, String resource, boolean interactors){
         if(resource.equals("TOTAL")){
             this.entities = new EntityStatistics(
                     "TOTAL",
@@ -50,7 +50,7 @@ public class PathwaySummary {
                     d.getEntitiesFDR(),
                     d.getExpressionValuesAvg()
             );
-            if (d.getInteractorsFound() > 0) {
+            if (interactors) {
                 this.entities.setRatio(d.getInteractorsRatio());
                 this.entities.setInteractorsTotal(d.getInteractorsCount());
                 this.entities.setInteractorsFound(d.getInteractorsFound());
@@ -73,7 +73,7 @@ public class PathwaySummary {
                             d.getEntitiesFDR(mr),
                             d.getExpressionValuesAvg(mr)
                     );
-                    if (d.getInteractorsCount(mr) > 0) {
+                    if (interactors) {
                         this.entities.setRatio(d.getInteractorsRatio(mr));
                         this.entities.setInteractorsTotal(d.getInteractorsCount(mr));
                         this.entities.setInteractorsFound(d.getInteractorsFound(mr));
