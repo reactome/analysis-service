@@ -11,7 +11,7 @@ public class MathUtilities {
 
     private static RandomEngine randomEngine = new DRand();
 
-    public static Double calculatePValue(double ratio, int sampleSize, int success) {
+    public static double calculatePValue(double ratio, int sampleSize, int success) {
         if(ratio==1.d) return 0d;
         Binomial binomial = new Binomial(sampleSize, ratio, randomEngine);
         if(success == 0){ // To avoid unreasonable value
