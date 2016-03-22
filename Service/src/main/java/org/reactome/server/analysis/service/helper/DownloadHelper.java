@@ -221,7 +221,7 @@ public class DownloadHelper {
 
         StringBuilder entities = new StringBuilder();
         if(summary.getData().getInteractorsFound()>0) {
-            for (AnalysisIdentifier identifier : summary.getData().getEntities()) {
+            for (AnalysisIdentifier identifier : summary.getData().getFoundEntities()) {
                 entities.append(identifier.getId()).append(";");
             }
         }
@@ -302,7 +302,7 @@ public class DownloadHelper {
         line.append(DELIMITER).append("\"").append(submitted.toString()).append("\"");
 
         StringBuilder entities = new StringBuilder();
-        for (AnalysisIdentifier identifier : summary.getData().getEntities(resource)) {
+        for (AnalysisIdentifier identifier : summary.getData().getFoundEntities(resource)) {
             entities.append(identifier.getId()).append(";");
         }
         if (entities.length() > 0) {
