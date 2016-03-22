@@ -1,6 +1,7 @@
 package org.reactome.server.analysis.core.model;
 
 import org.reactome.server.analysis.core.model.identifier.Identifier;
+import org.reactome.server.analysis.core.model.identifier.InteractorIdentifier;
 import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
 
 import java.io.Serializable;
@@ -56,7 +57,12 @@ public class PathwayHierarchy implements Serializable {
     }
 
     public void process(Identifier identifier, MainIdentifier mainIdentifier, Set<AnalysisReaction> reactions){
-        this.data.addMapping(identifier, mainIdentifier);
+        this.data.addEntity(identifier, mainIdentifier);
+        this.data.addReactions(mainIdentifier.getResource(), reactions);
+    }
+
+    public void processInteractor(InteractorIdentifier identifier, MainIdentifier mainIdentifier, Set<AnalysisReaction> reactions){
+        this.data.addInteractors(mainIdentifier, identifier);
         this.data.addReactions(mainIdentifier.getResource(), reactions);
     }
 }
