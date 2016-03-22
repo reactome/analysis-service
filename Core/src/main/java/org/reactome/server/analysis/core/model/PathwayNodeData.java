@@ -30,18 +30,23 @@ public class PathwayNodeData {
         Integer foundInteractors = 0;
         Double interactorsRatio;
 
+        //Aggregation
+        Integer totalFound = 0;
+
         //TP-Based analysis
         Integer totalReactions = 0; //Pre-calculated in setCounters method
         Integer foundReactions = 0;
         Double reactionsRatio;
     }
 
+    private MapSet<MainResource, String> foundTotal = new MapSet<>();
+
     /*
     The following structure plays two different roles
     1) While building the data structure it will keep track of the contained physical entities in the pathway
     2) During the analysis it will keep track of the seen elements
     */
-    private MapSet<Identifier, MainIdentifier> map = new MapSet<>();
+    private MapSet<Identifier, MainIdentifier> entities = new MapSet<>();
 
     /*
     The following structure plays two different roles
@@ -64,35 +69,62 @@ public class PathwayNodeData {
     public PathwayNodeData() {
     }
 
-    public void addMapping(Identifier identifier, MainIdentifier mainIdentifier) {
-        this.map.add(identifier, mainIdentifier);
+    public void addEntity(Identifier identifier, MainIdentifier mainIdentifier) {
+        this.entities.add(identifier, mainIdentifier);
+        this.foundTotal.add(mainIdentifier.getResource(), mainIdentifier.getValue().getId());
+    }
+
+    public void addInteractors(MainIdentifier mainIdentifier, InteractorIdentifier identifier) {
+        this.interactors.add(mainIdentifier, identifier);
+        this.foundTotal.add(mainIdentifier.getResource(), identifier.getMapsTo());
     }
 
     public void addReactions(MainResource mainResource, Set<AnalysisReaction> reactions) {
         this.reactions.add(mainResource, reactions);
     }
 
-    public void addInteractors(MainIdentifier mainIdentifier, InteractorIdentifier identifier) {
-        this.interactors.add(mainIdentifier, identifier);
+
+    public Integer getFoundEntitiesAndInteractorsCount(){
+        return combinedResult.totalFound;
     }
 
+    public Integer getFoundEntitiesAndInteractorsCount(MainResource resource){
+        Counter counter = this.entitiesResult.get(resource);
+        if (counter != null) {
+            return counter.totalFound;
+        }
+        return 0;
+    }
+
+    public Integer getFoundEntitiesAndInteractorsFound() {
+        int total = 0;
+        for (MainResource resource : foundTotal.keySet()) {
+            total += foundTotal.getElements(resource).size();
+        }
+        return total;
+    }
+
+    public Integer getFoundEntitiesAndInteractorsFound(MainResource resource) {
+        Set<String> found = this.foundTotal.getElements(resource);
+        return found == null ? 0 : found.size();
+    }
 
     // ENTITIES Result
 
-    public Set<AnalysisIdentifier> getEntities() {
+    public Set<AnalysisIdentifier> getFoundEntities() {
         Set<AnalysisIdentifier> rtn = new HashSet<>();
-        for (Identifier identifier : map.keySet()) {
-            for (MainIdentifier mainIdentifier : this.map.getElements(identifier)) {
+        for (Identifier identifier : entities.keySet()) {
+            for (MainIdentifier mainIdentifier : this.entities.getElements(identifier)) {
                 rtn.add(mainIdentifier.getValue());
             }
         }
         return rtn;
     }
 
-    public Set<AnalysisIdentifier> getEntities(MainResource resource) {
+    public Set<AnalysisIdentifier> getFoundEntities(MainResource resource) {
         Set<AnalysisIdentifier> rtn = new HashSet<>();
-        for (Identifier identifier : map.keySet()) {
-            for (MainIdentifier mainIdentifier : this.map.getElements(identifier)) {
+        for (Identifier identifier : entities.keySet()) {
+            for (MainIdentifier mainIdentifier : this.entities.getElements(identifier)) {
                 if (mainIdentifier.getResource().equals(resource)) {
                     rtn.add(mainIdentifier.getValue());
                 }
@@ -146,8 +178,8 @@ public class PathwayNodeData {
 
     private List<AnalysisIdentifier> getEntitiesDuplication() {
         List<AnalysisIdentifier> rtn = new LinkedList<>();
-        for (Identifier identifier : map.keySet()) {
-            for (MainIdentifier mainIdentifier : map.getElements(identifier)) {
+        for (Identifier identifier : entities.keySet()) {
+            for (MainIdentifier mainIdentifier : entities.getElements(identifier)) {
                 rtn.add(mainIdentifier.getValue());
             }
         }
@@ -156,8 +188,8 @@ public class PathwayNodeData {
 
     private List<AnalysisIdentifier> getEntitiesDuplication(MainResource resource) {
         List<AnalysisIdentifier> rtn = new LinkedList<>();
-        for (Identifier identifier : map.keySet()) {
-            for (MainIdentifier mainIdentifier : map.getElements(identifier)) {
+        for (Identifier identifier : entities.keySet()) {
+            for (MainIdentifier mainIdentifier : entities.getElements(identifier)) {
                 if (mainIdentifier.getResource().equals(resource)) {
                     rtn.add(mainIdentifier.getValue());
                 }
@@ -209,11 +241,11 @@ public class PathwayNodeData {
     }
 
     public Integer getEntitiesFound() {
-        return getEntities().size();
+        return getFoundEntities().size();
     }
 
     public Integer getEntitiesFound(MainResource resource) {
-        return getEntities(resource).size();
+        return getFoundEntities(resource).size();
     }
 
     public Double getEntitiesPValue() {
@@ -266,7 +298,7 @@ public class PathwayNodeData {
 
     //TODO: Provide with the pathway identifiers mapping to main identifiers
     public MapSet<Identifier, MainIdentifier> getIdentifierMap() {
-        return map;
+        return entities;
     }
 
 
@@ -276,11 +308,11 @@ public class PathwayNodeData {
 
     // INTERACTORS Result
 
-    public Set<InteractorIdentifier> getInteractors(){
+    public Set<InteractorIdentifier> getFoundInteractors(){
         return interactors.values();
     }
 
-    public Set<InteractorIdentifier> getInteractors(MainResource resource){
+    public Set<InteractorIdentifier> getFoundInteractors(MainResource resource){
         Set<InteractorIdentifier> rtn = new HashSet<>();
         for (MainIdentifier mainIdentifier : interactors.keySet()) {
             if (mainIdentifier.getResource().equals(resource)) {
@@ -304,7 +336,7 @@ public class PathwayNodeData {
 
     public Integer getInteractorsFound(){
         Set<String> mapsTo = new HashSet<>();
-        for (InteractorIdentifier interactor : getInteractors()) {
+        for (InteractorIdentifier interactor : getFoundInteractors()) {
             mapsTo.add(interactor.getMapsTo());
         }
         return mapsTo.size();
@@ -312,7 +344,7 @@ public class PathwayNodeData {
 
     public Integer getInteractorsFound(MainResource resource){
         Set<String> mapsTo = new HashSet<>();
-        for (InteractorIdentifier interactor : getInteractors(resource)) {
+        for (InteractorIdentifier interactor : getFoundInteractors(resource)) {
             mapsTo.add(interactor.getMapsTo());
         }
         return mapsTo.size();
@@ -382,7 +414,8 @@ public class PathwayNodeData {
     }
 
     public boolean hasResult(){
-        return !map.isEmpty() || !interactors.isEmpty();
+        return !foundTotal.isEmpty();
+//        return !entities.isEmpty() || !interactors.isEmpty();
     }
 
     public void setEntitiesFDR(Double fdr){
@@ -407,8 +440,8 @@ public class PathwayNodeData {
         reactions = new MapSet<MainResource, AnalysisReaction>();
 
         MapSet<MainResource, AnalysisIdentifier> aux = new MapSet<>();
-        for (Identifier identifier : map.keySet()) {
-            for (MainIdentifier mainIdentifier : map.getElements(identifier)) {
+        for (Identifier identifier : entities.keySet()) {
+            for (MainIdentifier mainIdentifier : entities.getElements(identifier)) {
                 aux.add(mainIdentifier.getResource(), mainIdentifier.getValue());
             }
         }
@@ -416,10 +449,13 @@ public class PathwayNodeData {
             Counter counter = this.getOrCreateCounter(mainResource);
             counter.totalEntities = aux.getElements(mainResource).size();
             counter.entitiesRatio =  counter.totalEntities/speciesData.getEntitiesCount(mainResource).doubleValue();
+            counter.totalFound = getFoundEntitiesAndInteractorsFound(mainResource);
             combinedResult.totalEntities += counter.totalEntities;
         }
         combinedResult.entitiesRatio = this.combinedResult.totalEntities / speciesData.getEntitiesCount().doubleValue();
-        map = new MapSet<>();
+        combinedResult.totalFound = getFoundEntitiesAndInteractorsFound();
+        entities = new MapSet<>();
+
 
         //INTERACTORS
         MapSet<MainResource, InteractorIdentifier> temp = new MapSet<>();
@@ -429,15 +465,20 @@ public class PathwayNodeData {
                 temp.add(mainIdentifier.getResource(), identifier);
             }
         }
+        interactors = new MapSet<>();
+
         for (MainResource mainResource : aux.keySet()) {
             Counter counter = this.getOrCreateCounter(mainResource);
             Set<InteractorIdentifier> interactors = temp.getElements(mainResource);
             counter.totalInteractors = interactors == null ? 0 : interactors.size();
-            counter.interactorsRatio = (counter.totalEntities + counter.totalInteractors) / (double) (speciesData.getEntitiesCount(mainResource) + speciesData.getInteractorsCount(mainResource)) ;
+            counter.interactorsRatio = counter.totalFound / speciesData.getFoundEntitiesAndInteractorsCount(mainResource).doubleValue();
+            if(counter.interactorsRatio.isNaN() || counter.interactorsRatio.isInfinite() ){
+                counter.interactorsRatio = 0.0;
+            }
             combinedResult.totalInteractors += counter.totalInteractors;
         }
-        combinedResult.interactorsRatio = (combinedResult.totalEntities + combinedResult.totalInteractors) / (double) (speciesData.getEntitiesCount() + speciesData.getInteractorsCount());
-        interactors = new MapSet<>();
+        combinedResult.interactorsRatio = this.combinedResult.totalFound / speciesData.getFoundEntitiesAndInteractorsCount().doubleValue();
+        foundTotal = new MapSet<>();
     }
 
     public void setResultStatistics(Map<MainResource, Integer> sampleSizePerResource, Integer notFound, boolean includeInteractors){
@@ -449,7 +490,7 @@ public class PathwayNodeData {
             int found;
             if (includeInteractors) {
                 counter.foundInteractors = getInteractorsFound(mainResource);
-                found = counter.foundEntities + counter.foundInteractors;
+                found = getFoundEntitiesAndInteractorsFound(mainResource); //Union of interactors and entities --> IMPORTANT
             } else {
                 found = counter.foundEntities;
             }
@@ -465,7 +506,7 @@ public class PathwayNodeData {
         int found;
         if(includeInteractors) {
             counter.foundInteractors = getInteractorsFound();
-            found = counter.foundEntities + counter.foundInteractors;
+            found = getFoundEntitiesAndInteractorsFound();
         } else {
             found = counter.foundEntities;
         }

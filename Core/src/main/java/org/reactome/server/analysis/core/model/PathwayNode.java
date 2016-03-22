@@ -126,7 +126,7 @@ public class PathwayNode implements Serializable, Comparable<PathwayNode> {
     }
 
     public void process(Identifier identifier, MainIdentifier mainIdentifier, Set<AnalysisReaction> reactions){
-        this.data.addMapping(identifier, mainIdentifier);
+        this.data.addEntity(identifier, mainIdentifier);
         this.data.addReactions(mainIdentifier.getResource(), reactions);
         if(this.parent!=null){
             this.parent.process(identifier, mainIdentifier, reactions);
