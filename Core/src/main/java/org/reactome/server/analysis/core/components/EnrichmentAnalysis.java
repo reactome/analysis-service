@@ -72,13 +72,13 @@ public class EnrichmentAnalysis {
                         //Create a copy of the main identifier and add to it the expression values of the analysed one
                         AnalysisIdentifier ai = new AnalysisIdentifier(mainAux.getValue().getId(), otherIdentifier.getValue().getExp());
                         MainIdentifier mainIdentifier = new MainIdentifier(mainAux.getResource(), ai);
+                        newSample.add(mainIdentifier);
                         for (Long pathwayId : node.getPathwayIds()) {
                             Set<PathwayNode> pNodes = hierarchies.getPathwayLocation().getElements(pathwayId);
                             if (pNodes == null) continue;
                             for (PathwayNode pNode : pNodes) {
                                 Set<AnalysisReaction> reactions = node.getReactions(pathwayId);
                                 pNode.process(otherIdentifier, mainIdentifier, reactions);
-                                newSample.add(mainIdentifier);
                             }
                         }
                     }
@@ -99,19 +99,16 @@ public class EnrichmentAnalysis {
                             //if (speciesNode != null) node = node.getProjection(speciesNode);
                             //if (node == null) continue;
                             found = true;
-                            MainIdentifier mainAux = node.getIdentifier();
-                            if (mainAux != null) {
-                                //Create a copy of the main identifier and add to it the expression values of the analysed one
-                                AnalysisIdentifier ai = new AnalysisIdentifier(mainAux.getValue().getId(), interactorIdentifier.getExp());
-                                MainIdentifier mainIdentifier = new MainIdentifier(mainAux.getResource(), ai);
-                                for (Long pathwayId : node.getPathwayIds()) {
-                                    Set<PathwayNode> pNodes = hierarchies.getPathwayLocation().getElements(pathwayId);
-                                    if (pNodes == null) continue;
-                                    for (PathwayNode pNode : pNodes) {
-                                        Set<AnalysisReaction> reactions = node.getReactions(pathwayId, false);
-                                        pNode.processInteractor(interactorIdentifier, mainIdentifier, reactions);
-                                        newSample.add(mainIdentifier);
-                                    }
+                            AnalysisIdentifier ai = new AnalysisIdentifier(interactorNode.getAccession(), identifier.getExp());
+                            MainIdentifier mainAux = new MainIdentifier(node.getIdentifier().getResource(), ai);
+                            newSample.add(mainAux);
+
+                            for (Long pathwayId : node.getPathwayIds()) {
+                                Set<PathwayNode> pNodes = hierarchies.getPathwayLocation().getElements(pathwayId);
+                                if (pNodes == null) continue;
+                                for (PathwayNode pNode : pNodes) {
+                                    Set<AnalysisReaction> reactions = node.getReactions(pathwayId, false);
+                                    pNode.processInteractor(interactorIdentifier, node.getIdentifier(), reactions);
                                 }
                             }
                         }
