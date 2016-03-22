@@ -84,11 +84,11 @@ public class PathwayNodeData {
     }
 
 
-    public Integer getFoundEntitiesAndInteractorsCount(){
+    public Integer getEntitiesAndInteractorsCount(){
         return combinedResult.totalFound;
     }
 
-    public Integer getFoundEntitiesAndInteractorsCount(MainResource resource){
+    public Integer getEntitiesAndInteractorsCount(MainResource resource){
         Counter counter = this.entitiesResult.get(resource);
         if (counter != null) {
             return counter.totalFound;
@@ -96,7 +96,7 @@ public class PathwayNodeData {
         return 0;
     }
 
-    public Integer getFoundEntitiesAndInteractorsFound() {
+    public Integer getEntitiesAndInteractorsFound() {
         int total = 0;
         for (MainResource resource : foundTotal.keySet()) {
             total += foundTotal.getElements(resource).size();
@@ -104,7 +104,7 @@ public class PathwayNodeData {
         return total;
     }
 
-    public Integer getFoundEntitiesAndInteractorsFound(MainResource resource) {
+    public Integer getEntitiesAndInteractorsFound(MainResource resource) {
         Set<String> found = this.foundTotal.getElements(resource);
         return found == null ? 0 : found.size();
     }
@@ -449,11 +449,11 @@ public class PathwayNodeData {
             Counter counter = this.getOrCreateCounter(mainResource);
             counter.totalEntities = aux.getElements(mainResource).size();
             counter.entitiesRatio =  counter.totalEntities/speciesData.getEntitiesCount(mainResource).doubleValue();
-            counter.totalFound = getFoundEntitiesAndInteractorsFound(mainResource);
+            counter.totalFound = getEntitiesAndInteractorsFound(mainResource);
             combinedResult.totalEntities += counter.totalEntities;
         }
         combinedResult.entitiesRatio = this.combinedResult.totalEntities / speciesData.getEntitiesCount().doubleValue();
-        combinedResult.totalFound = getFoundEntitiesAndInteractorsFound();
+        combinedResult.totalFound = getEntitiesAndInteractorsFound();
         entities = new MapSet<>();
 
 
@@ -471,13 +471,13 @@ public class PathwayNodeData {
             Counter counter = this.getOrCreateCounter(mainResource);
             Set<InteractorIdentifier> interactors = temp.getElements(mainResource);
             counter.totalInteractors = interactors == null ? 0 : interactors.size();
-            counter.interactorsRatio = counter.totalFound / speciesData.getFoundEntitiesAndInteractorsCount(mainResource).doubleValue();
+            counter.interactorsRatio = counter.totalFound / speciesData.getEntitiesAndInteractorsCount(mainResource).doubleValue();
             if(counter.interactorsRatio.isNaN() || counter.interactorsRatio.isInfinite() ){
                 counter.interactorsRatio = 0.0;
             }
             combinedResult.totalInteractors += counter.totalInteractors;
         }
-        combinedResult.interactorsRatio = this.combinedResult.totalFound / speciesData.getFoundEntitiesAndInteractorsCount().doubleValue();
+        combinedResult.interactorsRatio = this.combinedResult.totalFound / speciesData.getEntitiesAndInteractorsCount().doubleValue();
         foundTotal = new MapSet<>();
     }
 
@@ -490,7 +490,7 @@ public class PathwayNodeData {
             int found;
             if (includeInteractors) {
                 counter.foundInteractors = getInteractorsFound(mainResource);
-                found = getFoundEntitiesAndInteractorsFound(mainResource); //Union of interactors and entities --> IMPORTANT
+                found = getEntitiesAndInteractorsFound(mainResource); //Union of interactors and entities --> IMPORTANT
             } else {
                 found = counter.foundEntities;
             }
@@ -506,7 +506,7 @@ public class PathwayNodeData {
         int found;
         if(includeInteractors) {
             counter.foundInteractors = getInteractorsFound();
-            found = getFoundEntitiesAndInteractorsFound();
+            found = getEntitiesAndInteractorsFound();
         } else {
             found = counter.foundEntities;
         }
