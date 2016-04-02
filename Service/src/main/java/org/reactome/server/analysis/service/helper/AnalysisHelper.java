@@ -100,6 +100,7 @@ public class AnalysisHelper {
     }
 
     public AnalysisStoredResult compareSpecies(Long from, Long to){
+        boolean includeInteractors = false;
         SpeciesNode speciesFrom = SpeciesNodeFactory.getSpeciesNode(from, "");
         SpeciesNode speciesTo = SpeciesNodeFactory.getSpeciesNode(to, "");
 
@@ -119,8 +120,8 @@ public class AnalysisHelper {
         try {
             UserData ud = speciesComparison.getSyntheticUserData(speciesTo);
             String token = Tokenizer.getOrCreateToken(fakeMD5, human, false);
-            AnalysisSummary summary = new AnalysisSummary(token, null, null,  null, Type.SPECIES_COMPARISON, to);
-            return analyse(summary, ud, speciesFrom, null, reportParams);
+            AnalysisSummary summary = new AnalysisSummary(token, null, includeInteractors,  null, Type.SPECIES_COMPARISON, to);
+            return analyse(summary, ud, speciesFrom, false, reportParams);
         } catch (SpeciesNotFoundException e) {
             throw new ResourceNotFoundException();
         }
