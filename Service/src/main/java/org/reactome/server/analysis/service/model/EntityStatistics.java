@@ -1,5 +1,8 @@
 package org.reactome.server.analysis.service.model;
 
+import org.reactome.server.analysis.core.model.PathwayNodeData;
+import org.reactome.server.analysis.core.model.resource.MainResource;
+
 import java.util.List;
 
 /**
@@ -7,6 +10,9 @@ import java.util.List;
  */
 //@ApiModel(value = "EntityStatistics", description = "Statistics for an entity type")
 public class EntityStatistics extends Statistics {
+    private Integer curatedTotal;
+    private Integer curatedFound;
+
     private Integer interactorsTotal;
     private Integer interactorsFound;
 
@@ -14,26 +20,45 @@ public class EntityStatistics extends Statistics {
     private Double fdr;
     private List<Double> exp = null;
 
-    public EntityStatistics(String resource, Integer total, Integer found, Double ratio, Double pValue, Double fdr, List<Double> exp) {
-        this(resource, total, found, ratio, pValue, fdr);
-        this.exp = exp;
-    }
-    public EntityStatistics(String resource, Integer total, Integer found, Double ratio, Double pValue, Double fdr) {
-        super(resource, total, found, ratio);
-        this.pValue = pValue;
-        this.fdr = fdr;
+
+    public EntityStatistics(PathwayNodeData d, boolean interactors) {
+        super("TOTAL",
+                interactors ? d.getEntitiesAndInteractorsCount() : d.getEntitiesCount(),
+                interactors ? d.getEntitiesAndInteractorsFound() : d.getEntitiesFound(),
+                interactors ? d.getInteractorsRatio() : d.getEntitiesRatio());
+        this.fdr = d.getEntitiesFDR();
+        this.pValue = d.getEntitiesPValue();
+        this.exp = d.getExpressionValuesAvg();
+        if (interactors) {
+            this.curatedFound = d.getEntitiesFound();
+            this.curatedTotal = d.getEntitiesCount();
+            this.interactorsFound = d.getInteractorsFound();
+            this.interactorsTotal = d.getInteractorsCount();
+        }
     }
 
-    public void setInteractorsTotal(Integer interactorsTotal) {
-        this.interactorsTotal = interactorsTotal;
+    public EntityStatistics(MainResource resource, PathwayNodeData d, boolean interactors) {
+        super(resource.getName(),
+                interactors ? d.getEntitiesAndInteractorsCount(resource) : d.getEntitiesCount(resource),
+                interactors ? d.getEntitiesAndInteractorsFound(resource) : d.getEntitiesFound(resource),
+                interactors ? d.getInteractorsRatio(resource) : d.getEntitiesRatio(resource));
+        this.fdr = d.getEntitiesFDR(resource);
+        this.pValue = d.getEntitiesPValue(resource);
+        this.exp = d.getExpressionValuesAvg(resource);
+        if (interactors) {
+            this.curatedFound = d.getEntitiesFound(resource);
+            this.curatedTotal = d.getEntitiesCount(resource);
+            this.interactorsFound = d.getInteractorsFound(resource);
+            this.interactorsTotal = d.getInteractorsCount(resource);
+        }
     }
 
-    public void setInteractorsFound(Integer interactorsFound) {
-        this.interactorsFound = interactorsFound;
+    public Integer getCuratedTotal() {
+        return curatedTotal;
     }
 
-    public void setpValue(Double pValue) {
-        this.pValue = pValue;
+    public Integer getCuratedFound() {
+        return curatedFound;
     }
 
     public Integer getInteractorsTotal() {
