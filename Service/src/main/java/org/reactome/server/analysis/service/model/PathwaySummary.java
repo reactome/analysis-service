@@ -32,7 +32,7 @@ public class PathwaySummary {
     public PathwaySummary(PathwayNodeSummary node, String resource, boolean interactors) {
         this.stId = node.getStId();
         this.dbId = node.getPathwayId();
-//        this.diagramDbId = node.getDiagramId();
+
         this.name = node.getName();
         this.species = new SpeciesSummary(node.getSpecies().getSpeciesID(), node.getSpecies().getName());
         this.llp = node.isLlp();
@@ -41,49 +41,13 @@ public class PathwaySummary {
 
     private void initialize(PathwayNodeData d, String resource, boolean interactors){
         if(resource.equals("TOTAL")){
-            this.entities = new EntityStatistics(
-                    "TOTAL",
-                    d.getEntitiesCount(),
-                    d.getEntitiesFound(),
-                    d.getEntitiesRatio(),
-                    d.getEntitiesPValue(),
-                    d.getEntitiesFDR(),
-                    d.getExpressionValuesAvg()
-            );
-            if (interactors) {
-                this.entities.setRatio(d.getInteractorsRatio());
-                this.entities.setInteractorsTotal(d.getInteractorsCount());
-                this.entities.setInteractorsFound(d.getInteractorsFound());
-            }
-            this.reactions = new ReactionStatistics(
-                    "TOTAL",
-                    d.getReactionsCount(),
-                    d.getReactionsFound(),
-                    d.getReactionsRatio()
-            );
+            this.entities = new EntityStatistics(d, interactors);
+            this.reactions = new ReactionStatistics(d);
         }else{
             for (MainResource mr : d.getResources()) {
                 if(mr.getName().equals(resource)){
-                    this.entities = new EntityStatistics(
-                            mr.getName(),
-                            d.getEntitiesCount(mr),
-                            d.getEntitiesFound(mr),
-                            d.getEntitiesRatio(mr),
-                            d.getEntitiesPValue(mr),
-                            d.getEntitiesFDR(mr),
-                            d.getExpressionValuesAvg(mr)
-                    );
-                    if (interactors) {
-                        this.entities.setRatio(d.getInteractorsRatio(mr));
-                        this.entities.setInteractorsTotal(d.getInteractorsCount(mr));
-                        this.entities.setInteractorsFound(d.getInteractorsFound(mr));
-                    }
-                    this.reactions = new ReactionStatistics(
-                            mr.getName(),
-                            d.getReactionsCount(mr),
-                            d.getReactionsFound(mr),
-                            d.getReactionsRatio(mr)
-                    );
+                    this.entities = new EntityStatistics(mr, d, interactors);
+                    this.reactions = new ReactionStatistics(mr, d);
                     break;
                 }
             }
