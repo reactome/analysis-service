@@ -83,7 +83,7 @@ public class IdentifiersController {
     @RequestMapping(value = "/form/projection", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public AnalysisResult getPostFileToHuman( @ApiParam(name = "file", required = true, value = "A file with the data to be analysed")
-                                             @RequestParam(required = true) MultipartFile file,
+                                             @RequestPart MultipartFile file,
                                               @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
                                              @RequestParam(required = false, defaultValue = "false") Boolean interactors,
                                               @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
@@ -111,7 +111,7 @@ public class IdentifiersController {
     @RequestMapping(value = "/form", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public AnalysisResult getPostFile( @ApiParam(name = "file", required = true, value = "A file with the data to be analysed")
-                                      @RequestParam(required = true) MultipartFile file,
+                                      @RequestPart MultipartFile file,
                                        @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
                                       @RequestParam(required = false, defaultValue = "false") Boolean interactors,
                                        @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
