@@ -1,6 +1,6 @@
 package org.reactome.server.analysis.service.controller;
 
-import com.wordnik.swagger.annotations.*;
+import io.swagger.annotations.*;
 import org.reactome.server.analysis.service.helper.AnalysisHelper;
 import org.reactome.server.analysis.service.helper.DownloadHelper;
 import org.reactome.server.analysis.service.result.AnalysisStoredResult;
@@ -18,7 +18,7 @@ import java.io.IOException;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(value = "download", description = "Retrieve downloadable files in CSV format", position = 4)
+@Api(tags = "download", description = "Retrieve downloadable files in CSV format", position = 4)
 @RequestMapping(value = "/download")
 public class DownloadController {
     

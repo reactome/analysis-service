@@ -1,43 +1,39 @@
 package org.reactome.server.analysis.service.swagger;
 
-import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
-import com.mangofactory.swagger.plugin.EnableSwagger;
-import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
-import com.wordnik.swagger.model.ApiInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Configuration
-@EnableSwagger
-public class AnalysisServiceSwaggerConfig { // extends SpringSwaggerConfig {
+@EnableSwagger2
+public class AnalysisServiceSwaggerConfig {
 
-    private SpringSwaggerConfig springSwaggerConfig;
-
-    @Autowired
-    public void setSpringSwaggerConfig(SpringSwaggerConfig springSwaggerConfig) {
-        this.springSwaggerConfig = springSwaggerConfig;
-    }
-
-    @Bean //Don't forget the @Bean annotation
-    public SwaggerSpringMvcPlugin customImplementation(){
-        return new SwaggerSpringMvcPlugin(this.springSwaggerConfig)
-                .apiInfo(apiInfo())
-                .includePatterns(".*");
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.any())
+                .build().apiInfo(apiInfo());
     }
 
     private ApiInfo apiInfo() {
-        ApiInfo apiInfo = new ApiInfo(
+        return new ApiInfo(
                 "Pathway Analysis Service",
                 "Provides an API for pathway over-representation and expression analysis as well as species comparison tool",
-                "/pages/analysisservice/terms", //Not showing the link (deleted by hand, please edit swagger-ui.js to take it back)
-                "help@reactome.org",
+                "1.0",
+                "Terms of service",
+                new Contact("Reactome","http://www.reactome.org","help@reactome.org"),
                 "Creative Commons Attribution 3.0 Unported License",
-                "http://creativecommons.org/licenses/by/3.0/legalcode"
-        );
-        return apiInfo;
+                "http://creativecommons.org/licenses/by/3.0/legalcode");
     }
 }
