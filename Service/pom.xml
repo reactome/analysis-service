@@ -153,10 +153,11 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Apache Tika - Apache Tika™ toolkit detects and extracts metadata and text from over a thousand different file types -->
         <dependency>
-            <groupId>jmimemagic</groupId>
-            <artifactId>jmimemagic</artifactId>
-            <version>${jmimemagic.version}</version>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>1.12</version>
         </dependency>
 
         <!-- Pride Utils -->
