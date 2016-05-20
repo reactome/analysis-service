@@ -8,7 +8,7 @@ import org.reactome.core.factory.DatabaseObjectFactory;
 import org.reactome.server.Main;
 import org.reactome.server.analysis.tools.components.filter.AnalysisBuilder;
 import org.reactome.server.analysis.util.FileUtil;
-import org.reactome.server.tools.interactors.database.InteractorsDatabase;
+import org.reactome.server.interactors.database.InteractorsDatabase;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
