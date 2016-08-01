@@ -298,7 +298,7 @@ public class AnalysisHelper {
     }
 
     private boolean isAcceptedContentType(String contentType){
-        return contentType.contains("text/plain");
+        return contentType == null || contentType.contains("text/plain");
     }
 
     // trusting all certificate
