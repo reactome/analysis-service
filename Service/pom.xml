@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.springapp</groupId>
+    <groupId>org.reactome.server.tools</groupId>
     <artifactId>AnalysisService</artifactId>
     <packaging>war</packaging>
     <version>2.0.0</version>
@@ -11,6 +11,26 @@
     <properties>
         <spring.version>4.2.5.RELEASE</spring.version>
         <deploymentPath>/</deploymentPath>
+
+        <analysis.version>2.0.0</analysis.version>
+
+        <lru.version>1.4-SNAPSHOT</lru.version>
+        <sl4j.version>1.7.2</sl4j.version>
+        <fileupload.version>1.3</fileupload.version>
+        <javaee.version>7.0</javaee.version>
+        <jackson.version>2.7.3</jackson.version>
+        <swagger.version>2.4.0</swagger.version>
+        <pride.version>1.3.11</pride.version>
+        <servlet.api.version>2.5</servlet.api.version>
+        <jsp.api.version>2.1</jsp.api.version>
+        <jstl.api.version>1.2</jstl.api.version>
+        <kryo.version>2.22</kryo.version>
+        <xml.security.version>1.0.4</xml.security.version>
+        <xalan.version>2.7.1</xalan.version>
+        <joda.time.version>2.3</joda.time.version>
+        <junit.version>4.8.2</junit.version>
+        <jmimemagic.version>0.1.2</jmimemagic.version>
+
     </properties>
 
     <developers>
@@ -29,25 +49,25 @@
         <dependency>
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-core</artifactId>
-            <version>2.0.0</version>
+            <version>${analysis.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.reactome.server.lru</groupId>
             <artifactId>reactome-lru</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>${lru.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.2</version>
+            <version>${sl4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.3</version>
+            <version>${fileupload.version}</version>
         </dependency>
 
         <!--json-->
@@ -87,63 +107,64 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+            <version>${servlet.api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
-            <version>2.1</version>
+            <version>${jsp.api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
-            <version>1.2</version>
+            <version>${jstl.api.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.esotericsoftware.kryo</groupId>
             <artifactId>kryo</artifactId>
-            <version>2.22</version>
+            <version>${kryo.version}</version>
         </dependency>
 
         <dependency>
             <groupId>xml-security</groupId>
             <artifactId>xml-security</artifactId>
-            <version>1.0.4</version>
+            <version>${xml.security.version}</version>
         </dependency>
 
         <dependency>
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
-            <version>2.7.1</version>
+            <version>${xalan.version}</version>
         </dependency>
 
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.3</version>
+            <version>${joda.time.version}</version>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.2</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
+        <!-- Apache Tika - Apache Tika™ toolkit detects and extracts metadata and text from over a thousand different file types -->
         <dependency>
-            <groupId>jmimemagic</groupId>
-            <artifactId>jmimemagic</artifactId>
-            <version>0.1.2</version>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>1.12</version>
         </dependency>
 
         <!-- Pride Utils -->
         <dependency>
             <groupId>uk.ac.ebi.pride.web</groupId>
             <artifactId>pride-web-utils</artifactId>
-            <version>1.3.11</version>
+            <version>${pride.version}</version>
             <!-- It is causing maven conflicts -->
             <!--<exclusions>-->
                 <!--<exclusion>-->
@@ -161,14 +182,27 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
-            <version>7.0</version>
+            <version>${javaee.version}</version>
             <scope>provided</scope>
         </dependency>
 
+        <!-- Jackson JSON Processor -->
         <dependency>
-            <groupId>com.mangofactory</groupId>
-            <artifactId>swagger-springmvc</artifactId>
-            <version>0.8.5</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- Swagger for API Documentation -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${swagger.version}</version>
         </dependency>
     </dependencies>
 

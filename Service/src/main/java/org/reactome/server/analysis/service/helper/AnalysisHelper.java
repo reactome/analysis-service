@@ -1,8 +1,12 @@
 package org.reactome.server.analysis.service.helper;
 
-import net.sf.jmimemagic.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.apache.tika.detect.DefaultDetector;
+import org.apache.tika.detect.Detector;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MimeTypes;
 import org.reactome.server.analysis.core.components.EnrichmentAnalysis;
 import org.reactome.server.analysis.core.components.SpeciesComparison;
 import org.reactome.server.analysis.core.exception.SpeciesNotFoundException;
@@ -156,7 +160,7 @@ public class AnalysisHelper {
     }
 
     public List<Long> getInputIds(String input){
-        List<Long> rtn = new LinkedList<Long>();
+        List<Long> rtn = new LinkedList<>();
         if(input.contains("=")) input = input.split("=")[1];
         for (String line : input.split("\n")) {
             if(line.isEmpty()) continue;
@@ -185,23 +189,8 @@ public class AnalysisHelper {
     public UserData getUserData(MultipartFile file){
         if(!file.isEmpty()){
             try {
-                try {
-                    //MagicMatch tries to get the content type of the original file
-                    //sent via an HTML multi-part form (remember that the file mime-type
-                    //is always 'application/octet-stream' when using the form)
-                    MagicMatch match = Magic.getMagicMatch(file.getBytes());
-                    if(!isAcceptedContentType(match.getMimeType())){
-                        throw new UnsupportedMediaTypeException();
-                    }
-                } catch (MagicMatchNotFoundException e) {
-                    logger.error(e.getMessage(),e);
-                    e.printStackTrace();
-                    throw new UnsupportedMediaTypeException();
-                } catch (MagicException e) {
-                    logger.error(e.getMessage(),e);
-                    throw new UnsupportedMediaTypeException();
-                } catch (MagicParseException e) {
-                    logger.error(e.getMessage(),e);
+                String mimeType = detectMimeType(TikaInputStream.get(file.getInputStream()));
+                if(!isAcceptedContentType(mimeType)){
                     throw new UnsupportedMediaTypeException();
                 }
 
@@ -328,5 +317,23 @@ public class AnalysisHelper {
             }
         };
         HttpsURLConnection.setDefaultHostnameVerifier(hv);
+    }
+
+    /**
+     * Detect MimeType using apache tika.
+     * jMimeMagic has failed when analysing the PSIMITAB .txt file export from IntAct page
+     *
+     * @throws IOException
+     */
+    public String detectMimeType(TikaInputStream tikaInputStream) throws IOException {
+        final Detector DETECTOR = new DefaultDetector(MimeTypes.getDefaultMimeTypes());
+
+        try {
+            return DETECTOR.detect(tikaInputStream, new Metadata()).toString();
+        } finally {
+            if (tikaInputStream != null) {
+                tikaInputStream.close();
+            }
+        }
     }
 }

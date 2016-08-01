@@ -10,13 +10,14 @@
     <context:component-scan base-package="org.reactome.server.analysis.service.controller"/>
     <context:component-scan base-package="org.reactome.server.analysis.service.entrypoint"/>
 
+    <!-- Standard xml based mvc config-->
     <mvc:annotation-driven>
         <mvc:message-converters register-defaults="true">
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="objectMapper">
                     <bean class="com.fasterxml.jackson.databind.ObjectMapper">
                         <property name="serializationInclusion">
-                            <value type="com.fasterxml.jackson.annotation.JsonInclude.Include">NON_NULL</value>
+                            <value>NON_NULL</value>
                         </property>
                     </bean>
                 </property>
@@ -27,6 +28,10 @@
     <context:property-placeholder location="classpath:/analysis.properties" />
 
     <mvc:resources mapping="/**" location="/resources/" />
+
+    <!-- Enables swgger ui-->
+    <mvc:resources mapping="swagger-ui.html" location="classpath:/META-INF/resources/"/>
+    <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/"/>
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/pages/"/>
@@ -60,6 +65,6 @@
     </bean>
 
      <!-- Creates a controller at /api-docs from this uri, which serves swagger's raw documentation in JSON format. -->
-    <bean id="springSwaggerConfig" class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />
-    <bean class="org.reactome.server.analysis.service.swagger.AnalysisServiceSwaggerConfig" />
+    <bean name="/applicationSwaggerConfig" class="org.reactome.server.analysis.service.swagger.AnalysisServiceSwaggerConfig" />
+
 </beans>
