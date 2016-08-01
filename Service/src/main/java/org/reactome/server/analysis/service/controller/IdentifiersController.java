@@ -78,7 +78,7 @@ public class IdentifiersController {
                           "(TOTAL includes all the different molecules type)")
     @ApiResponses({
             @ApiResponse( code = 400, message = "Bad request" ),
-            @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (10MB)"  ),
+            @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (50MB)"  ),
             @ApiResponse( code = 415, message = "Unsupported Media Type (only 'text/plain')" )})
     @RequestMapping(value = "/form/projection", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
@@ -106,7 +106,7 @@ public class IdentifiersController {
                           "molecule type (TOTAL includes all the different molecules type)")
     @ApiResponses({
             @ApiResponse( code = 400, message = "Bad request" ),
-            @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (10MB)"  ),
+            @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (50MB)"  ),
             @ApiResponse( code = 415, message = "Unsupported Media Type (only 'text/plain')" )})
     @RequestMapping(value = "/form", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
@@ -135,7 +135,7 @@ public class IdentifiersController {
                           "(TOTAL includes all the different molecules type)")
     @ApiResponses({
             @ApiResponse( code = 400, message = "Bad request" ),
-            @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (10MB)"  ),
+            @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (50MB)"  ),
             @ApiResponse( code = 415, message = "Unsupported Media Type (only 'text/plain')" ),
             @ApiResponse( code = 422, message = "The provided URL is not processable" )})
     @RequestMapping(value = "/url/projection", method = RequestMethod.POST, consumes = "text/plain", produces = "application/json")
@@ -165,7 +165,7 @@ public class IdentifiersController {
                           "molecule type (TOTAL includes all the different molecules type)")
     @ApiResponses({
             @ApiResponse( code = 400, message = "Bad request" ),
-            @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (10MB)"  ),
+            @ApiResponse( code = 413, message = "The file size is larger than the maximum configured size (50MB)"  ),
             @ApiResponse( code = 415, message = "Unsupported Media Type (only 'text/plain')" ),
             @ApiResponse( code = 422, message = "The provided URL is not processable" )})
     @RequestMapping(value = "/url", method = RequestMethod.POST, consumes = "text/plain", produces = "application/json")

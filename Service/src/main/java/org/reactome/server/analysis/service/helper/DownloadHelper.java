@@ -210,9 +210,13 @@ public class DownloadHelper {
         line.append(DELIMITER).append(summary.getSpecies().getSpeciesID());
         line.append(DELIMITER).append(summary.getSpecies().getName());
 
-        StringBuilder submitted = new StringBuilder();
+        Set<String> uniqueSubmitted = new HashSet<>(); //Identifiers differentiates the resources -> using Set<String> to avoid duplicates in the column
         for (Identifier identifier : summary.getData().getIdentifierMap().keySet()) {
-            submitted.append(identifier.getValue()).append(";");
+            uniqueSubmitted.add(identifier.getValue().getId());
+        }
+        StringBuilder submitted = new StringBuilder();
+        for (String identifier : uniqueSubmitted) {
+            submitted.append(identifier).append(";");
         }
         if (submitted.length() > 0) {
             submitted.delete(submitted.length() - 1, submitted.length());

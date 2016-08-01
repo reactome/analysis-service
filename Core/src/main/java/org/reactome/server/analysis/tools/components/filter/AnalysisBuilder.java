@@ -6,7 +6,7 @@ import org.reactome.server.analysis.core.model.*;
 import org.reactome.server.analysis.core.model.identifier.InteractorIdentifier;
 import org.reactome.server.analysis.core.model.identifier.MainIdentifier;
 import org.reactome.server.analysis.core.util.MapSet;
-import org.reactome.server.tools.interactors.database.InteractorsDatabase;
+import org.reactome.server.interactors.database.InteractorsDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
