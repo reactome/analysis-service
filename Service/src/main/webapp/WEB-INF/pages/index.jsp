@@ -55,7 +55,8 @@
         apisSorter: "alpha",
         defaultModelRendering: 'model',
         operationsSorter: 'alpha',
-        showRequestHeaders: false
+        showRequestHeaders: false,
+        validatorUrl: null
     });
 
     /*
