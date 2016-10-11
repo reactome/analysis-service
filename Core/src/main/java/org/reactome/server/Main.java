@@ -5,18 +5,19 @@ import com.martiansoftware.jsap.Parameter;
 import com.martiansoftware.jsap.SimpleJSAP;
 import com.martiansoftware.jsap.UnflaggedOption;
 import org.reactome.server.analysis.core.data.HierarchiesDataContainer;
-import org.reactome.server.analysis.tools.*;
+import org.reactome.server.analysis.tools.BuilderTool;
+import org.reactome.server.analysis.tools.ComparisonTool;
+import org.reactome.server.analysis.tools.EnrichmentTool;
+import org.reactome.server.analysis.tools.ExpressionTool;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 public class Main {
-    public static enum Tool {
+    public enum Tool {
         ANALYSIS,
         EXPRESSION,
         COMPARISON,
-        EXPORT,
-        HIERARCHY,
         BUILD;
 
         public static String getOptions(){
@@ -57,7 +58,7 @@ public class Main {
         }
 
         Tool tool = Tool.getTool(args[0]);
-        if(tool!=null){
+        if (tool != null) {
             switch (Tool.getTool(args[0])){
                 case ANALYSIS:
                     EnrichmentTool.main(args);
@@ -67,12 +68,6 @@ public class Main {
                     break;
                 case COMPARISON:
                     ComparisonTool.main(args);
-                    break;
-                case EXPORT:
-                    ExporterTool.main(args);
-                    break;
-                case HIERARCHY:
-                    HierarchyTool.main(args);
                     break;
                 case BUILD:
                     BuilderTool.main(args);
