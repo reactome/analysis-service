@@ -14,23 +14,15 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class ComparisonTool {
 
-//    private static Logger logger = Logger.getLogger(ComparisonTool.class.getName());
-
     public static void main(String[] args) throws Exception {
         SimpleJSAP jsap = new SimpleJSAP(
                 BuilderTool.class.getName(),
                 "Provides a set of tools for the pathway analysis and species comparison",
                 new Parameter[] {
-                        new UnflaggedOption( "tool", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, JSAP.NOT_GREEDY,
-                                "The tool to use. Options: " + Main.Tool.getOptions()) //WE DO NOT TAKE INTO ACCOUNT TOOL HERE ANY MORE
-//                        ,new FlaggedOption( "input", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 'i', "input",
-//                        "The file containing the user data for the analysis." )
-                        ,new FlaggedOption( "structure", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED, 's', "structure",
-                        "The file containing the data structure for the analysis." )
-                        ,new FlaggedOption( "output", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'o', "output",
-                        "The file where the results are written to." )
-                        ,new QualifiedSwitch( "verbose", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'v', "verbose",
-                        "Requests verbose output." )
+                        new UnflaggedOption(  "tool",      JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED,  JSAP.NOT_GREEDY,    "The tool to use. Options: " + Main.Tool.getOptions()) //WE DO NOT TAKE INTO ACCOUNT TOOL HERE ANY MORE
+                        ,new FlaggedOption(   "structure", JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.REQUIRED,    's', "structure", "The file containing the data structure for the analysis." )
+                        ,new FlaggedOption(   "output",    JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'o', "output",   "The file where the results are written to." )
+                        ,new QualifiedSwitch( "verbose",   JSAP.STRING_PARSER, JSAP.NO_DEFAULT, JSAP.NOT_REQUIRED, 'v', "verbose",  "Requests verbose output." )
                 }
         );
         JSAPResult config = jsap.parse(args);
@@ -70,8 +62,6 @@ public class ComparisonTool {
             Double pValue = data.getEntitiesPValue(resource); Double ratio = data.getEntitiesRatio(resource); Double fdr = data.getEntitiesFDR(resource);
             if(pValue!=null && ratio!=null && fdr!=null){
                 System.out.print("\t" + ratio + "\t" + pValue + "\t" + fdr);
-//                DecimalFormat f = new DecimalFormat("#.####");
-//                System.out.print("\t" + f.format(ratio) + "\t" + f.format(pValue));
             }
 
             System.out.print("\t|\t");
@@ -79,26 +69,5 @@ public class ComparisonTool {
             total = data.getReactionsCount(resource);
             System.out.println("[" + found + "/" + total + "]");
         }
-
-//        Integer found = data.getEntitiesFound();
-//        Integer total = data.getEntitiesCount();
-//        System.out.print(name + " (" + found + "/" + total + ")");
-//        Double pValue = data.getEntitiesPValue(); Double ratio = data.getEntitiesRatio(); Double fdr = data.getEntitiesFDR();
-//        if(pValue!=null && ratio!=null && fdr!=null){
-//            System.out.print("\t" + ratio + "\t" + pValue + "\t" + fdr);
-////            DecimalFormat f = new DecimalFormat("#.####");
-////            System.out.print("\t" + f.format(ratio) + "\t" + f.format(pValue) + "\t" + fdr);
-//        }
-//        System.out.print("\t|\t");
-//        found = data.getReactionsFound();
-//        total = data.getReactionsCount();
-//        System.out.print("[" + found + "/" + total + "]");
-//         pValue = data.getReactionsPValue(); ratio = data.getReactionsRatio(); fdr = data.getReactionsFDR();
-//        if(pValue!=null && ratio!=null && fdr!=null){
-//            System.out.print("\t" + ratio + "\t" + pValue + "\t" + fdr);
-////            DecimalFormat f = new DecimalFormat("#.####");
-////            System.out.print("\t" + f.format(ratio) + "\t" + f.format(pValue) + "\t" + fdr);
-//        }
-//        System.out.println();
     }
 }
