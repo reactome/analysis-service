@@ -1,4 +1,4 @@
-package org.reactome.server.analysis.tools.components.filter;
+package org.reactome.server.analysis.tools.components;
 
 import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
@@ -44,7 +44,7 @@ public class PhysicalEntityHierarchyBuilder {
         this.physicalEntityGraph = new PhysicalEntityGraph();
     }
 
-    private void clearDBACache(){
+    private void clearDBACache() {
         try {
             dba.refresh(); //Cleans the mysql adaptor internal cache
         } catch (Exception e) {
@@ -52,22 +52,23 @@ public class PhysicalEntityHierarchyBuilder {
         }
     }
 
-    public void build(MySQLAdaptor dba, EntityPathwayReactionMap physicalEntitiesPathways){
+    public void build(MySQLAdaptor dba, EntityPathwayReactionMap physicalEntitiesPathways) {
         this.dba = dba;
         this.clearDBACache();
-        int i=0; int tot = physicalEntitiesPathways.keySet().size();
+        int i = 0;
+        int tot = physicalEntitiesPathways.keySet().size();
         for (Long physicalEntityId : physicalEntitiesPathways.keySet()) {
-            if(BuilderTool.VERBOSE) {
+            if (BuilderTool.VERBOSE) {
                 System.out.print("\rPhysicalEntity -> " + physicalEntityId + " >> " + (++i) + "/" + tot);
             }
             PhysicalEntityNode node = this.process(physicalEntityId);
-            if(node!=null){
+            if (node != null) {
                 MapSet<Long, AnalysisReaction> pathwaysReactions = physicalEntitiesPathways.getPathwaysReactions(physicalEntityId);
                 node.addPathwayReactions(pathwaysReactions);
                 this.physicalEntityGraph.addRoot(node);
             }
         }
-        if(BuilderTool.VERBOSE) {
+        if (BuilderTool.VERBOSE) {
             System.out.println("\rPhysicalEntity processed");
         }
     }
@@ -80,19 +81,15 @@ public class PhysicalEntityHierarchyBuilder {
         return physicalEntityGraph;
     }
 
-//    public Map<Long, PhysicalEntityNode> getPhysicalEntityBuffer() {
-//        return physicalEntityBuffer;
-//    }
-
     @SuppressWarnings("ConstantConditions")
-    private PhysicalEntityNode process(Long physicalEntityId){
-        if(physicalEntityId==null){
+    private PhysicalEntityNode process(Long physicalEntityId) {
+        if (physicalEntityId == null) {
             return null; //Just in case
         }
         //When organically growing, we do not want previous processed entities to be processed again
         //This a recursive algorithm STOP CONDITION (DO NOT REMOVE)
         PhysicalEntityNode aux = physicalEntityBuffer.get(physicalEntityId);
-        if(aux!=null){
+        if (aux != null) {
             return aux;
         }
 
@@ -110,16 +107,16 @@ public class PhysicalEntityHierarchyBuilder {
 
         //3rd -> figure out the species of the physical entity
         SpeciesNode species = null;
-        if(instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.species)){
+        if (instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.species)) {
             try {
                 GKInstance s = (GKInstance) instance.getAttributeValue(ReactomeJavaConstants.species);
-                species = SpeciesNodeFactory.getSpeciesNode(s.getDBID(), s.getDisplayName());
+                species = SpeciesNodeFactory.getSpeciesNode(s);
             } catch (Exception e) {
                 try {
                     List<?> ss = instance.getAttributeValuesList(ReactomeJavaConstants.species);
-                    if(ss == null && !ss.isEmpty()){
+                    if (ss == null && !ss.isEmpty()) {
                         GKInstance s = (GKInstance) ss.get(0);
-                        species = SpeciesNodeFactory.getSpeciesNode(s.getDBID(), s.getDisplayName());
+                        species = SpeciesNodeFactory.getSpeciesNode(s);
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -129,26 +126,26 @@ public class PhysicalEntityHierarchyBuilder {
 
         //4th -> set the node for the main identifier
         PhysicalEntityNode node = this.getPhysicalEntityNode(physicalEntity, species);
-        if(node!=null){
+        if (node != null) {
             MapSet<Resource, String> resourceIdentifiers = this.getResourceIdentifiers(physicalEntity);
             for (Resource resource : resourceIdentifiers.keySet()) {
                 for (String identifier : resourceIdentifiers.getElements(resource)) {
                     //create the corresponding entries in the RADIX TREE for all the (identifier, resource, node)
-                    if(identifier!=null) {
+                    if (identifier != null) {
                         this.entitiesMap.add(identifier, resource, node);
-                    }else{
+                    } else {
                         logger.error("Identifier not found for " + node.getId());
                     }
                 }
             }
-        }else{
-            if(physicalEntity instanceof SimpleEntity || physicalEntity instanceof EntityWithAccessionedSequence){
+        } else {
+            if (physicalEntity instanceof SimpleEntity || physicalEntity instanceof EntityWithAccessionedSequence) {
                 logger.warn("No main resource and identifier found for physical entity " + physicalEntityId);
             }
             node = new PhysicalEntityNode(physicalEntityId, species);
             for (Long containedEntity : this.getContainedPhysicalEntities(physicalEntity)) {
                 PhysicalEntityNode child = this.process(containedEntity);
-                if(child!=null){
+                if (child != null) {
                     node.addChild(child);
                 }
             }
@@ -158,29 +155,29 @@ public class PhysicalEntityHierarchyBuilder {
         return node;
     }
 
-    private Set<Long> getContainedPhysicalEntities(PhysicalEntity physicalEntity){
+    private Set<Long> getContainedPhysicalEntities(PhysicalEntity physicalEntity) {
         Set<PhysicalEntity> contained = new HashSet<PhysicalEntity>();
-        if(physicalEntity instanceof Complex){
+        if (physicalEntity instanceof Complex) {
             Complex complex = (Complex) physicalEntity;
-            if(complex.getHasComponent()!=null) {
+            if (complex.getHasComponent() != null) {
                 contained.addAll(complex.getHasComponent());
-            }else{
+            } else {
                 logger.error("Complex with not components: " + complex.getDbId());
             }
-        }else if(physicalEntity instanceof EntitySet){
+        } else if (physicalEntity instanceof EntitySet) {
             EntitySet entitySet = (EntitySet) physicalEntity;
-            if(entitySet.getHasMember()!=null){
+            if (entitySet.getHasMember() != null) {
                 contained.addAll(entitySet.getHasMember());
             }
-            if(physicalEntity instanceof CandidateSet){
+            if (physicalEntity instanceof CandidateSet) {
                 CandidateSet candidateSet = (CandidateSet) physicalEntity;
-                if(candidateSet.getHasCandidate()!=null){
+                if (candidateSet.getHasCandidate() != null) {
                     contained.addAll(candidateSet.getHasCandidate());
                 }
             }
-        }else if(physicalEntity instanceof Polymer){
+        } else if (physicalEntity instanceof Polymer) {
             Polymer polymer = (Polymer) physicalEntity;
-            if(polymer.getRepeatedUnit()!=null){
+            if (polymer.getRepeatedUnit() != null) {
                 //Aux contains only the DIFFERENT repeated units (just in case)
                 contained.addAll(polymer.getRepeatedUnit());
             }
@@ -193,9 +190,9 @@ public class PhysicalEntityHierarchyBuilder {
         return rtn;
     }
 
-    private MapSet<Resource, String> getResourceIdentifiers(PhysicalEntity physicalEntity){
+    private MapSet<Resource, String> getResourceIdentifiers(PhysicalEntity physicalEntity) {
         MapSet<Resource, String> rtn = new MapSet<Resource, String>();
-        if(physicalEntity.getCrossReference()!=null){
+        if (physicalEntity.getCrossReference() != null) {
             for (DatabaseIdentifier databaseIdentifier : physicalEntity.getCrossReference()) {
                 for (Pair<Resource, String> resourceIdentifier : this.getIdentifier(databaseIdentifier)) {
                     rtn.add(resourceIdentifier.getFst(), resourceIdentifier.getSnd());
@@ -206,20 +203,20 @@ public class PhysicalEntityHierarchyBuilder {
     }
 
     //This method takes into account only curated data
-    private PhysicalEntityNode getPhysicalEntityNode(PhysicalEntity pe, SpeciesNode species){
+    private PhysicalEntityNode getPhysicalEntityNode(PhysicalEntity pe, SpeciesNode species) {
         try {
             GKInstance instance = dba.fetchInstance(pe.getDbId());
 
-            if(instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.referenceEntity)){
-                String database=null;
+            if (instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.referenceEntity)) {
+                String database = null;
                 GKInstance re = (GKInstance) instance.getAttributeValue(ReactomeJavaConstants.referenceEntity);
-                if(re!=null){
+                if (re != null) {
                     GKInstance dbInstance = (GKInstance) re.getAttributeValue(ReactomeJavaConstants.referenceDatabase);
-                    if(dbInstance!=null){
+                    if (dbInstance != null) {
                         database = dbInstance.getDisplayName();
                     }
                 }
-                if(database!=null) {
+                if (database != null) {
                     String identifier = getMainIdentifier(re);
                     if (identifier != null) {
                         Resource resource = ResourceFactory.getResource(database);
@@ -238,18 +235,18 @@ public class PhysicalEntityHierarchyBuilder {
 
     //This method checks the cross-references looking for the main identifier (or takes an auxiliary main resource in case
     //the main one does not exist
-    private PhysicalEntityNode getPhysicalEntityNode(Long physicalEntityId, SpeciesNode species, List<DatabaseIdentifier> identifiers){
+    private PhysicalEntityNode getPhysicalEntityNode(Long physicalEntityId, SpeciesNode species, List<DatabaseIdentifier> identifiers) {
         PhysicalEntityNode aux = null;
-        if(identifiers != null) {
+        if (identifiers != null) {
             for (DatabaseIdentifier identifier : identifiers) {
                 for (Pair<Resource, String> resourceIdentifier : this.getIdentifier(identifier)) {
                     Resource resource = resourceIdentifier.getFst();
-                    if(resource instanceof MainResource){
+                    if (resource instanceof MainResource) {
                         MainResource mainResource = (MainResource) resource;
                         String mainIdentifier = resourceIdentifier.getSnd();
-                        if(mainResource.isAuxMainResource() && aux==null){
+                        if (mainResource.isAuxMainResource() && aux == null) {
                             aux = new PhysicalEntityNode(physicalEntityId, species, mainResource, mainIdentifier);
-                        }else{
+                        } else {
                             return new PhysicalEntityNode(physicalEntityId, species, mainResource, mainIdentifier);
                         }
                     }
@@ -261,29 +258,30 @@ public class PhysicalEntityHierarchyBuilder {
 
     /**
      * Returns a list of pairs (resource, identifier) contained in the display name
+     *
      * @param databaseIdentifier the database identifier object containing the information
      * @return a list of pairs (resource, identifier) contained in the display name
      */
-    private List<Pair<Resource, String>> getIdentifier(DatabaseIdentifier databaseIdentifier){
+    private List<Pair<Resource, String>> getIdentifier(DatabaseIdentifier databaseIdentifier) {
         List<Pair<Resource, String>> rtn = new LinkedList<Pair<Resource, String>>();
         try {
             Resource resource = null;
             GKInstance instance = dba.fetchInstance(databaseIdentifier.getDbId());
-            if(instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.referenceDatabase)){
+            if (instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.referenceDatabase)) {
                 GKInstance referenceDatabase = (GKInstance) instance.getAttributeValue(ReactomeJavaConstants.referenceDatabase);
-                if(referenceDatabase!=null) {
+                if (referenceDatabase != null) {
                     String r = referenceDatabase.getDisplayName();
                     if (r != null) {
                         resource = ResourceFactory.getResource(r);
-                    }else{
-                        logger.error("DatabaseIdentifier " + databaseIdentifier.getAvailableIdentifier() + " >> No displayName" );
+                    } else {
+                        logger.error("DatabaseIdentifier " + databaseIdentifier.getAvailableIdentifier() + " >> No displayName");
                     }
                 }
             }
 
-            if(resource!=null){
+            if (resource != null) {
                 String mainIdentifier = getMainIdentifier(instance);
-                if(mainIdentifier!=null){
+                if (mainIdentifier != null) {
                     rtn.add(new Pair<Resource, String>(resource, mainIdentifier));
                 }
 
@@ -291,17 +289,17 @@ public class PhysicalEntityHierarchyBuilder {
                 String rscAux = "#" + resource.getName(); //fake resource
                 resource = ResourceFactory.getResource(rscAux);
                 List<String> aux = new LinkedList<String>();
-                if(instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.secondaryIdentifier)){
+                if (instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.secondaryIdentifier)) {
                     for (Object identifier : instance.getAttributeValuesList(ReactomeJavaConstants.secondaryIdentifier)) {
                         aux.add((String) identifier);
                     }
                 }
-                if(instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.otherIdentifier)){
+                if (instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.otherIdentifier)) {
                     for (Object identifier : instance.getAttributeValuesList(ReactomeJavaConstants.otherIdentifier)) {
                         aux.add((String) identifier);
                     }
                 }
-                if(instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.geneName)){
+                if (instance.getSchemClass().isValidAttribute(ReactomeJavaConstants.geneName)) {
                     for (Object gene : instance.getAttributeValuesList(ReactomeJavaConstants.geneName)) {
                         aux.add((String) gene);
                     }
@@ -316,18 +314,18 @@ public class PhysicalEntityHierarchyBuilder {
         return rtn;
     }
 
-    private String getMainIdentifier(GKInstance referenceEntity){
+    private String getMainIdentifier(GKInstance referenceEntity) {
         try {
             //If the variant identifier exists we use it as the identifier
-            if(referenceEntity.getSchemClass().isValidAttribute(ReactomeJavaConstants.variantIdentifier)){
+            if (referenceEntity.getSchemClass().isValidAttribute(ReactomeJavaConstants.variantIdentifier)) {
                 String variantIdentifier = (String) referenceEntity.getAttributeValue(ReactomeJavaConstants.variantIdentifier);
-                if(variantIdentifier!=null){
+                if (variantIdentifier != null) {
                     return variantIdentifier;
                 }
             }
-            if(referenceEntity.getSchemClass().isValidAttribute(ReactomeJavaConstants.identifier)){
+            if (referenceEntity.getSchemClass().isValidAttribute(ReactomeJavaConstants.identifier)) {
                 String mainIdentifier = (String) referenceEntity.getAttributeValue(ReactomeJavaConstants.identifier);
-                if(mainIdentifier!=null) {
+                if (mainIdentifier != null) {
                     return mainIdentifier;
                 }
             }
@@ -338,11 +336,12 @@ public class PhysicalEntityHierarchyBuilder {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void setOrthologous(){
+    public void setOrthologous() {
         Set<PhysicalEntityNode> nodes = getPhysicalEntityGraph().getAllNodes();
-        int i=0; int tot = nodes.size();
+        int i = 0;
+        int tot = nodes.size();
         for (PhysicalEntityNode node : nodes) {
-            if(BuilderTool.VERBOSE) {
+            if (BuilderTool.VERBOSE) {
                 System.out.print("\rOrthology for PhysicalEntity -> " + node.getId() + " >> " + (++i) + "/" + tot);
             }
             GKInstance pe = null;
@@ -364,14 +363,14 @@ public class PhysicalEntityHierarchyBuilder {
                 node.addInferredTo(inferredToNode);
             }
         }
-        if(BuilderTool.VERBOSE) {
+        if (BuilderTool.VERBOSE) {
             System.out.println("\rOrthologies processed");
         }
     }
 
-    private List<?> getAttributeValuesList(GKInstance instance, String attr){
+    private List<?> getAttributeValuesList(GKInstance instance, String attr) {
         List<?> list = null;
-        if(instance.getSchemClass().isValidAttribute(attr)){
+        if (instance.getSchemClass().isValidAttribute(attr)) {
             try {
                 list = instance.getAttributeValuesList(attr);
             } catch (Exception e1) {
@@ -381,15 +380,15 @@ public class PhysicalEntityHierarchyBuilder {
         return list;
     }
 
-    private Set<PhysicalEntityNode> getOrthologyNodes(PhysicalEntityNode node, List<?> orth){
+    private Set<PhysicalEntityNode> getOrthologyNodes(PhysicalEntityNode node, List<?> orth) {
         Set<PhysicalEntityNode> rtn = new HashSet<PhysicalEntityNode>();
-        if(orth==null) return rtn;
+        if (orth == null) return rtn;
         for (Object obj : orth) {
             Long id = ((GKInstance) obj).getDBID();
             PhysicalEntityNode aux = physicalEntityBuffer.get(id);
-            if(aux!=null){
+            if (aux != null) {
                 rtn.add(aux);
-            }else{
+            } else {
                 logger.warn(String.format("There is not node for %d (orthology from %d)", id, node.getId()));
             }
         }

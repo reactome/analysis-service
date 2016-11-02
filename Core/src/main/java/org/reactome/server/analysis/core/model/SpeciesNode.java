@@ -5,15 +5,21 @@ package org.reactome.server.analysis.core.model;
  */
 public class SpeciesNode {
     private Long speciesID;
+    private String taxID;
     private String name;
 
-    protected SpeciesNode(Long speciesID, String name) {
+    protected SpeciesNode(Long speciesID, String taxId, String name) {
         this.speciesID = speciesID;
+        this.taxID = taxId;
         this.name = name;
     }
 
     public Long getSpeciesID() {
         return speciesID;
+    }
+
+    public String getTaxID() {
+        return taxID;
     }
 
     public String getName() {

@@ -1,4 +1,4 @@
-package org.reactome.server.analysis.tools.components.filter;
+package org.reactome.server.analysis.tools.components;
 
 import org.gk.model.GKInstance;
 import org.gk.model.ReactomeJavaConstants;

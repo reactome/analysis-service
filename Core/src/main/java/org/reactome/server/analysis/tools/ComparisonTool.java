@@ -36,7 +36,7 @@ public class ComparisonTool {
         analysisData.setFileName(structure);
 
         SpeciesNode speciesFrom = SpeciesNodeFactory.getHumanNode();
-        SpeciesNode speciesTo = SpeciesNodeFactory.getSpeciesNode(48892L, "Mus musculus");
+        SpeciesNode speciesTo = SpeciesNodeFactory.getSpeciesNode(48892L, "10090", "Mus musculus");
 
         SpeciesComparison comparison = context.getBean(SpeciesComparison.class);
         HierarchiesData hierarchiesData = comparison.speciesComparison(speciesFrom, speciesTo);

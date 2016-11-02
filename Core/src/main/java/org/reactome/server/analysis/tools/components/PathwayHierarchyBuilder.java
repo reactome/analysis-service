@@ -1,4 +1,4 @@
-package org.reactome.server.analysis.tools.components.filter;
+package org.reactome.server.analysis.tools.components;
 
 import org.apache.log4j.Logger;
 import org.gk.model.GKInstance;
@@ -47,7 +47,8 @@ public class PathwayHierarchyBuilder {
             if(BuilderTool.VERBOSE) {
                 System.out.print("\rCreating the pathway hierarchies >> " + ++i + "/" + tot + " ");
             }
-            SpeciesNode speciesNode = SpeciesNodeFactory.getSpeciesNode(species.getDbId(), species.getDisplayName());
+
+            SpeciesNode speciesNode = SpeciesNodeFactory.getSpeciesNode(species.getDbId(), getTaxId(dba, species), species.getDisplayName());
             PathwayHierarchy pathwayHierarchy = new PathwayHierarchy(speciesNode);
             this.hierarchies.put(speciesNode, pathwayHierarchy);
             try{
@@ -180,5 +181,18 @@ public class PathwayHierarchyBuilder {
         for (Species species : this.helper.getSpeciesList()) {
             this.mainSpecies.add(species.getDbId());
         }
+    }
+
+    private String getTaxId(MySQLAdaptor dba, Species species){
+        try {
+            GKInstance  instance = dba.fetchInstance(species.getDbId());
+            GKInstance taxon = (GKInstance) instance.getAttributeValue(ReactomeJavaConstants.crossReference);
+            if (taxon != null) {
+                return  (String) taxon.getAttributeValue(ReactomeJavaConstants.identifier);
+            }
+        } catch (Exception e) {
+            logger.error("No taxId found for " + species.getDisplayName());
+        }
+        return null;
     }
 }

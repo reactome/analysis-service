@@ -1,4 +1,4 @@
-package org.reactome.server.analysis.tools.components.filter;
+package org.reactome.server.analysis.tools.components;
 
 import org.reactome.server.analysis.core.model.IdentifiersMap;
 import org.reactome.server.analysis.core.model.InteractorNode;
