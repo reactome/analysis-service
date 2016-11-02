@@ -105,8 +105,8 @@ public class AnalysisHelper {
 
     public AnalysisStoredResult compareSpecies(Long from, Long to){
         boolean includeInteractors = false;
-        SpeciesNode speciesFrom = SpeciesNodeFactory.getSpeciesNode(from, "");
-        SpeciesNode speciesTo = SpeciesNodeFactory.getSpeciesNode(to, "");
+        SpeciesNode speciesFrom = SpeciesNodeFactory.getSpeciesNode(from, "", "");
+        SpeciesNode speciesTo = SpeciesNodeFactory.getSpeciesNode(to, "", "");
 
         ReportParameters reportParams = new ReportParameters(Type.SPECIES_COMPARISON);
         String fakeMD5 = this.getFakedMD5(speciesFrom, speciesTo);

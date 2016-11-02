@@ -34,7 +34,7 @@ public class PathwaySummary {
         this.dbId = node.getPathwayId();
 
         this.name = node.getName();
-        this.species = new SpeciesSummary(node.getSpecies().getSpeciesID(), node.getSpecies().getName());
+        this.species = new SpeciesSummary(node.getSpecies());
         this.llp = node.isLlp();
         initialize(node.getData(), resource, interactors);
     }

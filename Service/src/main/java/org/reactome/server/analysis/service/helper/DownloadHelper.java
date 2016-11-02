@@ -207,7 +207,7 @@ public class DownloadHelper {
             line.append(DELIMITER).append(aDouble);
         }
 
-        line.append(DELIMITER).append(summary.getSpecies().getSpeciesID());
+        line.append(DELIMITER).append(summary.getSpecies().getTaxID());
         line.append(DELIMITER).append(summary.getSpecies().getName());
 
         Set<String> uniqueSubmitted = new HashSet<>(); //Identifiers differentiates the resources -> using Set<String> to avoid duplicates in the column
@@ -288,7 +288,7 @@ public class DownloadHelper {
             line.append(DELIMITER).append(aDouble);
         }
 
-        line.append(DELIMITER).append(summary.getSpecies().getSpeciesID());
+        line.append(DELIMITER).append(summary.getSpecies().getTaxID());
         line.append(DELIMITER).append(summary.getSpecies().getName());
 
         //NOTE: We have to ensure we only add a submitted identifier once per row
