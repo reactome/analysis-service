@@ -12,7 +12,7 @@
         <spring.version>4.2.5.RELEASE</spring.version>
         <deploymentPath>/</deploymentPath>
 
-        <analysis.version>2.0.0</analysis.version>
+        <analysis.version>2.0.1</analysis.version>
 
         <lru.version>1.4-SNAPSHOT</lru.version>
         <sl4j.version>1.7.2</sl4j.version>
