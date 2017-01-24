@@ -94,11 +94,11 @@ public class AnalysisStoredResult {
         return rtn;
     }
 
-    public Set<Long> getFoundReactions(Long pathwayId, String resource){
+    public Set<Long> getFoundReactions(String pathwayId, String resource){
         Set<Long> rtn = new HashSet<>();
         if(resource.toUpperCase().equals("TOTAL")){
             for (PathwayNodeSummary pathway : this.pathways) {
-                if(pathway.getPathwayId().equals(pathwayId)){
+                if(pathway.is(pathwayId)){
                     for (AnalysisReaction reaction : pathway.getData().getReactions()) {
                         rtn.add(reaction.getDbId());
                     }
@@ -109,7 +109,7 @@ public class AnalysisStoredResult {
             if(r instanceof MainResource){
                 MainResource mainResource = (MainResource) r;
                 for (PathwayNodeSummary pathway : this.pathways) {
-                    if(pathway.getPathwayId().equals(pathwayId)){
+                    if(pathway.is(pathwayId)){
                         for (AnalysisReaction reaction : pathway.getData().getReactions(mainResource)) {
                             rtn.add(reaction.getDbId());
                         }
@@ -120,11 +120,11 @@ public class AnalysisStoredResult {
         return rtn;
     }
 
-    public Set<Long> getFoundReactions(List<Long> pathwayIds, String resource){
+    public Set<Long> getFoundReactions(List<String> pathwayIds, String resource){
         Set<Long> rtn = new HashSet<>();
         if(resource.toUpperCase().equals("TOTAL")){
             for (PathwayNodeSummary pathway : this.pathways) {
-                if(pathwayIds.contains(pathway.getPathwayId())){
+                if(pathway.in(pathwayIds)){
                     for (AnalysisReaction reaction : pathway.getData().getReactions()) {
                         rtn.add(reaction.getDbId());
                     }
@@ -135,7 +135,7 @@ public class AnalysisStoredResult {
             if(r instanceof MainResource){
                 MainResource mainResource = (MainResource) r;
                 for (PathwayNodeSummary pathway : this.pathways) {
-                    if(pathwayIds.contains(pathway.getPathwayId())){
+                    if(pathway.in(pathwayIds)){
                         for (AnalysisReaction reaction : pathway.getData().getReactions(mainResource)) {
                             rtn.add(reaction.getDbId());
                         }
@@ -150,9 +150,9 @@ public class AnalysisStoredResult {
         return notFound;
     }
 
-    public PathwayNodeSummary getPathway(Long dbId){
+    public PathwayNodeSummary getPathway(String identifier){
         for (PathwayNodeSummary nodeSummary : this.pathways) {
-            if(nodeSummary.getPathwayId().equals(dbId)){
+            if(nodeSummary.is(identifier)){
                 return nodeSummary;
             }
         }
@@ -163,13 +163,13 @@ public class AnalysisStoredResult {
         return pathways;
     }
 
-    public int getPage(Long dbId, String sortBy, String order, String resource, Integer pageSize){
+    public int getPage(String pathwayId, String sortBy, String order, String resource, Integer pageSize){
         this.filterPathwaysByResource(resource);
         Collections.sort(this.pathways, getComparator(sortBy, order, resource));
         if(pageSize==null) pageSize = PAGE_SIZE;
         for (int i = 0; i < this.pathways.size(); i++) {
             PathwayNodeSummary pathway = this.pathways.get(i);
-            if(pathway.getPathwayId().equals(dbId)){
+            if(pathway.is(pathwayId)){
                 return ((int) Math.floor(i/pageSize)) + 1;
             }
         }
@@ -211,11 +211,11 @@ public class AnalysisStoredResult {
         return warnings;
     }
 
-    public List<PathwaySummary> filterByPathways(List<Long> pathwayIds, String resource){
+    public List<PathwaySummary> filterByPathways(List<String> pathwayIds, String resource){
         this.filterPathwaysByResource(resource);
-        List<PathwaySummary> rtn = new LinkedList<PathwaySummary>();
+        List<PathwaySummary> rtn = new LinkedList<>();
         for (PathwayNodeSummary pathway : this.pathways) {
-            if(pathwayIds.contains(pathway.getPathwayId())){
+            if(pathway.in(pathwayIds)){
                 rtn.add(new PathwaySummary(pathway, resource.toUpperCase(), summary.isInteractors()));
             }
         }
@@ -227,7 +227,7 @@ public class AnalysisStoredResult {
             Resource r = ResourceFactory.getResource(resource);
 
             this.filterPathwaysByResource(resource);
-            List<PathwayBase> rtn = new LinkedList<PathwayBase>();
+            List<PathwayBase> rtn = new LinkedList<>();
             Double min = null; Double max=null;
 
             for (PathwayNodeSummary pathway : this.pathways) {
@@ -235,7 +235,7 @@ public class AnalysisStoredResult {
                     PathwaySummary aux = new PathwaySummary(pathway, resource.toUpperCase(), summary.isInteractors());
                     rtn.add(new PathwayBase(aux));
 
-                    List<Double> exps = new LinkedList<Double>();
+                    List<Double> exps = new LinkedList<>();
                     if(r instanceof MainResource) {
                         exps = pathway.getData().getExpressionValuesAvg((MainResource) r);
                     }else if (resource.equals("TOTAL")) {
@@ -264,13 +264,13 @@ public class AnalysisStoredResult {
 
     private Comparator<PathwayNodeSummary> getComparator(String sortBy, String order, String resource){
         AnalysisSortType sortType = AnalysisSortType.getSortType(sortBy);
-        if(resource!=null){
+        if (resource != null) {
             Resource r = ResourceFactory.getResource(resource);
-            if(r!=null && r instanceof MainResource){
+            if (r != null && r instanceof MainResource) {
                 MainResource mr = (MainResource) r;
-                if(order!=null && order.toUpperCase().equals("DESC")){
+                if (order != null && order.toUpperCase().equals("DESC")) {
                     return Collections.reverseOrder(ComparatorFactory.getComparator(sortType, mr));
-                }else{
+                } else {
                     return ComparatorFactory.getComparator(sortType, mr);
                 }
             }
