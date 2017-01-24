@@ -9,6 +9,7 @@ import java.util.Set;
  */
 public class FoundElements {
 
+    private String pathway;
     private List<FoundEntity> entities;
     private List<FoundInteractor> interactors;
     private Set<String> resources;
@@ -16,7 +17,8 @@ public class FoundElements {
     private Integer foundEntities;
     private Integer foundInteractors;
 
-    public FoundElements(FoundEntities entities, FoundInteractors interactors, List<String> expNames) {
+    public FoundElements(String pathway, FoundEntities entities, FoundInteractors interactors, List<String> expNames) {
+        this.pathway = pathway;
         this.resources = new HashSet<>();
         this.expNames = expNames;
         if(entities !=null){
@@ -29,6 +31,10 @@ public class FoundElements {
             this.foundInteractors = interactors.getFound();
             this.resources.addAll(interactors.getResources());
         }
+    }
+
+    public String getPathway() {
+        return pathway;
     }
 
     public List<FoundEntity> getEntities() {
