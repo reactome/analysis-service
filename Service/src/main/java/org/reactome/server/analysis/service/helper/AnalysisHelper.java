@@ -159,16 +159,23 @@ public class AnalysisHelper {
         throw new ResourceNotFoundException();
     }
 
-    public List<Long> getInputIds(String input){
-        List<Long> rtn = new LinkedList<>();
+    public List<String> getInputIdentifiers(String input){
+        List<String> rtn = new LinkedList<>();
         if(input.contains("=")) input = input.split("=")[1];
         for (String line : input.split("\n")) {
             if(line.isEmpty()) continue;
             for (String value : line.split(",")) {
-                try{
-                    rtn.add(Long.valueOf(value.trim()));
-                }catch (NumberFormatException e){
-                    throw new ResourceNotFoundException();
+                String id = value.trim();
+                if (id.startsWith("R-")) {
+                    rtn.add(id);
+                } else {
+                    try {
+                        //Next one is to ensure that if it doesn't start with R- at least is a valid db_id (is Long)
+                        rtn.add(Long.valueOf(id).toString());
+                    } catch (NumberFormatException e) {
+                        //Nothing here because
+                        //throw new ResourceNotFoundException(); is not longer needed
+                    }
                 }
             }
         }
