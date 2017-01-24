@@ -4,6 +4,8 @@ import org.reactome.server.analysis.core.model.PathwayNode;
 import org.reactome.server.analysis.core.model.PathwayNodeData;
 import org.reactome.server.analysis.core.model.SpeciesNode;
 
+import java.util.Collection;
+
 /**
  * This class is based on PathwayNode but removing the tree hierarchy to store/retrieve the data
  * faster from/to the hard drive.
@@ -50,5 +52,26 @@ public class PathwayNodeSummary {
 
     public boolean isLlp() {
         return llp;
+    }
+
+    public boolean is(String identifier){
+        identifier = identifier.trim();
+        if(identifier.startsWith("R-")){
+            return stId.equals(identifier);
+        } else {
+            try {
+                Long aux = Long.valueOf(identifier);
+                return pathwayId.equals(aux);
+            } catch (NumberFormatException ex){
+                return false;
+            }
+        }
+    }
+
+    public boolean in(Collection<String> identifiers){
+        for (String identifier : identifiers) {
+            if(is(identifier)) return true;
+        }
+        return false;
     }
 }
