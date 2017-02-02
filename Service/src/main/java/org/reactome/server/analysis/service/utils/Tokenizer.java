@@ -49,7 +49,11 @@ public abstract class Tokenizer {
     public static String getName(String token){
         //noinspection TryWithIdenticalCatches
         try {
-            token = URLDecoder.decode(token, "UTF-8");
+            String aux = URLDecoder.decode(token, "UTF-8");
+            while(!aux.equals(token)) {
+                token = aux;
+                aux = URLDecoder.decode(token, "UTF-8");
+            }
             return new String(Base64.decode(token));
         } catch (Base64DecodingException e) {
             //Nothing here
