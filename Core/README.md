@@ -28,3 +28,10 @@ corresponding "AnalysisService/input/" folder and then change the symlink of ana
 to the new file.
 
 Once the AnalysisService is restarted the new data will be used.
+
+#### Recommendation
+It is recommended to specify the initial and maximum memory allocation pool for the Java Virtual Machine
+
+```console
+-Xms2048M -Xmx5120M
+```
