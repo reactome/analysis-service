@@ -1,7 +1,9 @@
 package org.reactome.server.analysis.service.utils;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,35 +22,34 @@ import java.net.URL;
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@Component
 public class HeaderFooterCacher extends Thread {
-
-    private static Logger logger = Logger.getLogger(HeaderFooterCacher.class.getName());
-
-    private static final String TITLE_OPEM = "<title>";
+    private static final String TITLE_OPEN = "<title>";
     private static final String TITLE_CLOSE = "</title>";
-    private static final String TITLE_REPLACE = "<title>Reactome | Pathway Analysis Service API</title>";
+    private static final String TITLE_REPLACE = "<title>Reactome | Analysis Service API</title>";
 
     private static final String HEADER_CLOSE = "</head>";
-    private static final String HEADER_CLOSE_REPLACE = "<jsp:include page=\"script.jsp\"/>\n</head>";
+    private static final String HEADER_CLOSE_REPLACE = "<jsp:include page=\"additional.jsp\"/>\n</head>";
+
+    // Name of the template page in Joomla
+    private static final String TEMPLATE_PAGE = "template-swagger";
 
     private static final Integer MINUTES = 15;
 
-    private String server;
+    private final String server;
 
-    public HeaderFooterCacher(String server) {
-        if(server!=null && !server.isEmpty()) {
-            this.server = server;
-            logger.info("Thread to keep the header/footer updated started");
-            start();
-        }
+    @Autowired
+    public HeaderFooterCacher(@Value("${template.server}") String server) {
+        this.server = server;
+        start();
     }
 
     @Override
     public void run() {
+        String template = getTemplate();
         //noinspection InfiniteLoopStatement
         while (true) {
-            writeFile("header.jsp", getHeader());
-            writeFile("footer.jsp", getFooter());
+            getHeaderAndFooter(template);
             try {
                 Thread.sleep(1000 * 60 * MINUTES);
             } catch (InterruptedException e) {
@@ -69,28 +70,50 @@ public class HeaderFooterCacher extends Thread {
                 //When executing in local we need to write the files in the actual resources
                 path += "../../src/main/webapp/WEB-INF/pages/";
             }
-            String file = path + fileName;
-            FileOutputStream out = new FileOutputStream(file);
+            FileOutputStream out = new FileOutputStream(path + fileName);
             out.write(content.getBytes());
             out.close();
-            logger.info(file + " updated succesfully");
-        } catch (Exception e) {
-            logger.error("Error updating " + fileName, e);
+        } catch (NullPointerException | IOException e){
+            e.printStackTrace();
         }
     }
 
-    private String getHeader() {
+    private String getTemplate() {
         try {
-            URL url = new URL(this.server + "common/header.php");
+            URL url = new URL(this.server + "/" + TEMPLATE_PAGE);
             String rtn = IOUtils.toString(url.openConnection().getInputStream());
-            rtn = getReplaced(rtn, TITLE_OPEM, TITLE_CLOSE, TITLE_REPLACE);
+
+            rtn = getReplaced(rtn, TITLE_OPEN, TITLE_CLOSE, TITLE_REPLACE);
             rtn = getReplaced(rtn, HEADER_CLOSE, HEADER_CLOSE, HEADER_CLOSE_REPLACE);
+
+            rtn = rtn.replace("<base href=\"" + this.server + "/" + TEMPLATE_PAGE + "\" />", "");
             rtn = rtn.replaceAll("(http|https)://", "//");
+
+            // remove joomla template default class
+            rtn = rtn.replaceAll("favth-content-block", "");
+
             return  rtn;
         } catch (IOException e) {
             e.printStackTrace();
             return String.format("<span style='color:red'>%s</span>", e.getMessage());
         }
+    }
+
+    private void getHeaderAndFooter(String file) {
+        String html = "";
+        String[] lines = file.split(System.getProperty("line.separator"));
+        boolean isHeaderLine = true;
+        for (String line : lines) {
+            html += line + "\n";
+            if(isHeaderLine) {
+                if (line.contains("template-placeholder")) {
+                    isHeaderLine = false;
+                    writeFile("header.jsp", html);
+                    html = "";
+                }
+            }
+        }
+        writeFile("footer.jsp", html);
     }
 
     private String getReplaced(String target, String open, String close, String replace){
@@ -102,17 +125,4 @@ public class HeaderFooterCacher extends Thread {
             return target;
         }
     }
-
-    private String getFooter() {
-        try {
-            URL url = new URL(this.server + "common/footer.php");
-            String rtn = IOUtils.toString(url.openConnection().getInputStream());
-            rtn = rtn.replaceAll("(http|https)://", "//");
-            return rtn;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return String.format("<span style='color:red'>%s</span>", e.getMessage());
-        }
-    }
-
 }

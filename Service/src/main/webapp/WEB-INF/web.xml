@@ -31,9 +31,26 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <servlet>
         <servlet-name>Wordpress</servlet-name>
-        <servlet-class>uk.ac.ebi.pride.web.util.servlet.proxy.ProxyServlet</servlet-class>
+        <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
         <init-param>
             <param-name>proxyHost</param-name>
             <param-value>reactomedev.oicr.on.ca</param-value>
@@ -50,5 +67,48 @@
     <servlet-mapping>
         <servlet-name>Wordpress</servlet-name>
         <url-pattern>/wordpress/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Content</servlet-name>
+        <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
+        <init-param>
+            <param-name>proxyHost</param-name>
+            <param-value>localhost</param-value>
+        </init-param>
+        <init-param>
+            <param-name>proxyPort</param-name>
+            <param-value>8080</param-value>
+        </init-param>
+        <init-param>
+            <param-name>proxyPath</param-name>
+            <param-value>/content</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Content</servlet-name>
+        <url-pattern>/content/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Testing: This is  -->
+    <servlet>
+        <servlet-name>Joomla</servlet-name>
+        <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
+        <init-param>
+            <param-name>proxyHost</param-name>
+            <param-value>localhost</param-value>
+        </init-param>
+        <init-param>
+            <param-name>proxyPort</param-name>
+            <param-value>8888</param-value>
+        </init-param>
+        <init-param>
+            <param-name>proxyPath</param-name>
+            <param-value>/website/</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Joomla</servlet-name>
+        <url-pattern>/website/*</url-pattern>
     </servlet-mapping>
 </web-app>
