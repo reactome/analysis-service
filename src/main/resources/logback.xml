@@ -52,6 +52,9 @@
     <logger name="methodsLogger" level="TRACE" additivity="false">
         <appender-ref ref="methodsFileAppender"/>
     </logger>
+    <logger name="methodsLogger" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
 
     <!-- Setting up neo4j and spring logging to ERROR -->
     <logger name="org.neo4j" level="ERROR"/>
