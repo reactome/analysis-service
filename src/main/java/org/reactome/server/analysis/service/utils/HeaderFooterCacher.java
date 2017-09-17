@@ -85,8 +85,9 @@ public class HeaderFooterCacher extends Thread {
     }
 
     private String getTemplate() {
+        String templateURL = this.server + TEMPLATE_PAGE;
         try {
-            URL url = new URL(this.server + TEMPLATE_PAGE);
+            URL url = new URL(templateURL);
             String rtn = IOUtils.toString(url.openConnection().getInputStream());
 
             rtn = getReplaced(rtn, TITLE_OPEN, TITLE_CLOSE, TITLE_REPLACE);
@@ -100,8 +101,11 @@ public class HeaderFooterCacher extends Thread {
 
             return rtn;
         } catch (IOException e) {
-            e.printStackTrace();
-            return String.format("<span style='color:red'>%s</span>", e.getMessage());
+            logger.warn("The template file is not available. Please check '" + templateURL + "'");
+            return String.format("" +
+                    "<span style='color:red'>%s is not available</span>" +
+                    "<!-- template-placeholder -->" +
+                    "<span style='color:red'>No footer available</span>", templateURL);
         }
     }
 
