@@ -69,7 +69,7 @@ public class AnalysisHelper {
     private String pathDirectory;
 
     @Autowired
-    CommonsMultipartResolver multipartResolver;
+    private CommonsMultipartResolver multipartResolver;
 
     @Autowired
     private EnrichmentAnalysis enrichmentAnalysis;
@@ -104,7 +104,6 @@ public class AnalysisHelper {
     }
 
     public AnalysisStoredResult compareSpecies(Long from, Long to){
-        boolean includeInteractors = false;
         SpeciesNode speciesFrom = SpeciesNodeFactory.getSpeciesNode(from, "", "");
         SpeciesNode speciesTo = SpeciesNodeFactory.getSpeciesNode(to, "", "");
 
@@ -124,7 +123,7 @@ public class AnalysisHelper {
         try {
             UserData ud = speciesComparison.getSyntheticUserData(speciesTo);
             String token = Tokenizer.getOrCreateToken(fakeMD5, human, false);
-            AnalysisSummary summary = new AnalysisSummary(token, null, includeInteractors,  null, Type.SPECIES_COMPARISON, to);
+            AnalysisSummary summary = new AnalysisSummary(token, null, false,  null, Type.SPECIES_COMPARISON, to);
             return analyse(summary, ud, speciesFrom, false, reportParams);
         } catch (SpeciesNotFoundException e) {
             throw new ResourceNotFoundException();
@@ -315,13 +314,11 @@ public class AnalysisHelper {
         SSLContext sc = SSLContext.getInstance("SSL");
         sc.init(null, trustAllCerts, new SecureRandom());
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        HostnameVerifier hv = new HostnameVerifier() {
-            public boolean verify(String urlHostName, SSLSession session) {
-                if (!urlHostName.equalsIgnoreCase(session.getPeerHost())) {
-                    logger.warn("Warning: URL host '" + urlHostName + "' is different to SSLSession host '" + session.getPeerHost() + "'.");
-                }
-                return true;
+        HostnameVerifier hv = (urlHostName, session) -> {
+            if (!urlHostName.equalsIgnoreCase(session.getPeerHost())) {
+                logger.warn("Warning: URL host '" + urlHostName + "' is different to SSLSession host '" + session.getPeerHost() + "'.");
             }
+            return true;
         };
         HttpsURLConnection.setDefaultHostnameVerifier(hv);
     }
@@ -330,9 +327,9 @@ public class AnalysisHelper {
      * Detect MimeType using apache tika.
      * jMimeMagic has failed when analysing the PSIMITAB .txt file export from IntAct page
      *
-     * @throws IOException
+     * @throws IOException if the document input stream could not be read
      */
-    public String detectMimeType(TikaInputStream tikaInputStream) throws IOException {
+    private String detectMimeType(TikaInputStream tikaInputStream) throws IOException {
         final Detector DETECTOR = new DefaultDetector(MimeTypes.getDefaultMimeTypes());
 
         try {
