@@ -37,7 +37,7 @@ public class DownloadHelper {
         FileWriter fw = new FileWriter(f);
 
         List<PathwayNodeSummary> pathways = filterPathwaysByResource(asr.getPathways(), resource);
-        Collections.sort(pathways, getComparator("ENTITIES_PVALUE", "ASC", resource));
+        pathways.sort(getComparator("ENTITIES_PVALUE", "ASC", resource));
         fw.write(getAnalysisResultHeader(asr));
         if (resource.toUpperCase().equals("TOTAL")) {
             for (PathwayNodeSummary summary : pathways) {
@@ -68,7 +68,7 @@ public class DownloadHelper {
         FileWriter fw = new FileWriter(f);
         StringBuilder sb = new StringBuilder();
 
-        MapSet<String, MainIdentifier> projection = new MapSet<String, MainIdentifier>();
+        MapSet<String, MainIdentifier> projection = new MapSet<>();
         if (resource.toUpperCase().equals("TOTAL")) {
             sb.append("Submitted identifier").append(DELIMITER).append("Found identifier").append(DELIMITER).append("Resource\n");
             fw.write(sb.toString());
@@ -292,7 +292,7 @@ public class DownloadHelper {
         line.append(DELIMITER).append(summary.getSpecies().getName());
 
         //NOTE: We have to ensure we only add a submitted identifier once per row
-        Set<String> uniqueSubmitted = new HashSet<String>();
+        Set<String> uniqueSubmitted = new HashSet<>();
         for (Identifier identifier : summary.getData().getIdentifierMap().keySet()) {
             uniqueSubmitted.add(identifier.getValue().getId());
         }
@@ -368,7 +368,7 @@ public class DownloadHelper {
         if (resource.toUpperCase().equals("TOTAL")) {
             rtn = pathways;
         } else {
-            rtn = new LinkedList<PathwayNodeSummary>();
+            rtn = new LinkedList<>();
             Resource r = ResourceFactory.getResource(resource);
             if (r instanceof MainResource) {
                 MainResource mr = (MainResource) r;
