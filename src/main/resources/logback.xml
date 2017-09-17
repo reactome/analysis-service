@@ -20,8 +20,37 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="importLogger" level="INFO" additivity="false">
+    <logger name="importLogger" level="WARN" additivity="false">
         <appender-ref ref="importFileAppender"/>
+    </logger>
+
+    <appender name="analysisDataFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log4j.root}/analysis-data-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <maxHistory>-1</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="analysisDataLogger" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="analysisDataFileAppender"/>
+    </logger>
+
+    <appender name="methodsFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log4j.root}/analysis-exec-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <maxHistory>-1</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="methodsLogger" level="TRACE" additivity="false">
+        <appender-ref ref="methodsFileAppender"/>
     </logger>
 
     <!-- Setting up neo4j and spring logging to ERROR -->
