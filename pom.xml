@@ -34,7 +34,6 @@
         <joda.time.version>2.3</joda.time.version>
         <junit.version>4.8.2</junit.version>
         <jmimemagic.version>0.1.2</jmimemagic.version>
-        <tomcat.catalina>8.5.20</tomcat.catalina>
 
         <maven.compiler.version>3.5.1</maven.compiler.version>
         <jdk.version>1.8</jdk.version>
@@ -194,12 +193,6 @@
             <version>${swagger.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-catalina</artifactId>
-            <version>${tomcat.catalina}</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <build>
