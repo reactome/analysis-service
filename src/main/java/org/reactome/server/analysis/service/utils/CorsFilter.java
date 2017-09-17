@@ -11,8 +11,7 @@ import java.io.IOException;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-@Deprecated
-public class CORSFilter extends OncePerRequestFilter {
+public class CorsFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

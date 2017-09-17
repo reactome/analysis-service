@@ -24,7 +24,7 @@
     <!-- Adds the headers to support cross-origin resource sharing in the web clients -->
     <filter>
         <filter-name>CorsFilter</filter-name>
-        <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+        <filter-class>org.reactome.server.analysis.service.utils.CorsFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>CorsFilter</filter-name>
