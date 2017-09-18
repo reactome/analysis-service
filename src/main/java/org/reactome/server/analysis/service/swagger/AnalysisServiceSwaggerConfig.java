@@ -33,7 +33,7 @@ public class AnalysisServiceSwaggerConfig {
         return new ApiInfo(
                 "Pathway Analysis Service",
                 "Provides an API for pathway over-representation and expression analysis as well as species comparison tool",
-                "1.0",
+                "2.0",
                 "about/license-agreement",
                 new Contact("Reactome","http://www.reactome.org","help@reactome.org"),
                 "Creative Commons Attribution 3.0 Unported License",
