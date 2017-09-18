@@ -23,37 +23,20 @@
 
     <!-- Adds the headers to support cross-origin resource sharing in the web clients -->
     <filter>
-        <filter-name>CorsFilter</filter-name>
+        <filter-name>cors</filter-name>
         <filter-class>org.reactome.server.analysis.service.utils.CorsFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>CorsFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter>
-        <filter-name>encodingFilter</filter-name>
-        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-        <init-param>
-            <param-name>encoding</param-name>
-            <param-value>UTF-8</param-value>
-        </init-param>
-        <init-param>
-            <param-name>forceEncoding</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>encodingFilter</filter-name>
+        <filter-name>cors</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <servlet>
-        <servlet-name>Plugins</servlet-name>
+        <servlet-name>Wordpress</servlet-name>
         <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
         <init-param>
             <param-name>proxyHost</param-name>
-            <param-value>reactomedev.oicr.on.ca</param-value>
+            <param-value>reactomerelease.oicr.on.ca</param-value>
         </init-param>
         <init-param>
             <param-name>proxyPort</param-name>
@@ -61,76 +44,12 @@
         </init-param>
         <init-param>
             <param-name>proxyPath</param-name>
-            <param-value>/plugins</param-value>
+            <param-value>/wordpress</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Plugins</servlet-name>
-        <url-pattern>/plugins/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>Media</servlet-name>
-        <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
-        <init-param>
-            <param-name>proxyHost</param-name>
-            <param-value>reactomedev.oicr.on.ca</param-value>
-        </init-param>
-        <init-param>
-            <param-name>proxyPort</param-name>
-            <param-value>80</param-value>
-        </init-param>
-        <init-param>
-            <param-name>proxyPath</param-name>
-            <param-value>/media</param-value>
-        </init-param>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Media</servlet-name>
-        <url-pattern>/media/*</url-pattern>
-    </servlet-mapping>
-
-
-    <servlet>
-        <servlet-name>Templates</servlet-name>
-        <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
-        <init-param>
-            <param-name>proxyHost</param-name>
-            <param-value>reactomedev.oicr.on.ca</param-value>
-        </init-param>
-        <init-param>
-            <param-name>proxyPort</param-name>
-            <param-value>80</param-value>
-        </init-param>
-        <init-param>
-            <param-name>proxyPath</param-name>
-            <param-value>/templates</param-value>
-        </init-param>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Templates</servlet-name>
-        <url-pattern>/templates/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>Modules</servlet-name>
-        <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
-        <init-param>
-            <param-name>proxyHost</param-name>
-            <param-value>reactomedev.oicr.on.ca</param-value>
-        </init-param>
-        <init-param>
-            <param-name>proxyPort</param-name>
-            <param-value>80</param-value>
-        </init-param>
-        <init-param>
-            <param-name>proxyPath</param-name>
-            <param-value>/modules</param-value>
-        </init-param>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Modules</servlet-name>
-        <url-pattern>/modules/*</url-pattern>
+        <servlet-name>Wordpress</servlet-name>
+        <url-pattern>/wordpress/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -138,7 +57,7 @@
         <servlet-class>org.reactome.server.utils.proxy.ProxyServlet</servlet-class>
         <init-param>
             <param-name>proxyHost</param-name>
-            <param-value>reactomedev.oicr.on.ca</param-value>
+            <param-value>reactomerelease.oicr.on.ca</param-value>
         </init-param>
         <init-param>
             <param-name>proxyPort</param-name>

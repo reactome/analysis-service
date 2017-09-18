@@ -10,8 +10,6 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.util.Collections;
-
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
@@ -37,7 +35,6 @@ public class AnalysisServiceSwaggerConfig {
                 "about/license-agreement",
                 new Contact("Reactome","http://www.reactome.org","help@reactome.org"),
                 "Creative Commons Attribution 3.0 Unported License",
-                "http://creativecommons.org/licenses/by/3.0/legalcode",
-                Collections.emptyList());
+                "http://creativecommons.org/licenses/by/3.0/legalcode");
     }
 }
