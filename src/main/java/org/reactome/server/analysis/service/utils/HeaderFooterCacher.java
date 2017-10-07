@@ -48,16 +48,12 @@ public class HeaderFooterCacher extends Thread {
     public void run() {
         //noinspection InfiniteLoopStatement
         while (true) {
+            writeFile("header.jsp", getHeader());
+            writeFile("footer.jsp", getFooter());
             try {
-                writeFile("header.jsp", getHeader());
-                writeFile("footer.jsp", getFooter());
-                try {
-                    Thread.sleep(1000 * 60 * MINUTES);
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage());
-                }
-            } catch (Exception e) {
-                interrupt();
+                Thread.sleep(1000 * 60 * MINUTES);
+            } catch (InterruptedException e) {
+                logger.warn("The header/footer updater has been stop for the analysis-service");
             }
         }
     }
@@ -81,6 +77,7 @@ public class HeaderFooterCacher extends Thread {
             logger.info(file + " updated succesfully");
         } catch (Exception e) {
             logger.error("Error updating " + fileName, e);
+            interrupt();
         }
     }
 
