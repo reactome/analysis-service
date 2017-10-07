@@ -95,7 +95,7 @@ public class AnalysisHelper {
                 logger.trace("No TOKEN found. Analysing...");
                 return analyse(summary, userData, speciesNode, includeInteractors, reportParams);
             } catch (Exception e){
-                logger.error("Error retrieving the result from the MD5 token. Analysing again...");
+                logger.warn("Cannot retrieve the result from the MD5 token. Analysing again...");
             }
         }
         String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman, includeInteractors);
