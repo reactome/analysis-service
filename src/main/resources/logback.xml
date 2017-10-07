@@ -10,34 +10,7 @@
         </encoder>
     </appender>
 
-    <appender name="analysisDataFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log4j.root}/analysis-data-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <cleanHistoryOnStart>true</cleanHistoryOnStart>
-            <maxHistory>-1</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-    <logger name="analysisDataLogger" level="${logging.level}" additivity="false">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="analysisDataFileAppender"/>
-    </logger>
-
-    <appender name="methodsFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log4j.root}/analysis-exec-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <cleanHistoryOnStart>true</cleanHistoryOnStart>
-            <maxHistory>-1</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <logger name="methodsLogger" level="${logging.level}" additivity="false">
-        <appender-ref ref="methodsFileAppender"/>
+    <logger name="analysisDataLogger" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
     </logger>
 
