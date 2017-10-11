@@ -10,7 +10,7 @@ import java.net.URL;
 /**
  * Generates the header and the footer every MINUTES defined below.
  * The header.jsp and footer.jsp are placed under jsp folder in WEB-INF
- *
+ * <p>
  * IMPORTANT
  * ---------
  * We assume the war file runs exploded, because there is no way of writing
@@ -36,7 +36,8 @@ public class HeaderFooterCacher extends Thread {
     private String server;
 
     public HeaderFooterCacher(String server) {
-        if(server!=null && !server.isEmpty()) {
+        super("HeaderFooterCacherThread");
+        if (server != null && !server.isEmpty()) {
             this.server = server;
             logger.info("Thread to keep the header/footer updated started");
             start();
@@ -46,38 +47,34 @@ public class HeaderFooterCacher extends Thread {
     @Override
     public void run() {
         //noinspection InfiniteLoopStatement
-        while (true) {
-            writeFile("header.jsp", getHeader());
-            writeFile("footer.jsp", getFooter());
+        //while (isAlive()) {
             try {
-                Thread.sleep(1000 * 60 * MINUTES);
-            } catch (InterruptedException e) {
-                interrupt();
+                writeFile("header.jsp", getHeader());
+                writeFile("footer.jsp", getFooter());
+                //Thread.sleep(1000 * 60 * MINUTES);
+            } catch (Exception e) {
+                logger.warn("The header/footer updater has been stop for the analysis-server");
+                //interrupt();
             }
-        }
+        //}
     }
 
-    private synchronized void writeFile(String fileName, String content){
-        try {
-            //noinspection ConstantConditions
-            String path = getClass().getClassLoader().getResource("").getPath();
-            //HACK!
-            if(path.contains("WEB-INF")) {
-                //When executing in a deployed war file in tomcat, the WEB-INF folder is just one bellow the classes
-                path += "../pages/";
-            }else{
-                //When executing in local we need to write the files in the actual resources
-                path += "../../src/main/webapp/WEB-INF/pages/";
-            }
-            String file = path + fileName;
-            FileOutputStream out = new FileOutputStream(file);
-            out.write(content.getBytes());
-            out.close();
-            logger.info(file + " updated succesfully");
-        } catch (Exception e) {
-            logger.error("Error updating " + fileName, e);
-            interrupt();
+    private synchronized void writeFile(String fileName, String content) throws IOException {
+        //noinspection ConstantConditions
+        String path = getClass().getClassLoader().getResource("").getPath();
+        //HACK!
+        if (path.contains("WEB-INF")) {
+            //When executing in a deployed war file in tomcat, the WEB-INF folder is just one bellow the classes
+            path += "../pages/";
+        } else {
+            //When executing in local we need to write the files in the actual resources
+            path += "../../src/main/webapp/WEB-INF/pages/";
         }
+        String file = path + fileName;
+        FileOutputStream out = new FileOutputStream(file);
+        out.write(content.getBytes());
+        out.close();
+        logger.info(file + " updated succesfully");
     }
 
     private String getHeader() {
@@ -87,19 +84,19 @@ public class HeaderFooterCacher extends Thread {
             rtn = getReplaced(rtn, TITLE_OPEM, TITLE_CLOSE, TITLE_REPLACE);
             rtn = getReplaced(rtn, HEADER_CLOSE, HEADER_CLOSE, HEADER_CLOSE_REPLACE);
             rtn = rtn.replaceAll("(http|https)://", "//");
-            return  rtn;
+            return rtn;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return String.format("<span style='color:red'>%s</span>", e.getMessage());
         }
     }
 
-    private String getReplaced(String target, String open, String close, String replace){
+    private String getReplaced(String target, String open, String close, String replace) {
         try {
             String pre = target.substring(0, target.indexOf(open));
             String suf = target.substring(target.indexOf(close) + close.length(), target.length());
             return pre + replace + suf;
-        }catch (StringIndexOutOfBoundsException e){
+        } catch (StringIndexOutOfBoundsException e) {
             return target;
         }
     }
@@ -111,7 +108,7 @@ public class HeaderFooterCacher extends Thread {
             rtn = rtn.replaceAll("(http|https)://", "//");
             return rtn;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return String.format("<span style='color:red'>%s</span>", e.getMessage());
         }
     }
