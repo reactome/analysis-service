@@ -69,6 +69,12 @@ public class FileCheckerController implements LruFolderContentCheckerFileDeleted
         }
     }
 
+    public void interrupt() {
+        if (checker != null && checker.isAlive()) {
+            checker.interrupt();
+        }
+    }
+
     @Override
     public void onLruFolderContentCheckerFileDeleted(String fileName) {
         Tokenizer.removeAssociatedToken(fileName);
