@@ -30,26 +30,11 @@
         </encoder>
     </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logging.dir}/analysis-service-trace.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <fileNamePattern>${logging.dir}/analysis-service-trace-%i-log.zip</fileNamePattern>
-            <minIndex>1</minIndex>
-            <maxIndex>3</maxIndex>
-        </rollingPolicy>
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>100MB</maxFileSize>
-        </triggeringPolicy>
-        <encoder>
-            <pattern>%d %-5level [%thread] %logger{0}: %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <logger name="callLogger" level="TRACE">
-        <appender-ref ref="FILE" />
+    <logger name="analysisDataLogger" level="INFO" additivity="false">
+        <appender-ref ref="INFO_STDOUT"/>
     </logger>
 
-    <logger name="analysisDataLogger" level="INFO" additivity="false">
+    <logger name="threadLogger" level="${logging.level}" additivity="false">
         <appender-ref ref="INFO_STDOUT"/>
     </logger>
 
