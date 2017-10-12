@@ -1,7 +1,8 @@
 package org.reactome.server.analysis.service.utils;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import java.net.URL;
  */
 public class HeaderFooterCacher extends Thread {
 
-    private static Logger logger = Logger.getLogger(HeaderFooterCacher.class.getName());
+    private static Logger logger = LoggerFactory.getLogger("threadLogger");
 
     private static final String TITLE_OPEM = "<title>";
     private static final String TITLE_CLOSE = "</title>";
@@ -34,27 +35,29 @@ public class HeaderFooterCacher extends Thread {
     private static final Integer MINUTES = 15;
 
     private String server;
+    private boolean active = true;
 
     public HeaderFooterCacher(String server) {
-        super("HeaderFooterCacherThread");
+        super("AS-HeaderFooter");
         if (server != null && !server.isEmpty()) {
             this.server = server;
-            logger.info("Thread to keep the header/footer updated started");
+            logger.info("Analysis-Service HeaderFooterCacher started");
             start();
         }
     }
 
     @Override
     public void run() {
-        while (isAlive()) {
-            try {
+        try {
+            while (active) {
                 writeFile("header.jsp", getHeader());
                 writeFile("footer.jsp", getFooter());
-                Thread.sleep(1000 * 60 * MINUTES);
-            } catch (Exception e) {
-                logger.warn("The header/footer updater has been stop for the analysis-server");
-                interrupt();
+                if(active) Thread.sleep(1000 * 60 * MINUTES);
             }
+        } catch (InterruptedException e) {
+            logger.info("Analysis-Service HeaderFooterCacher interrupted");
+        } catch (IOException e) {
+            interrupt();
         }
     }
 
@@ -73,7 +76,7 @@ public class HeaderFooterCacher extends Thread {
         FileOutputStream out = new FileOutputStream(file);
         out.write(content.getBytes());
         out.close();
-        logger.info(file + " updated succesfully");
+        logger.trace(file + " updated succesfully");
     }
 
     private String getHeader() {
@@ -112,4 +115,10 @@ public class HeaderFooterCacher extends Thread {
         }
     }
 
+    @Override
+    public void interrupt() {
+        this.active = false;
+        super.interrupt();
+        logger.info("Analysis-Service HeaderFooterCacher stopped");
+    }
 }
