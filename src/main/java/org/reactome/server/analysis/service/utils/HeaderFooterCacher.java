@@ -46,17 +46,16 @@ public class HeaderFooterCacher extends Thread {
 
     @Override
     public void run() {
-        //noinspection InfiniteLoopStatement
-        //while (isAlive()) {
+        while (isAlive()) {
             try {
                 writeFile("header.jsp", getHeader());
                 writeFile("footer.jsp", getFooter());
-                //Thread.sleep(1000 * 60 * MINUTES);
+                Thread.sleep(1000 * 60 * MINUTES);
             } catch (Exception e) {
                 logger.warn("The header/footer updater has been stop for the analysis-server");
-                //interrupt();
+                interrupt();
             }
-        //}
+        }
     }
 
     private synchronized void writeFile(String fileName, String content) throws IOException {
