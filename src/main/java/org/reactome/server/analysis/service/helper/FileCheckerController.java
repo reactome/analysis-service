@@ -1,9 +1,10 @@
 package org.reactome.server.analysis.service.helper;
 
-import org.apache.log4j.Logger;
 import org.reactome.server.analysis.service.utils.Tokenizer;
-import org.reactome.server.lru.LruFolderContentChecker;
-import org.reactome.server.lru.LruFolderContentCheckerFileDeletedHandler;
+import org.reactome.server.utils.lru.LruFolderContentChecker;
+import org.reactome.server.utils.lru.LruFolderContentCheckerFileDeletedHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 
 /**
@@ -11,9 +12,10 @@ import org.springframework.context.annotation.Scope;
  */
 @Scope("singleton")
 public class FileCheckerController implements LruFolderContentCheckerFileDeletedHandler {
-    private static Logger logger = Logger.getLogger(FileCheckerController.class.getName());
 
-    private static Thread checker = null;
+    private static Logger logger = LoggerFactory.getLogger("threadLogger");
+
+    private static LruFolderContentChecker checker = null;
 
     private String pathDirectory;
     private Long maxSize;
@@ -49,19 +51,19 @@ public class FileCheckerController implements LruFolderContentCheckerFileDeleted
         this.initialize();
     }
 
-    public void initialize(){
-        if(checker!=null){
+    public void initialize() {
+        if (checker != null) {
             //We ensure only one thread will be created
             logger.warn("Attempt to initialise the file checker when initialised before");
             return;
         }
-        if(pathDirectory!=null && maxSize!=null && threshold!=null && time!=null && ttl!=null){
-            LruFolderContentChecker folderContentChecker = new LruFolderContentChecker(pathDirectory, maxSize, threshold, time, ttl);
-            folderContentChecker.addCheckerFileDeletedHandler(this);
-            checker = new Thread(folderContentChecker);
-            try{
-                checker.setName("FileCheckerController");
-            }catch (SecurityException e){
+        if (pathDirectory != null && maxSize != null && threshold != null && time != null && ttl != null) {
+            checker = new LruFolderContentChecker(pathDirectory, maxSize, threshold, time, ttl);
+            checker.setLoggerName("threadLogger"); //It helps tracing the messages in the catalina.out
+            checker.addCheckerFileDeletedHandler(this);
+            try {
+                checker.setName(FileCheckerController.class.getSimpleName());
+            } catch (SecurityException e) {
                 logger.warn("FileCheckerController thread renaming failed!");
             }
             checker.start();
@@ -70,8 +72,9 @@ public class FileCheckerController implements LruFolderContentCheckerFileDeleted
     }
 
     public void interrupt() {
-        if (checker != null && checker.isAlive()) {
+        if (checker != null) {
             checker.interrupt();
+            logger.info(LruFolderContentChecker.class.getSimpleName() + " interrupted");
         }
     }
 
