@@ -14,7 +14,7 @@ import java.net.URL;
 /**
  * Generates the header and the footer every MINUTES defined below.
  * The header.jsp and footer.jsp are placed under jsp folder in WEB-INF
- *
+ * <p>
  * IMPORTANT
  * ---------
  * We assume the war file runs exploded, because there is no way of writing
@@ -26,7 +26,7 @@ import java.net.URL;
  */
 public class HeaderFooterCacher extends Thread {
 
-    private static Logger logger = LoggerFactory.getLogger("templateLogger");
+    private static Logger logger = LoggerFactory.getLogger("threadLogger");
 
     private static final String TITLE_OPEN = "<title>";
     private static final String TITLE_CLOSE = "</title>";
@@ -42,6 +42,8 @@ public class HeaderFooterCacher extends Thread {
 
     private final String server;
 
+    private boolean running = true;
+
     @Autowired
     public HeaderFooterCacher(@Value("${template.server}") String server) {
         super("AS-HeaderFooter");
@@ -52,13 +54,13 @@ public class HeaderFooterCacher extends Thread {
     @Override
     public void run() {
         //noinspection InfiniteLoopStatement
-        while (isAlive()) {
+        while (running) {
             getHeaderAndFooter(getTemplate());
             try {
-                Thread.sleep(1000 * 60 * MINUTES);
+                if(running) Thread.sleep(1000 * 60 * MINUTES);
             } catch (InterruptedException e) {
+                running = false;
                 logger.warn("The header/footer updater has been stop for the analysis service");
-                interrupt();
             }
         }
     }
