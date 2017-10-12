@@ -44,6 +44,7 @@ public class HeaderFooterCacher extends Thread {
 
     @Autowired
     public HeaderFooterCacher(@Value("${template.server}") String server) {
+        super("AS-HeaderFooter");
         this.server = server;
         start();
     }
@@ -51,12 +52,13 @@ public class HeaderFooterCacher extends Thread {
     @Override
     public void run() {
         //noinspection InfiniteLoopStatement
-        while (true) {
+        while (isAlive()) {
             getHeaderAndFooter(getTemplate());
             try {
                 Thread.sleep(1000 * 60 * MINUTES);
             } catch (InterruptedException e) {
                 logger.warn("The header/footer updater has been stop for the analysis service");
+                interrupt();
             }
         }
     }
@@ -79,7 +81,7 @@ public class HeaderFooterCacher extends Thread {
             out.close();
             logger.debug(file + " updated successfully");
         } catch (NullPointerException | IOException e) {
-            logger.error("Error updating " + fileName, e);
+            logger.error("Error updating " + fileName);
             interrupt();
         }
     }
