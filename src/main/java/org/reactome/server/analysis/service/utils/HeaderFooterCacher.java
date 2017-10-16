@@ -42,7 +42,7 @@ public class HeaderFooterCacher extends Thread {
 
     private final String server;
 
-    private boolean running = true;
+    private boolean active = true;
 
     @Autowired
     public HeaderFooterCacher(@Value("${template.server}") String server) {
@@ -53,15 +53,13 @@ public class HeaderFooterCacher extends Thread {
 
     @Override
     public void run() {
-        //noinspection InfiniteLoopStatement
-        while (running) {
-            getHeaderAndFooter(getTemplate());
-            try {
-                if(running) Thread.sleep(1000 * 60 * MINUTES);
-            } catch (InterruptedException e) {
-                running = false;
-                logger.warn("The header/footer updater has been stop for the analysis service");
+        try {
+            while (active) {
+                getHeaderAndFooter(getTemplate());
+                if (active) Thread.sleep(1000 * 60 * MINUTES);
             }
+        } catch (InterruptedException e) {
+            logger.info("Analysis-Service HeaderFooterCacher interrupted");
         }
     }
 
@@ -82,8 +80,8 @@ public class HeaderFooterCacher extends Thread {
             out.write(content.getBytes());
             out.close();
             logger.debug(file + " updated successfully");
-        } catch (NullPointerException | IOException e) {
-            logger.error("Error updating " + fileName);
+        } catch (IllegalStateException | NullPointerException | IOException e) {
+            logger.warn("Error updating " + fileName);
             interrupt();
         }
     }
@@ -129,5 +127,12 @@ public class HeaderFooterCacher extends Thread {
         } catch (StringIndexOutOfBoundsException e) {
             return target;
         }
+    }
+
+    @Override
+    public void interrupt() {
+        active = false;
+        super.interrupt();
+        logger.info("Analysis-Service HeaderFooterCacher stopped");
     }
 }
