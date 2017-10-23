@@ -30,10 +30,6 @@
         </encoder>
     </appender>
 
-    <logger name="analysisDataLogger" level="INFO" additivity="false">
-        <appender-ref ref="INFO_STDOUT"/>
-    </logger>
-
     <logger name="threadLogger" level="${logging.level}" additivity="false">
         <appender-ref ref="INFO_STDOUT"/>
     </logger>
