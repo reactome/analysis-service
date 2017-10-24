@@ -5,8 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PreDestroy;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -24,6 +26,7 @@ import java.net.URL;
  *
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@Component
 public class HeaderFooterCacher extends Thread {
 
     private static Logger logger = LoggerFactory.getLogger("threadLogger");
@@ -129,6 +132,7 @@ public class HeaderFooterCacher extends Thread {
         }
     }
 
+    @PreDestroy
     @Override
     public void interrupt() {
         active = false;

@@ -9,10 +9,11 @@
     <context:component-scan base-package="org.reactome.server.analysis.core.methods"/>
     <context:component-scan base-package="org.reactome.server.analysis.service.controller"/>
     <context:component-scan base-package="org.reactome.server.analysis.service.entrypoint"/>
+    <context:component-scan base-package="org.reactome.server.analysis.service.utils"/>
 
     <!-- Standard xml based mvc config-->
     <mvc:annotation-driven>
-        <mvc:message-converters register-defaults="true">
+        <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
                 <property name="objectMapper">
                     <bean class="com.fasterxml.jackson.databind.ObjectMapper">
@@ -58,10 +59,6 @@
 
     <bean id="analysisHelper" class="org.reactome.server.analysis.service.helper.AnalysisHelper">
         <property name="pathDirectory" value="${analysis.data.tmp}"/>
-    </bean>
-
-    <bean id="templateCacher" class="org.reactome.server.analysis.service.utils.HeaderFooterCacher" destroy-method="interrupt">
-        <constructor-arg name="server" value="${template_server_host}"/>
     </bean>
 
      <!-- Creates a controller at /api-docs from this uri, which serves swagger's raw documentation in JSON format. -->
