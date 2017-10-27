@@ -34,6 +34,10 @@
         <appender-ref ref="INFO_STDOUT"/>
     </logger>
 
+    <logger name="org.springframework" level="ERROR" />
+    <logger name="org.reflections" level="WARN" />
+    <logger name="springfox.documentation" level="WARN" />
+
     <!--Root logger will log all messages to file that are not caught by other loggers-->
     <root>
         <appender-ref ref="STDOUT" />

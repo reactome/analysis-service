@@ -64,4 +64,20 @@
      <!-- Creates a controller at /api-docs from this uri, which serves swagger's raw documentation in JSON format. -->
     <bean name="/applicationSwaggerConfig" class="org.reactome.server.analysis.service.swagger.AnalysisServiceSwaggerConfig" />
 
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${mail.host}" />
+        <property name="port" value="${mail.port}" />
+        <property name="username" value="${mail.username}" />
+        <property name="password" value="${mail.password}" />
+
+        <!-- The name of the property, following JavaBean naming conventions -->
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.transport.protocol">smtp</prop>
+                <prop key="mail.smtp.auth">${mail.enable.auth}</prop>
+                <prop key="mail.smtp.starttls.enable">true</prop>
+                <prop key="mail.debug">false</prop>
+            </props>
+        </property>
+    </bean>
 </beans>
