@@ -24,6 +24,7 @@ public class FileCheckerController implements LruFolderContentCheckerFileDeleted
     private Long ttl;
 
     public FileCheckerController() {
+        Thread.currentThread().setName("AS-TempFilesChecker");
     }
 
     public void setPathDirectory(String pathDirectory) {
@@ -67,7 +68,7 @@ public class FileCheckerController implements LruFolderContentCheckerFileDeleted
                 logger.warn("FileCheckerController thread renaming failed!");
             }
             checker.start();
-            logger.info("FileCheckerController started...");
+            logger.info(pathDirectory + " is now under LRU check...");
         }
     }
 
