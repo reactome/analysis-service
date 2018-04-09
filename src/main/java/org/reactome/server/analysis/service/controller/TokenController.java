@@ -1,19 +1,15 @@
 package org.reactome.server.analysis.service.controller;
 
 import io.swagger.annotations.*;
-import org.reactome.server.analysis.core.model.AnalysisIdentifier;
-import org.reactome.server.analysis.service.exception.ResourceNotFoundException;
+import org.reactome.server.analysis.core.result.exception.ResourceNotFoundException;
+import org.reactome.server.analysis.core.result.model.*;
+import org.reactome.server.analysis.core.result.utils.TokenUtils;
 import org.reactome.server.analysis.service.helper.AnalysisHelper;
-import org.reactome.server.analysis.service.model.*;
-import org.reactome.server.analysis.service.result.AnalysisStoredResult;
-import org.reactome.server.analysis.service.result.PathwayNodeSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +22,10 @@ import java.util.Set;
 public class TokenController {
 
     @Autowired
-    private AnalysisHelper controller;
+    private TokenUtils token;
+
+    @Autowired
+    private AnalysisHelper analysis;
 
     @ApiOperation(value = "Returns the result associated with the token",
                   notes = "Use page and pageSize to reduce the amount of data retrieved. Use sortBy and order to sort the result by your " +
@@ -49,7 +48,7 @@ public class TokenController {
                                   @RequestParam(required = false) String order,
                                     @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                   @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        return controller.getFromToken(token).getResultSummary(sortBy, order, resource, pageSize, page);
+        return this.token.getFromToken(token).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Returns the result for the pathway ids sent by post (when they are present in the original result)",
@@ -66,8 +65,8 @@ public class TokenController {
                                                 @RequestBody String input,
                                                  @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                                 @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        List<String> inputIdentifiers = controller.getInputIdentifiers(input);
-        return controller.getFromToken(token).filterByPathways(inputIdentifiers, resource);
+        List<String> inputIdentifiers = analysis.getInputIdentifiers(input);
+        return this.token.getFromToken(token).filterByPathways(inputIdentifiers, resource);
     }
 
     @ApiOperation(value = "Filters the result by species")
@@ -82,7 +81,7 @@ public class TokenController {
                                           @PathVariable Long species,
                                            @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                           @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        return controller.getFromToken(token).filterBySpecies(species, resource);
+        return this.token.getFromToken(token).filterBySpecies(species, resource);
     }
 
     @ApiOperation(value = "Returns the page where the corresponding pathway is taking into account the passed parameters",
@@ -106,7 +105,7 @@ public class TokenController {
                                 @RequestParam(required = false) String order,
                                  @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                  @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        return controller.getFromToken(token).getPage(pathway, sortBy, order, resource, pageSize);
+        return this.token.getFromToken(token).getPage(pathway, sortBy, order, resource, pageSize);
     }
 
     @ApiOperation(value = "Returns a summary of the contained identifiers and interactors for a given pathway and token",
@@ -123,17 +122,9 @@ public class TokenController {
                                                   @PathVariable String pathway,
                                                     @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                                   @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        AnalysisStoredResult result = controller.getFromToken(token);
-        PathwayNodeSummary aux = result.getPathway(pathway);
-        if (aux != null) {
-            List<String> columnNames = result.getExpressionSummary().getColumnNames();
-            FoundEntities identifiers = (new FoundEntities(aux, columnNames)).filter(resource);
-            FoundInteractors interactors =(new FoundInteractors(aux, columnNames)).filter(resource);
-            if (identifiers != null ) {
-                return new FoundElements(pathway, identifiers, interactors, columnNames);
-            }
-        }
-        throw new ResourceNotFoundException();
+        FoundElements fe = this.token.getFromToken(token).getFoundElmentsForPathway(pathway, resource);
+        if(fe == null) throw new ResourceNotFoundException();
+        return fe;
     }
 
     @ApiOperation(value = "Returns a summary of the contained identifiers and interactors for each requested pathway and a given token",
@@ -150,24 +141,10 @@ public class TokenController {
                                                           @RequestBody String input,
                                                            @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                                           @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        List<FoundElements> rtn = new ArrayList<>();
-        AnalysisStoredResult result = controller.getFromToken(token);
-        for (String pathway : controller.getInputIdentifiers(input)) {
-            PathwayNodeSummary aux = result.getPathway(pathway);
-            if (aux != null) {
-                List<String> columnNames = result.getExpressionSummary().getColumnNames();
-                FoundEntities identifiers = (new FoundEntities(aux, columnNames)).filter(resource);
-                FoundInteractors interactors = (new FoundInteractors(aux, columnNames)).filter(resource);
-                if (identifiers != null) {
-                    rtn.add(new FoundElements(pathway, identifiers, interactors, columnNames));
-                }
-            }
-        }
-
-        if(rtn.isEmpty()) {
-            throw new ResourceNotFoundException();
-        }
-        return rtn;
+        List<String> pathways = analysis.getInputIdentifiers(input);
+        List<FoundElements> fes = this.token.getFromToken(token).getFoundElmentsForPathways(pathways, resource);
+        if(fes == null || fes.isEmpty()) throw new ResourceNotFoundException();
+        return fes;
     }
 
     @ApiOperation(value = "Returns a summary of the found curated identifiers for a given pathway and token",
@@ -179,25 +156,18 @@ public class TokenController {
     @RequestMapping(value = "/{token}/found/entities/{pathway}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public FoundEntities getTokenIdentifiersPathway(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
-                                                         @PathVariable String token,
+                                                  @PathVariable String token,
                                                     @ApiParam(name = "pathway", required = true, value = "The identifier of the pathway of interest")
-                                                         @PathVariable String pathway,
+                                                  @PathVariable String pathway,
                                                     @ApiParam(name = "page", value = "page number", defaultValue = "1")
-                                                         @RequestParam(required = false) Integer page,
+                                                  @RequestParam(required = false) Integer page,
                                                     @ApiParam(name = "pageSize", value = "identifiers per page", defaultValue = "20")
-                                                         @RequestParam(required = false) Integer pageSize,
+                                                  @RequestParam(required = false) Integer pageSize,
                                                     @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
-                                                         @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        AnalysisStoredResult result = controller.getFromToken(token);
-        PathwayNodeSummary aux = result.getPathway(pathway);
-        if (aux != null) {
-            List<String> columnNames = result.getExpressionSummary().getColumnNames();
-            FoundEntities pi = (new FoundEntities(aux, columnNames)).filter(resource, pageSize, page);
-            if (pi != null) {
-                return pi;
-            }
-        }
-        throw new ResourceNotFoundException();
+                                                  @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+        FoundEntities fi = this.token.getFromToken(token).getFoundEntities(pathway);
+        if (fi == null) throw new ResourceNotFoundException();
+        return fi.filter(resource, pageSize, page);
     }
 
     /*
@@ -230,16 +200,9 @@ public class TokenController {
                                                          @RequestParam(required = false) Integer pageSize,
                                                        @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                                          @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        AnalysisStoredResult result = controller.getFromToken(token);
-        PathwayNodeSummary aux = result.getPathway(pathway);
-        if (aux != null) {
-            List<String> columnNames = result.getExpressionSummary().getColumnNames();
-            FoundInteractors pi = (new FoundInteractors(aux, columnNames)).filter(resource, pageSize, page);
-            if (pi != null) {
-                return pi;
-            }
-        }
-        throw new ResourceNotFoundException();
+        FoundInteractors fi = this.token.getFromToken(token).getFoundInteractors(pathway);
+        if (fi == null) throw new ResourceNotFoundException();
+        return fi.filter(resource, pageSize, page);
     }
 
 
@@ -259,24 +222,8 @@ public class TokenController {
                                                           @RequestParam(required = false) Integer pageSize,
                                                            @ApiParam(name = "page", value = "page number", defaultValue = "1")
                                                           @RequestParam(required = false) Integer page) {
-        List<IdentifierSummary> notFound = new LinkedList<>();
-        for (AnalysisIdentifier identifier : controller.getFromToken(token).getNotFound()) {
-            notFound.add(new IdentifierSummary(identifier));
-        }
-        if(pageSize!=null && page!=null){
-            pageSize = pageSize < 0 ? 0 : pageSize;
-            page = page < 0 ? 0 : page;
-            int from = pageSize * (page - 1);
-            if(from < notFound.size() && from > -1){
-                int to = from + pageSize;
-                to = to > notFound.size() ? notFound.size() : to;
-                return notFound.subList(from, to);
-            }else{
-                return new LinkedList<>();
-            }
-        }else{
-            return notFound;
-        }
+        List<IdentifierSummary> notFound = this.token.getFromToken(token).getNotFoundIdentifiers();
+        return analysis.filter(notFound, pageSize, page);
     }
 
     @ApiOperation(value = "Returns the reaction ids of the provided pathway id that are present in the original result",
@@ -293,7 +240,7 @@ public class TokenController {
                                              @PathVariable String pathway,
                                               @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        return controller.getFromToken(token).getFoundReactions(pathway, resource);
+        return this.token.getFromToken(token).getFoundReactions(pathway, resource);
     }
 
     @ApiOperation(value = "Returns the reaction ids of the pathway ids sent by post that are present in the original result",
@@ -310,8 +257,8 @@ public class TokenController {
                                              @RequestBody String input,
                                               @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        List<String> pathwayIds = controller.getInputIdentifiers(input);
-        return controller.getFromToken(token).getFoundReactions(pathwayIds, resource);
+        List<String> pathwayIds = analysis.getInputIdentifiers(input);
+        return this.token.getFromToken(token).getFoundReactions(pathwayIds, resource);
     }
 
     @ApiOperation(value = "Returns the resources summary associated with the token",
@@ -323,6 +270,6 @@ public class TokenController {
     @ResponseBody
     public List<ResourceSummary> getResources( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
                                               @PathVariable String token) {
-        return this.controller.getFromToken(token).getResourceSummary();
+        return this.token.getFromToken(token).getResourceSummary();
     }
 }

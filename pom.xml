@@ -12,7 +12,7 @@
         <deploymentPath>/</deploymentPath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <analysis.core>3.0.0-SNAPSHOT</analysis.core>
+        <analysis.core>3.1.0</analysis.core>
         <spring.version>4.2.5.RELEASE</spring.version>
 
         <sl4j.version>1.7.2</sl4j.version>
@@ -20,7 +20,7 @@
         <javaee.version>7.0</javaee.version>
         <jackson.version>2.7.3</jackson.version>
         <swagger.version>2.7.0</swagger.version>
-        <reactome.utils.version>1.0.5</reactome.utils.version>
+        <!--<reactome.utils.version>1.0.5</reactome.utils.version>-->
         <tika.version>1.12</tika.version>
         <jackson.asl.version>1.9.12</jackson.asl.version>
 
@@ -28,9 +28,8 @@
         <servlet.api.version>2.5</servlet.api.version>
         <jsp.api.version>2.1</jsp.api.version>
         <jstl.api.version>1.2</jstl.api.version>
-        <xml.security.version>1.0.4</xml.security.version>
+        <!--<xml.security.version>1.0.4</xml.security.version>-->
         <xalan.version>2.7.1</xalan.version>
-        <joda.time.version>2.3</joda.time.version>
         <junit.version>4.8.2</junit.version>
         <jmimemagic.version>0.1.2</jmimemagic.version>
         <mail.version>1.6.0</mail.version>
@@ -141,22 +140,16 @@
             <version>${jstl.api.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>xml-security</groupId>
-            <artifactId>xml-security</artifactId>
-            <version>${xml.security.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>xml-security</groupId>-->
+            <!--<artifactId>xml-security</artifactId>-->
+            <!--<version>${xml.security.version}</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
             <version>${xalan.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${joda.time.version}</version>
         </dependency>
 
         <dependency>
@@ -171,12 +164,6 @@
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
             <version>${tika.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.reactome.server.utils</groupId>
-            <artifactId>reactome-utils</artifactId>
-            <version>${reactome.utils.version}</version>
         </dependency>
 
         <!--Documentation generator-->
@@ -288,6 +275,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
                 <executions>
                     <execution>
                         <id>make-a-jar</id>

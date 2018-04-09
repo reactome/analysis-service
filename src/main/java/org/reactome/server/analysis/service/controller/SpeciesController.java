@@ -2,8 +2,8 @@ package org.reactome.server.analysis.service.controller;
 
 import io.swagger.annotations.*;
 import org.reactome.server.analysis.core.model.SpeciesNodeFactory;
+import org.reactome.server.analysis.core.result.model.AnalysisResult;
 import org.reactome.server.analysis.service.helper.AnalysisHelper;
-import org.reactome.server.analysis.service.model.AnalysisResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

@@ -1,8 +1,9 @@
 package org.reactome.server.analysis.service.handler;
 
-import org.apache.log4j.Logger;
-import org.reactome.server.analysis.service.exception.AnalysisServiceException;
-import org.reactome.server.analysis.service.model.AnalysisError;
+import org.reactome.server.analysis.core.result.exception.AnalysisServiceException;
+import org.reactome.server.analysis.core.result.model.AnalysisError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
@@ -22,7 +23,7 @@ import java.io.IOException;
  */
 public class HandlerExceptionResolverImpl implements HandlerExceptionResolver {
 
-    private static Logger logger = Logger.getLogger(HandlerExceptionResolverImpl.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger("resultLogger");
 
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
                                          Object handler, Exception ex) {

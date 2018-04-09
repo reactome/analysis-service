@@ -49,6 +49,8 @@
         <property name="fileName" value="${analysis.data.file}"/>
     </bean>
 
+    <bean class="org.reactome.server.analysis.service.helper.AnalysisHelper"/>
+
     <bean id="fileCheckerController" class="org.reactome.server.analysis.service.helper.FileCheckerController" name="FileCheckerController" destroy-method="interrupt">
         <property name="pathDirectory" value="${analysis.data.tmp}"/>
         <property name="maxSize" value="5368709120"/> <!-- 104857600 = 100MB // 5368709120 = 5 GB // 10737418240 = 10GB -->
@@ -57,7 +59,7 @@
         <property name="ttl" value="604800000"/> <!-- 1 week (SAB suggestion) -->
     </bean>
 
-    <bean id="analysisHelper" class="org.reactome.server.analysis.service.helper.AnalysisHelper">
+    <bean id="tokenUtils" class="org.reactome.server.analysis.core.result.utils.TokenUtils">
         <property name="pathDirectory" value="${analysis.data.tmp}"/>
     </bean>
 

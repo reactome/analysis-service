@@ -1,7 +1,7 @@
 package org.reactome.server.analysis.service.utils;
 
 import org.apache.commons.io.IOUtils;
-import org.reactome.server.analysis.service.exception.UnprocessableEntityException;
+import org.reactome.server.analysis.core.result.exception.UnprocessableEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

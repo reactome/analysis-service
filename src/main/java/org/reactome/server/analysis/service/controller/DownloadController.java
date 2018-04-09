@@ -1,9 +1,9 @@
 package org.reactome.server.analysis.service.controller;
 
 import io.swagger.annotations.*;
-import org.reactome.server.analysis.service.helper.AnalysisHelper;
+import org.reactome.server.analysis.core.result.AnalysisStoredResult;
+import org.reactome.server.analysis.core.result.utils.TokenUtils;
 import org.reactome.server.analysis.service.helper.DownloadHelper;
-import org.reactome.server.analysis.service.result.AnalysisStoredResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Controller;
@@ -21,9 +21,9 @@ import java.io.IOException;
 @Api(tags = "download", description = "Retrieve downloadable files in CSV format", position = 4)
 @RequestMapping(value = "/download")
 public class DownloadController {
-    
+
     @Autowired
-    private AnalysisHelper controller;
+    private TokenUtils token;
 
     @ApiOperation(value = "Downloads all hit pathways for a given analysis",
                   notes = "The results are filtered by the selected resource. The filename is the one to be suggested in the download window.")
@@ -38,7 +38,7 @@ public class DownloadController {
                                                   @PathVariable String resource,
                                                    @ApiParam(name = "filename", value = "the file name for the downloaded information", required = true, defaultValue = "result")
                                                   @PathVariable String filename) throws IOException {
-        AnalysisStoredResult asr = this.controller.getFromToken(token);
+        AnalysisStoredResult asr = this.token.getFromToken(token);
         return DownloadHelper.getHitPathwaysCVS(filename, asr, resource);
     }
 
@@ -55,7 +55,7 @@ public class DownloadController {
                                                     @PathVariable String resource,
                                                      @ApiParam(name = "filename", value = "the file name for the downloaded information", required = true, defaultValue = "result")
                                                     @PathVariable String filename) throws IOException {
-        AnalysisStoredResult asr = this.controller.getFromToken(token);
+        AnalysisStoredResult asr = this.token.getFromToken(token);
         return DownloadHelper.getIdentifiersFoundMappingCVS(filename, asr, resource);
     }
 
@@ -70,7 +70,7 @@ public class DownloadController {
                                    @PathVariable String token,
                                     @ApiParam(name = "filename", value = "the file name for the downloaded information", required = true, defaultValue = "result")
                                    @PathVariable String filename) throws IOException {
-        AnalysisStoredResult asr = this.controller.getFromToken(token);
+        AnalysisStoredResult asr = this.token.getFromToken(token);
         return DownloadHelper.getNotFoundIdentifiers(filename, asr);
     }
 

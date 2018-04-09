@@ -1,6 +1,6 @@
 package org.reactome.server.analysis.service.helper;
 
-import org.reactome.server.analysis.service.utils.Tokenizer;
+import org.reactome.server.analysis.core.result.utils.Tokenizer;
 import org.reactome.server.utils.lru.LruFolderContentChecker;
 import org.reactome.server.utils.lru.LruFolderContentCheckerFileDeletedHandler;
 import org.slf4j.Logger;

@@ -1,7 +1,6 @@
 package org.reactome.server.analysis.service.helper;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.io.TikaInputStream;
@@ -12,16 +11,19 @@ import org.reactome.server.analysis.core.methods.EnrichmentAnalysis;
 import org.reactome.server.analysis.core.methods.SpeciesComparison;
 import org.reactome.server.analysis.core.model.*;
 import org.reactome.server.analysis.core.parser.exception.ParserException;
+import org.reactome.server.analysis.core.result.AnalysisStoredResult;
+import org.reactome.server.analysis.core.result.exception.*;
+import org.reactome.server.analysis.core.result.model.AnalysisSummary;
+import org.reactome.server.analysis.core.result.report.AnalysisReport;
+import org.reactome.server.analysis.core.result.report.ReportParameters;
+import org.reactome.server.analysis.core.result.utils.ResultDataUtils;
+import org.reactome.server.analysis.core.result.utils.TokenUtils;
+import org.reactome.server.analysis.core.result.utils.Tokenizer;
 import org.reactome.server.analysis.core.util.InputUtils;
-import org.reactome.server.analysis.service.exception.*;
-import org.reactome.server.analysis.service.model.AnalysisSummary;
-import org.reactome.server.analysis.service.report.AnalysisReport;
-import org.reactome.server.analysis.service.report.ReportParameters;
-import org.reactome.server.analysis.service.result.AnalysisStoredResult;
-import org.reactome.server.analysis.service.utils.ResultDataUtils;
-import org.reactome.server.analysis.service.utils.Tokenizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
@@ -46,27 +48,13 @@ import java.util.Set;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
-@Scope("singleton")
+@Component
 public class AnalysisHelper {
 
-    public enum Type {
-        SPECIES_COMPARISON,
-        OVERREPRESENTATION,
-        EXPRESSION;
+    private static final Logger logger = LoggerFactory.getLogger("analysisLogger");
 
-        public static Type getType(String type){
-            for (Type t : values()) {
-                if(t.toString().toLowerCase().equals(type.toLowerCase())){
-                    return t;
-                }
-            }
-            return null;
-        }
-    }
-
-    private static Logger logger = Logger.getLogger(AnalysisHelper.class.getName());
-
-    private String pathDirectory;
+    @Autowired
+    private TokenUtils tokenUtils;
 
     @Autowired
     private CommonsMultipartResolver multipartResolver;
@@ -82,14 +70,14 @@ public class AnalysisHelper {
     }
 
     public AnalysisStoredResult analyse(UserData userData, Boolean toHuman, Boolean includeInteractors, String userFileName){
-        Type type =  userData.getExpressionColumnNames().isEmpty() ? Type.OVERREPRESENTATION : Type.EXPRESSION;
+        AnalysisType type =  userData.getExpressionColumnNames().isEmpty() ? AnalysisType.OVERREPRESENTATION : AnalysisType.EXPRESSION;
         ReportParameters reportParams = new ReportParameters(type, toHuman, includeInteractors);
         SpeciesNode speciesNode = toHuman ? SpeciesNodeFactory.getHumanNode() : null;
         if(Tokenizer.hasToken(userData.getInputMD5(), toHuman, includeInteractors)){
             String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman, includeInteractors);
-            AnalysisSummary summary = getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName);
+            AnalysisSummary summary = tokenUtils.getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName);
             try {
-                String fileName = getFileName(token);
+                String fileName = tokenUtils.getFileName(token);
                 return ResultDataUtils.getAnalysisResult(fileName, reportParams);
             } catch (FileNotFoundException e) {
                 logger.trace("No TOKEN found. Analysing...");
@@ -99,7 +87,7 @@ public class AnalysisHelper {
             }
         }
         String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman, includeInteractors);
-        AnalysisSummary summary = getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName);
+        AnalysisSummary summary = tokenUtils.getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName);
         return analyse(summary, userData, speciesNode, includeInteractors, reportParams);
     }
 
@@ -107,13 +95,13 @@ public class AnalysisHelper {
         SpeciesNode speciesFrom = SpeciesNodeFactory.getSpeciesNode(from, "", "");
         SpeciesNode speciesTo = SpeciesNodeFactory.getSpeciesNode(to, "", "");
 
-        ReportParameters reportParams = new ReportParameters(Type.SPECIES_COMPARISON);
-        String fakeMD5 = this.getFakedMD5(speciesFrom, speciesTo);
+        ReportParameters reportParams = new ReportParameters(AnalysisType.SPECIES_COMPARISON);
+        String fakeMD5 = tokenUtils.getFakedMD5(speciesFrom, speciesTo);
         boolean human = from.equals(SpeciesNodeFactory.getHumanNode().getSpeciesID());
         if(Tokenizer.hasToken(fakeMD5, human, false)){
             String token = Tokenizer.getOrCreateToken(fakeMD5, human, false);
             try {
-                String fileName = getFileName(token);
+                String fileName = tokenUtils.getFileName(token);
                 return ResultDataUtils.getAnalysisResult(fileName, reportParams);
             } catch (FileNotFoundException e) {
                 //Nothing here
@@ -123,7 +111,7 @@ public class AnalysisHelper {
         try {
             UserData ud = speciesComparison.getSyntheticUserData(speciesTo);
             String token = Tokenizer.getOrCreateToken(fakeMD5, human, false);
-            AnalysisSummary summary = new AnalysisSummary(token, null, false,  null, Type.SPECIES_COMPARISON, to);
+            AnalysisSummary summary = new AnalysisSummary(token, null, false,  null, AnalysisType.SPECIES_COMPARISON, to);
             return analyse(summary, ud, speciesFrom, false, reportParams);
         } catch (SpeciesNotFoundException e) {
             throw new ResourceNotFoundException();
@@ -131,31 +119,21 @@ public class AnalysisHelper {
 
     }
 
-    private AnalysisSummary getAnalysisSummary(String token, Boolean projection, Boolean interactors, String sampleName, Type type, String userFileName){
-        if(userFileName!=null && !userFileName.isEmpty()){
-            return new AnalysisSummary(token, projection, interactors, sampleName, type, userFileName);
-        }else{
-            return new AnalysisSummary(token, projection, interactors, sampleName, type, true);
-        }
-    }
-
-    private String getFakedMD5(SpeciesNode speciesFrom, SpeciesNode speciesTo){
-        return Type.SPECIES_COMPARISON.toString() + speciesFrom.getSpeciesID() + "-" + speciesTo.getSpeciesID();
-    }
-
-    public AnalysisStoredResult getFromToken(String token) {
-        String fileName = getFileName(token);
-        if(fileName!=null){
-            try {
-                return ResultDataUtils.getAnalysisResult(fileName);
-            } catch (FileNotFoundException e) {
-                //should be alive is only true when the token follows the rule and the resulting date is in the last 7 days
-                if(Tokenizer.shouldBeAlive(token)){
-                    throw new ResourceGoneException();
-                }
+    public <T> List<T> filter(List<T> list, Integer pageSize, Integer page){
+        if(pageSize!=null && page!=null){
+            pageSize = pageSize < 0 ? 0 : pageSize;
+            page = page < 0 ? 0 : page;
+            int from = pageSize * (page - 1);
+            if(from < list.size() && from > -1){
+                int to = from + pageSize;
+                to = to > list.size() ? list.size() : to;
+                return list.subList(from, to);
+            }else{
+                return new LinkedList<>();
             }
+        }else{
+            return list;
         }
-        throw new ResourceNotFoundException();
     }
 
     public List<String> getInputIdentifiers(String input){
@@ -260,10 +238,6 @@ public class AnalysisHelper {
         return name;
     }
 
-    public void setPathDirectory(String pathDirectory) {
-        this.pathDirectory = pathDirectory;
-    }
-
     private AnalysisStoredResult analyse(AnalysisSummary summary, UserData userData, SpeciesNode speciesNode, Boolean includeInteractors, ReportParameters reportParams){
         long start = System.currentTimeMillis();
         Set<AnalysisIdentifier> identifiers = userData.getIdentifiers();
@@ -272,7 +246,7 @@ public class AnalysisHelper {
         AnalysisStoredResult result = new AnalysisStoredResult(userData, resAux);
         result.setSummary(summary);
         result.setHitPathways(resAux.getUniqueHitPathways(speciesNode));
-        this.saveResult(result);
+        tokenUtils.saveResult(result);
 
         //Report
         reportParams.setAnalysisStoredResult(result);
@@ -282,21 +256,8 @@ public class AnalysisHelper {
         return result;
     }
 
-    private String getFileName(String token){
-        String name = Tokenizer.getName(token);
-        return String.format("%s/res_%s.bin", this.pathDirectory, name);
-    }
-
-    private void saveResult(final AnalysisStoredResult result){
-        String fileName = getFileName(result.getSummary().getToken());
-        ResultDataUtils.kryoSerialisation(result, fileName);
-    }
-
-    private boolean isAcceptedContentType(String contentType){
-        return contentType == null || contentType.contains("text/plain");
-    }
-
     // trusting all certificate
+    @SuppressWarnings("Duplicates")
     private void doTrustToCertificates() throws NoSuchAlgorithmException, KeyManagementException {
         Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
         TrustManager[] trustAllCerts = new TrustManager[]{
@@ -339,5 +300,9 @@ public class AnalysisHelper {
                 tikaInputStream.close();
             }
         }
+    }
+
+    public boolean isAcceptedContentType(String contentType){
+        return contentType == null || contentType.contains("text/plain");
     }
 }
