@@ -6,6 +6,7 @@
                             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                             http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
+    <context:component-scan base-package="org.reactome.server.graph"/>
     <context:component-scan base-package="org.reactome.server.analysis.core.methods"/>
     <context:component-scan base-package="org.reactome.server.analysis.service.controller"/>
     <context:component-scan base-package="org.reactome.server.analysis.service.entrypoint"/>
@@ -81,5 +82,20 @@
                 <prop key="mail.debug">false</prop>
             </props>
         </property>
+    </bean>
+
+    <bean id="graphCore" class="org.reactome.server.analysis.service.utils.ReactomeGraphConfig">
+        <constructor-arg name="host" value="${neo4j.host}"/>
+        <constructor-arg name="port" value="${neo4j.port}"/>
+        <constructor-arg name="user" value="${neo4j.user}"/>
+        <constructor-arg name="password" value="${neo4j.password}"/>
+    </bean>
+
+    <bean id="analysisReport" class="org.reactome.server.tools.analysis.report.AnalysisReport" depends-on="graphCore">
+        <constructor-arg name="diagramPath" value="${diagram.json.folder}"/>
+        <constructor-arg name="ehldPath" value="${ehld.folder}"/>
+        <constructor-arg name="fireworksPath" value="${fireworks.json.folder}"/>
+        <constructor-arg name="analysisPath" value="${analysis.data.tmp}"/>
+        <constructor-arg name="svgSummary" value="${svg.summary.file}"/>
     </bean>
 </beans>

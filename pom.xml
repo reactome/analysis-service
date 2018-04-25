@@ -13,14 +13,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <analysis.core>3.1.0</analysis.core>
+        <analysis.report>1.0-SNAPSHOT</analysis.report>
         <spring.version>4.2.5.RELEASE</spring.version>
 
         <sl4j.version>1.7.2</sl4j.version>
         <fileupload.version>1.3</fileupload.version>
+        <commons.codec>1.11</commons.codec>
         <javaee.version>7.0</javaee.version>
         <jackson.version>2.7.3</jackson.version>
         <swagger.version>2.7.0</swagger.version>
-        <!--<reactome.utils.version>1.0.5</reactome.utils.version>-->
         <tika.version>1.12</tika.version>
         <jackson.asl.version>1.9.12</jackson.asl.version>
 
@@ -28,7 +29,7 @@
         <servlet.api.version>2.5</servlet.api.version>
         <jsp.api.version>2.1</jsp.api.version>
         <jstl.api.version>1.2</jstl.api.version>
-        <!--<xml.security.version>1.0.4</xml.security.version>-->
+        <xml.security.version>1.0.4</xml.security.version>
         <xalan.version>2.7.1</xalan.version>
         <junit.version>4.8.2</junit.version>
         <jmimemagic.version>0.1.2</jmimemagic.version>
@@ -59,11 +60,26 @@
         </dependency>
 
         <dependency>
+            <groupId>org.reactome.server.tools</groupId>
+            <artifactId>analysis-report</artifactId>
+            <version>${analysis.report}</version>
+        </dependency>
+
+        <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
             <version>${fileupload.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons.codec}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
         <!--json-->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
@@ -140,11 +156,11 @@
             <version>${jstl.api.version}</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>xml-security</groupId>-->
-            <!--<artifactId>xml-security</artifactId>-->
-            <!--<version>${xml.security.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.3.0</version>
+        </dependency>
 
         <dependency>
             <groupId>xalan</groupId>
@@ -193,6 +209,17 @@
             <version>${swagger.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.25</version>
+        </dependency>
     </dependencies>
 
     <build>
