@@ -80,6 +80,8 @@ public class HandlerExceptionResolverImpl implements HandlerExceptionResolver {
             response.getWriter().println(error);
         } catch (IOException e) {
             logger.error("Error writing to output stream", e);
+        } catch (IllegalStateException ise){
+            logger.error("Connection stream was closed by the user");
         }
         return new ModelAndView();
     }
