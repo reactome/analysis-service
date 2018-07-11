@@ -4,7 +4,7 @@
     <groupId>org.reactome.server.tools</groupId>
     <artifactId>analysis-service</artifactId>
     <packaging>war</packaging>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0</version>
     <name>AnalysisService</name>
     <description>Pathway enrichment and expression analysis as well as species comparison tool</description>
 
@@ -12,8 +12,8 @@
         <deploymentPath>/</deploymentPath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <analysis.core>3.1.0</analysis.core>
-        <analysis.report>1.0-SNAPSHOT</analysis.report>
+        <analysis.core>3.1.2</analysis.core>
+        <analysis.report>1.1.1</analysis.report>
         <spring.version>4.2.5.RELEASE</spring.version>
 
         <sl4j.version>1.7.2</sl4j.version>
