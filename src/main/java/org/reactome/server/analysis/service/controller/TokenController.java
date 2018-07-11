@@ -79,9 +79,13 @@ public class TokenController {
                                           @PathVariable String token,
                                            @ApiParam(name = "species", required = true, value = "The dbId of the species to filter the result")
                                           @PathVariable Long species,
+                                           @ApiParam(name = "sortBy", value = "how to sort the result", defaultValue = "ENTITIES_PVALUE", allowableValues = "NAME,TOTAL_ENTITIES,TOTAL_INTERACTORS,TOTAL_REACTIONS,FOUND_ENTITIES,FOUND_INTERACTORS,FOUND_REACTIONS,ENTITIES_RATIO,ENTITIES_PVALUE,ENTITIES_FDR,REACTIONS_RATIO")
+                                          @RequestParam(required = false) String sortBy,
+                                           @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
+                                          @RequestParam(required = false) String order,
                                            @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                           @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        return this.token.getFromToken(token).filterBySpecies(species, resource);
+        return this.token.getFromToken(token).filterBySpecies(species, sortBy, order, resource);
     }
 
     @ApiOperation(value = "Returns the page where the corresponding pathway is taking into account the passed parameters",
