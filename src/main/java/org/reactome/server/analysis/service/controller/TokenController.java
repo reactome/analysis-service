@@ -85,7 +85,7 @@ public class TokenController {
                                           @RequestParam(required = false) String order,
                                            @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
                                           @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
-        return this.token.getFromToken(token).filterBySpecies(species, sortBy, order, resource);
+        return this.token.getFromToken(token).filterBySpecies(species, resource, sortBy, order);
     }
 
     @ApiOperation(value = "Returns the page where the corresponding pathway is taking into account the passed parameters",
