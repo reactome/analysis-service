@@ -118,10 +118,9 @@ public class ReportController {
 
             Long reportTime = System.currentTimeMillis() - reportStart;
             logger.info(String.format("_REPORT_ format:PDF token:%s pathways:%d time:%s", token, number, FormatUtils.getTimeFormatted(reportTime)));
-            if (waitingTime > 0) {
-                Map<String, String> map = getReportInformation(request);
-                doAsyncSearchReport(map.get("ip-address"), waitingTime, reportTime, number, map.get("user-agent"));
-            }
+
+            Map<String, String> map = getReportInformation(request);
+            doAsyncSearchReport(map.get("ip-address"), waitingTime, reportTime, number, map.get("user-agent"));
         } catch (PdfException | IllegalStateException | IOException ise) {
             logger.info(String.format("_REPORT_ format:PDF token:%s User_Closed_Connection", token));
         } catch (AnalysisExporterException  e) {
