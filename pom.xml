@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <analysis.core>3.1.2</analysis.core>
-        <analysis.report>1.1.1</analysis.report>
+        <analysis.report>1.1.2-SNAPSHOT</analysis.report>
         <spring.version>4.2.5.RELEASE</spring.version>
 
         <sl4j.version>1.7.2</sl4j.version>
