@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
-@Api(tags = "species", description= "Species comparison", position = 3)
+@Api(tags = "species", description= "Species comparison", position = 4)
 @RequestMapping(value = "/species")
 public class SpeciesController {
 
@@ -34,9 +36,10 @@ public class SpeciesController {
                                                @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
                                               @RequestParam(required = false) String order,
                                                @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
-                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                                HttpServletRequest request) {
         Long from = SpeciesNodeFactory.getHumanNode().getSpeciesID(); //For the time being let's do only human ;)
-        return controller.compareSpecies(from, species).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.compareSpecies(from, species, request).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
 

@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.net.ssl.*;
+import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,17 +66,17 @@ public class AnalysisHelper {
     @Autowired
     private SpeciesComparison speciesComparison;
 
-    public AnalysisStoredResult analyse(UserData userData, boolean toHuman, boolean includeInteractors){
-        return analyse(userData, toHuman, includeInteractors, null);
+    public AnalysisStoredResult analyse(UserData userData, HttpServletRequest request, boolean toHuman, boolean includeInteractors){
+        return analyse(userData, request, toHuman, includeInteractors, null);
     }
 
-    public AnalysisStoredResult analyse(UserData userData, Boolean toHuman, Boolean includeInteractors, String userFileName){
+    public AnalysisStoredResult analyse(UserData userData, HttpServletRequest request, Boolean toHuman, Boolean includeInteractors, String userFileName){
         AnalysisType type =  userData.getExpressionColumnNames().isEmpty() ? AnalysisType.OVERREPRESENTATION : AnalysisType.EXPRESSION;
         ReportParameters reportParams = new ReportParameters(type, toHuman, includeInteractors);
         SpeciesNode speciesNode = toHuman ? SpeciesNodeFactory.getHumanNode() : null;
         if(Tokenizer.hasToken(userData.getInputMD5(), toHuman, includeInteractors)){
             String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman, includeInteractors);
-            AnalysisSummary summary = tokenUtils.getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName);
+            AnalysisSummary summary = tokenUtils.getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName, getServerName(request));
             try {
                 String fileName = tokenUtils.getFileName(token);
                 return ResultDataUtils.getAnalysisResult(fileName, reportParams);
@@ -87,11 +88,11 @@ public class AnalysisHelper {
             }
         }
         String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman, includeInteractors);
-        AnalysisSummary summary = tokenUtils.getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName);
+        AnalysisSummary summary = tokenUtils.getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName, getServerName(request));
         return analyse(summary, userData, speciesNode, includeInteractors, reportParams);
     }
 
-    public AnalysisStoredResult compareSpecies(Long from, Long to){
+    public AnalysisStoredResult compareSpecies(Long from, Long to, HttpServletRequest request){
         SpeciesNode speciesFrom = SpeciesNodeFactory.getSpeciesNode(from, "", "");
         SpeciesNode speciesTo = SpeciesNodeFactory.getSpeciesNode(to, "", "");
 
@@ -111,7 +112,7 @@ public class AnalysisHelper {
         try {
             UserData ud = speciesComparison.getSyntheticUserData(speciesTo);
             String token = Tokenizer.getOrCreateToken(fakeMD5, human, false);
-            AnalysisSummary summary = new AnalysisSummary(token, null, false,  null, AnalysisType.SPECIES_COMPARISON, to);
+            AnalysisSummary summary = new AnalysisSummary(token, null, false,  null, AnalysisType.SPECIES_COMPARISON, to, getServerName(request));
             return analyse(summary, ud, speciesFrom, false, reportParams);
         } catch (SpeciesNotFoundException e) {
             throw new ResourceNotFoundException();
@@ -304,5 +305,24 @@ public class AnalysisHelper {
 
     public boolean isAcceptedContentType(String contentType){
         return contentType == null || contentType.contains("text/plain");
+    }
+
+    /**
+     * #Custom header added to propagate the request protocol when ProxyPass
+     * RequestHeader set supports-ssl "true"
+     *
+     * @param request
+     * @return
+     */
+    private String getServerName(HttpServletRequest request){
+        String rtn;
+        try {
+            Boolean supportsSSL = Boolean.valueOf(request.getHeader("supports-ssl"));
+            URL url = new URL(request.getRequestURL().toString());
+            rtn = "http" + (supportsSSL ? "s" : "") + "://" + url.getHost();
+        } catch (MalformedURLException e) {
+            rtn = null;
+        }
+        return rtn;
     }
 }

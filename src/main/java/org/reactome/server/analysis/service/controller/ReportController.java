@@ -45,7 +45,7 @@ import java.util.Map;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags = "report", description = "Retrieves report files in PDF format", position = 4)
+@Api(tags = "report", description = "Retrieves report files in PDF format", position = 5)
 @RequestMapping(value = "/report")
 public class ReportController {
 

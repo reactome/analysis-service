@@ -18,7 +18,7 @@ import java.io.IOException;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags = "download", description = "Retrieve downloadable files in CSV format", position = 4)
+@Api(tags = "download", description = "Retrieve downloadable files in CSV format", position = 5)
 @RequestMapping(value = "/download")
 public class DownloadController {
 

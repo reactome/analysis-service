@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags="identifier", description = "Queries for only one identifier", position = 0)
+@Api(tags="identifier", description = "Queries for only one identifier", position = 1)
 @RequestMapping(value = "/identifier")
 public class IdentifierController {
 
@@ -40,9 +42,10 @@ public class IdentifierController {
                                                @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
                                               @RequestParam(required = false) String order,
                                                @ApiParam(name = "resource", value = "resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
-                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                                HttpServletRequest request) {
         UserData ud = controller.getUserData(id);
-        return controller.analyse(ud, true, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, request, true, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the identifier over the different species in the database",
@@ -64,8 +67,9 @@ public class IdentifierController {
                                         @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
                                        @RequestParam(required = false) String order,
                                         @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
-                                       @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+                                       @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                         HttpServletRequest request) {
         UserData ud = controller.getUserData(id);
-        return controller.analyse(ud, false, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, request, false, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 }

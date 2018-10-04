@@ -9,11 +9,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags = "identifiers", description = "Queries for multiple identifiers", position = 1)
+@Api(tags = "identifiers", description = "Queries for multiple identifiers", position = 2)
 @RequestMapping(value = "/identifiers")
 public class IdentifiersController {
 
@@ -41,9 +43,10 @@ public class IdentifiersController {
                                               @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
                                              @RequestParam(required = false) String order,
                                               @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
-                                             @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+                                             @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                              HttpServletRequest request) {
         UserData ud = controller.getUserData(input);
-        return controller.analyse(ud, true, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, request, true, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the post identifiers over the different species",
@@ -66,9 +69,10 @@ public class IdentifiersController {
                                        @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
                                       @RequestParam(required = false) String order,
                                        @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
-                                      @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+                                      @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                       HttpServletRequest request) {
         UserData ud = controller.getUserData(input);
-        return controller.analyse(ud, false, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, request, false, interactors).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the identifiers in the file over the different species and projects the result to Homo Sapiens",
@@ -95,9 +99,10 @@ public class IdentifiersController {
                                               @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
                                              @RequestParam(required = false) String order,
                                               @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
-                                             @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+                                             @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                              HttpServletRequest request) {
         UserData ud = controller.getUserData(file);
-        return controller.analyse(ud, true, interactors, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, request, true, interactors, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the identifiers in the file over the different species",
@@ -123,9 +128,10 @@ public class IdentifiersController {
                                        @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
                                       @RequestParam(required = false) String order,
                                        @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
-                                      @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+                                      @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                       HttpServletRequest request) {
         UserData ud = controller.getUserData(file);
-        return controller.analyse(ud, false, interactors, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, request, false, interactors, file.getOriginalFilename()).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the identifiers contained in the provided url over the different species and projects the result to Homo Sapiens",
@@ -153,10 +159,11 @@ public class IdentifiersController {
                                              @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
                                             @RequestParam(required = false) String order,
                                              @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
-                                            @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+                                            @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                             HttpServletRequest request) {
         UserData ud = controller.getUserDataFromURL(url);
         String fileName = controller.getFileNameFromURL(url);
-        return controller.analyse(ud, true, interactors, fileName).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, request, true, interactors, fileName).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Analyse the identifiers contained in the provided url over the different species",
@@ -183,9 +190,10 @@ public class IdentifiersController {
                                       @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
                                      @RequestParam(required = false) String order,
                                       @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
-                                     @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+                                     @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                      HttpServletRequest request) {
         UserData ud = controller.getUserDataFromURL(url);
         String fileName = controller.getFileNameFromURL(url);
-        return controller.analyse(ud, false, interactors, fileName).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.analyse(ud, request, false, interactors, fileName).getResultSummary(sortBy, order, resource, pageSize, page);
     }
 }
