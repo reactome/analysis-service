@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.reactome.server.analysis.core.data.AnalysisData;
+import org.reactome.server.analysis.core.model.DatabaseInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,9 +45,9 @@ public class DatabaseController {
 
 
     @ApiIgnore
-    @RequestMapping(value = "/database/checksum", method = RequestMethod.GET, produces = "text/plain")
+    @RequestMapping(value = "/database/info", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public String getChecksum() {
-        return "" + analysisData.getDatabaseInfo().getChecksum();
+    public DatabaseInfo getDatabaseInfo() {
+        return analysisData.getDatabaseInfo();
     }
 }
