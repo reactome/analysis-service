@@ -311,15 +311,17 @@ public class AnalysisHelper {
      * #Custom header added to propagate the request protocol when ProxyPass
      * RequestHeader set supports-ssl "true"
      *
-     * @param request
-     * @return
+     * @param request the request object as provided
+     * @return the name of the server with its corresponding protocol
      */
     private String getServerName(HttpServletRequest request){
         String rtn;
         try {
             Boolean supportsSSL = Boolean.valueOf(request.getHeader("supports-ssl"));
             URL url = new URL(request.getRequestURL().toString());
-            rtn = "http" + (supportsSSL ? "s" : "") + "://" + url.getHost();
+            String protocol = url.getProtocol();
+            if(supportsSSL && !protocol.endsWith("s")) protocol += "s";
+            rtn = protocol + "://" + url.getHost();
         } catch (MalformedURLException e) {
             rtn = null;
         }
