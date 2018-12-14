@@ -85,7 +85,7 @@ public class ReportController {
                                       @SuppressWarnings("unused")  @PathVariable String filename,
                                   @ApiParam(name = "number", value = "Number of pathways reported (max 50)", defaultValue = "25")
                                     @RequestParam(required = false, defaultValue = "25") Integer number,
-                                  @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND")
+                                  @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
                                     @RequestParam(required = false, defaultValue = "TOTAL") String resource,
                                   @ApiParam(value = "Diagram Color Profile", defaultValue = "Modern", allowableValues = "Modern, Standard")
                                     @RequestParam(value = "diagramProfile", defaultValue = "Modern", required = false) String diagramProfile,
