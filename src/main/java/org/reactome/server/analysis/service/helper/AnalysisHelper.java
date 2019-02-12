@@ -8,12 +8,14 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MimeTypes;
 import org.reactome.server.analysis.core.exception.SpeciesNotFoundException;
 import org.reactome.server.analysis.core.methods.EnrichmentAnalysis;
+import org.reactome.server.analysis.core.methods.IdentifiersMapping;
 import org.reactome.server.analysis.core.methods.SpeciesComparison;
 import org.reactome.server.analysis.core.model.*;
 import org.reactome.server.analysis.core.parser.exception.ParserException;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.core.result.exception.*;
 import org.reactome.server.analysis.core.result.model.AnalysisSummary;
+import org.reactome.server.analysis.core.result.model.MappedEntity;
 import org.reactome.server.analysis.core.result.report.AnalysisReport;
 import org.reactome.server.analysis.core.result.report.ReportParameters;
 import org.reactome.server.analysis.core.result.utils.ResultDataUtils;
@@ -42,6 +44,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -62,6 +65,9 @@ public class AnalysisHelper {
 
     @Autowired
     private EnrichmentAnalysis enrichmentAnalysis;
+
+    @Autowired
+    private IdentifiersMapping identifiersMapping;
 
     @Autowired
     private SpeciesComparison speciesComparison;
@@ -118,6 +124,15 @@ public class AnalysisHelper {
             throw new ResourceNotFoundException();
         }
 
+    }
+
+    public List<MappedEntity> getMapping(UserData userData, boolean toHuman, boolean includeInteractors) {
+        Set<String> identifiers = new HashSet<>();
+        for (AnalysisIdentifier identifier : userData.getIdentifiers()) {
+            identifiers.add(identifier.getId());
+        }
+        SpeciesNode speciesNode = toHuman ? SpeciesNodeFactory.getHumanNode() : null;
+        return identifiersMapping.run(identifiers, speciesNode, includeInteractors);
     }
 
     public <T> List<T> filter(List<T> list, Integer pageSize, Integer page){
