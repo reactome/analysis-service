@@ -22,6 +22,8 @@ import org.reactome.server.analysis.core.result.utils.ResultDataUtils;
 import org.reactome.server.analysis.core.result.utils.TokenUtils;
 import org.reactome.server.analysis.core.result.utils.Tokenizer;
 import org.reactome.server.analysis.core.util.InputUtils;
+import org.reactome.server.graph.domain.model.Species;
+import org.reactome.server.graph.service.SpeciesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +44,8 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -57,20 +55,43 @@ public class AnalysisHelper {
 
     private static final Logger logger = LoggerFactory.getLogger("analysisLogger");
 
-    @Autowired
+
     private TokenUtils tokenUtils;
-
-    @Autowired
     private CommonsMultipartResolver multipartResolver;
-
-    @Autowired
     private EnrichmentAnalysis enrichmentAnalysis;
-
-    @Autowired
     private IdentifiersMapping identifiersMapping;
+    private SpeciesComparison speciesComparison;
+    private SpeciesService speciesService;
 
     @Autowired
-    private SpeciesComparison speciesComparison;
+    public void setTokenUtils(TokenUtils tokenUtils) {
+        this.tokenUtils = tokenUtils;
+    }
+
+    @Autowired
+    public void setMultipartResolver(CommonsMultipartResolver multipartResolver) {
+        this.multipartResolver = multipartResolver;
+    }
+
+    @Autowired
+    public void setEnrichmentAnalysis(EnrichmentAnalysis enrichmentAnalysis) {
+        this.enrichmentAnalysis = enrichmentAnalysis;
+    }
+
+    @Autowired
+    public void setIdentifiersMapping(IdentifiersMapping identifiersMapping) {
+        this.identifiersMapping = identifiersMapping;
+    }
+
+    @Autowired
+    public void setSpeciesComparison(SpeciesComparison speciesComparison) {
+        this.speciesComparison = speciesComparison;
+    }
+
+    @Autowired
+    public void setSpeciesService(SpeciesService speciesService) {
+        this.speciesService = speciesService;
+    }
 
     public AnalysisStoredResult analyse(UserData userData, HttpServletRequest request, boolean toHuman, boolean includeInteractors){
         return analyse(userData, request, toHuman, includeInteractors, null);
@@ -185,12 +206,11 @@ public class AnalysisHelper {
         }
     }
 
-    @SuppressWarnings("TryWithIdenticalCatches")
     public UserData getUserData(MultipartFile file){
         if(!file.isEmpty()){
             try {
                 String mimeType = detectMimeType(TikaInputStream.get(file.getInputStream()));
-                if(!isAcceptedContentType(mimeType)){
+                if(!isAcceptedContentType(mimeType, "text/plain")){
                     throw new UnsupportedMediaTypeException();
                 }
 
@@ -205,6 +225,44 @@ public class AnalysisHelper {
     }
 
     public UserData getUserDataFromURL(String url){
+        if(url!=null && !url.isEmpty()) {
+//            InputStream is;
+//            try {
+//                HttpURLConnection conn;
+//                URL aux = new URL(url);
+//                if(aux.getProtocol().contains("https")){
+//                    doTrustToCertificates(); //accepting the certificate by default
+//                    HttpsURLConnection tmpConn = (HttpsURLConnection) aux.openConnection();
+//                    is = tmpConn.getInputStream();
+//                    conn = tmpConn;
+//                }else{
+//                    URLConnection tmpConn = aux.openConnection();
+//                    is = tmpConn.getInputStream();
+//                    conn = (HttpURLConnection) tmpConn;
+//                }
+//
+//                if(conn.getContentLength() > multipartResolver.getFileUpload().getSizeMax()){
+//                    throw new RequestEntityTooLargeException();
+//                }
+//                if(!isAcceptedContentType(conn.getContentType())){
+//                    throw new UnsupportedMediaTypeException();
+//                }
+//            } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+//
+//                throw new UnprocessableEntityException();
+//            }
+            try {
+                return InputUtils.getUserData(getUrlInputStream(url, "text/plain"));
+            } catch (IOException e) {
+                throw new UnsupportedMediaTypeException();
+            } catch (ParserException e) {
+                throw new DataFormatException(e.getErrorMessages());
+            }
+        }
+        throw new UnsupportedMediaTypeException();
+    }
+
+    private InputStream getUrlInputStream(String url, String accepts){
         if(url!=null && !url.isEmpty()) {
             InputStream is;
             try {
@@ -224,20 +282,14 @@ public class AnalysisHelper {
                 if(conn.getContentLength() > multipartResolver.getFileUpload().getSizeMax()){
                     throw new RequestEntityTooLargeException();
                 }
-                if(!isAcceptedContentType(conn.getContentType())){
+                if(!isAcceptedContentType(conn.getContentType(), accepts)){
                     throw new UnsupportedMediaTypeException();
                 }
             } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
 
                 throw new UnprocessableEntityException();
             }
-            try {
-                return InputUtils.getUserData(is);
-            } catch (IOException e) {
-                throw new UnsupportedMediaTypeException();
-            } catch (ParserException e) {
-                throw new DataFormatException(e.getErrorMessages());
-            }
+            return is;
         }
         throw new UnsupportedMediaTypeException();
     }
@@ -252,6 +304,20 @@ public class AnalysisHelper {
             }
         }
         return name;
+    }
+
+    public Species getSpecies(String species) {
+        return speciesService.getSpecies(species.trim().replaceAll("  +", " "));
+    }
+
+    public List<Species> getSpeciesList(String species) {
+        if (species == null || species.isEmpty()) return null;
+        List<Species> rtn = new ArrayList<>();
+        for (String s : species.split(",")) {
+            Species aux = speciesService.getSpecies(s.trim().replaceAll("  +", " "));
+            if (aux != null) rtn.add(aux);
+        }
+        return rtn;
     }
 
     private AnalysisStoredResult analyse(AnalysisSummary summary, UserData userData, SpeciesNode speciesNode, Boolean includeInteractors, ReportParameters reportParams){
@@ -282,9 +348,9 @@ public class AnalysisHelper {
                         return null;
                     }
 
-                    public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {}
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {}
 
-                    public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {}
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {}
                 }
         };
 
@@ -318,8 +384,8 @@ public class AnalysisHelper {
         }
     }
 
-    public boolean isAcceptedContentType(String contentType){
-        return contentType == null || contentType.contains("text/plain");
+    private boolean isAcceptedContentType(String contentType, String accepts){
+        return contentType == null || contentType.contains(accepts);
     }
 
     /**
@@ -342,4 +408,5 @@ public class AnalysisHelper {
         }
         return rtn;
     }
+
 }
