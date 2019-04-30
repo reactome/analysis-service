@@ -1,5 +1,6 @@
 package org.reactome.server.analysis.service.helper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.reactome.server.analysis.core.model.AnalysisIdentifier;
 import org.reactome.server.analysis.core.model.AnalysisReaction;
 import org.reactome.server.analysis.core.model.PathwayNodeData;
@@ -13,16 +14,16 @@ import org.reactome.server.analysis.core.result.AnalysisSortType;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.core.result.ComparatorFactory;
 import org.reactome.server.analysis.core.result.PathwayNodeSummary;
+import org.reactome.server.analysis.core.result.external.ExternalAnalysisResult;
 import org.reactome.server.analysis.core.result.model.AnalysisSummary;
 import org.reactome.server.analysis.core.result.report.AnalysisReport;
 import org.reactome.server.analysis.core.result.report.ReportParameters;
 import org.reactome.server.analysis.core.util.MapSet;
 import org.springframework.core.io.FileSystemResource;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -30,6 +31,8 @@ import java.util.*;
 public class DownloadHelper {
 
     private static final String DELIMITER = ",";
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     public static FileSystemResource getHitPathwaysCVS(String filename, AnalysisStoredResult asr, String resource) throws IOException {
         long start = System.currentTimeMillis();
@@ -114,6 +117,17 @@ public class DownloadHelper {
         reportParams.setMilliseconds(System.currentTimeMillis() - start);
         AnalysisReport.reportMappingDownload(reportParams);
 
+        return new FileSystemResource(f);
+    }
+
+    public static FileSystemResource getExternalResultsGZIP(String filename, ExternalAnalysisResult er) throws IOException {
+        File f = File.createTempFile(filename, "json.gz");
+        String json = mapper.writeValueAsString(er);
+        OutputStream os = new FileOutputStream(f);
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(os);
+        gzipOutputStream.write(json.getBytes());
+        gzipOutputStream.flush();
+        gzipOutputStream.close();
         return new FileSystemResource(f);
     }
 
