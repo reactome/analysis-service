@@ -1,6 +1,7 @@
 package org.reactome.server.analysis.service.helper;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.io.TikaInputStream;
@@ -14,10 +15,12 @@ import org.reactome.server.analysis.core.model.*;
 import org.reactome.server.analysis.core.parser.exception.ParserException;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.core.result.exception.*;
+import org.reactome.server.analysis.core.result.external.ExternalAnalysisResult;
 import org.reactome.server.analysis.core.result.model.AnalysisSummary;
 import org.reactome.server.analysis.core.result.model.MappedEntity;
 import org.reactome.server.analysis.core.result.report.AnalysisReport;
 import org.reactome.server.analysis.core.result.report.ReportParameters;
+import org.reactome.server.analysis.core.result.utils.ExternalAnalysisResultCheck;
 import org.reactome.server.analysis.core.result.utils.ResultDataUtils;
 import org.reactome.server.analysis.core.result.utils.TokenUtils;
 import org.reactome.server.analysis.core.result.utils.Tokenizer;
@@ -28,11 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.net.ssl.*;
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,12 +45,15 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
 
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
@@ -55,13 +63,13 @@ public class AnalysisHelper {
 
     private static final Logger logger = LoggerFactory.getLogger("analysisLogger");
 
-
     private TokenUtils tokenUtils;
     private CommonsMultipartResolver multipartResolver;
     private EnrichmentAnalysis enrichmentAnalysis;
     private IdentifiersMapping identifiersMapping;
     private SpeciesComparison speciesComparison;
     private SpeciesService speciesService;
+    private ExternalAnalysisResultCheck externalAnalysisResultCheck;
 
     @Autowired
     public void setTokenUtils(TokenUtils tokenUtils) {
@@ -91,6 +99,11 @@ public class AnalysisHelper {
     @Autowired
     public void setSpeciesService(SpeciesService speciesService) {
         this.speciesService = speciesService;
+    }
+
+    @Autowired
+    public void setExternalAnalysisResultCheck(ExternalAnalysisResultCheck externalAnalysisResultCheck) {
+        this.externalAnalysisResultCheck = externalAnalysisResultCheck;
     }
 
     public AnalysisStoredResult analyse(UserData userData, HttpServletRequest request, boolean toHuman, boolean includeInteractors){
@@ -226,33 +239,9 @@ public class AnalysisHelper {
 
     public UserData getUserDataFromURL(String url){
         if(url!=null && !url.isEmpty()) {
-//            InputStream is;
-//            try {
-//                HttpURLConnection conn;
-//                URL aux = new URL(url);
-//                if(aux.getProtocol().contains("https")){
-//                    doTrustToCertificates(); //accepting the certificate by default
-//                    HttpsURLConnection tmpConn = (HttpsURLConnection) aux.openConnection();
-//                    is = tmpConn.getInputStream();
-//                    conn = tmpConn;
-//                }else{
-//                    URLConnection tmpConn = aux.openConnection();
-//                    is = tmpConn.getInputStream();
-//                    conn = (HttpURLConnection) tmpConn;
-//                }
-//
-//                if(conn.getContentLength() > multipartResolver.getFileUpload().getSizeMax()){
-//                    throw new RequestEntityTooLargeException();
-//                }
-//                if(!isAcceptedContentType(conn.getContentType())){
-//                    throw new UnsupportedMediaTypeException();
-//                }
-//            } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-//
-//                throw new UnprocessableEntityException();
-//            }
             try {
-                return InputUtils.getUserData(getUrlInputStream(url, "text/plain"));
+                //return InputUtils.getUserData(getUrlInputStream(url, "text/plain"));
+                return InputUtils.getUserData(getUrlInputStream(url));
             } catch (IOException e) {
                 throw new UnsupportedMediaTypeException();
             } catch (ParserException e) {
@@ -262,7 +251,73 @@ public class AnalysisHelper {
         throw new UnsupportedMediaTypeException();
     }
 
-    private InputStream getUrlInputStream(String url, String accepts){
+    public AnalysisStoredResult getAnalysisStoredResult(String json, HttpServletRequest request) {
+        try {
+            ExternalAnalysisResult result = InputUtils.getExternalAnalysisResult(json);
+            List<String> messages = externalAnalysisResultCheck.isValid(result);
+            if (messages.isEmpty()) {
+                String md5 = DigestUtils.md5DigestAsHex(json.getBytes());
+                String newToken = Tokenizer.getOrCreateToken(md5, false, false);
+                result.getSummary().setServer(getServerName(request));
+                final AnalysisStoredResult analysisStoredResult = new AnalysisStoredResult(newToken, result);
+                tokenUtils.saveResult(analysisStoredResult);
+                return analysisStoredResult;
+            }
+            throw new DataFormatException(messages);
+        } catch (IOException e) {
+            throw new DataFormatException(e.getMessage());
+        }
+    }
+
+    public AnalysisStoredResult getAnalysisStoredResult(MultipartFile file, HttpServletRequest request){
+        if (!file.isEmpty()) {
+            try {
+                return getAnalysisStoredResult(file.getInputStream(), request);
+            } catch (IOException e) {
+                throw new UnsupportedMediaTypeException();
+            }
+        }
+        throw new UnsupportedMediaTypeException();
+    }
+
+    public AnalysisStoredResult getAnalysisResultFromURL(String url, HttpServletRequest request){
+        return getAnalysisStoredResult(getUrlInputStream(url), request);
+    }
+
+
+    private AnalysisStoredResult getAnalysisStoredResult(InputStream input, HttpServletRequest request) {
+        try {
+            String json = null;
+            //When reading from URL, TikaInputStream closes the stream. This is a trick to have fun fun fun
+            final byte[] bytes = IOUtils.toByteArray(input);
+            String mimeType = detectMimeType(TikaInputStream.get(bytes));
+            input = new ByteArrayInputStream(bytes);
+            if (isAcceptedContentType(mimeType, "application/zip")) {
+                final ZipInputStream zis = new ZipInputStream(input);
+                if (zis.getNextEntry() != null) {
+                    json = IOUtils.toString(zis, Charset.defaultCharset());
+                    final InputStream dataInputStream = new ByteArrayInputStream(json.getBytes());
+                    mimeType = detectMimeType(TikaInputStream.get(dataInputStream));
+                }
+                zis.close();
+            } else if (isAcceptedContentType(mimeType, "application/gzip", "application/octet-stream")) {
+                final GZIPInputStream inputStream = new GZIPInputStream(input);
+                json = IOUtils.toString(inputStream, Charset.defaultCharset());
+                final InputStream dataInputStream = new ByteArrayInputStream(json.getBytes());
+                mimeType = detectMimeType(TikaInputStream.get(dataInputStream));
+            } else {
+                json = IOUtils.toString(input, Charset.defaultCharset());
+            }
+            if (json == null || !isAcceptedContentType(mimeType, "text/plain", "application/json")) {
+                throw new UnsupportedMediaTypeException();
+            }
+            return getAnalysisStoredResult(json, request);
+        } catch (IOException e) {
+            throw new UnsupportedMediaTypeException();
+        }
+    }
+
+    private InputStream getUrlInputStream(String url){ //, String... accepts){
         if(url!=null && !url.isEmpty()) {
             InputStream is;
             try {
@@ -281,9 +336,6 @@ public class AnalysisHelper {
 
                 if(conn.getContentLength() > multipartResolver.getFileUpload().getSizeMax()){
                     throw new RequestEntityTooLargeException();
-                }
-                if(!isAcceptedContentType(conn.getContentType(), accepts)){
-                    throw new UnsupportedMediaTypeException();
                 }
             } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
 
@@ -384,8 +436,8 @@ public class AnalysisHelper {
         }
     }
 
-    private boolean isAcceptedContentType(String contentType, String accepts){
-        return contentType == null || contentType.contains(accepts);
+    private boolean isAcceptedContentType(String contentType, String... accepts){
+        return contentType == null || Arrays.stream(accepts).anyMatch(contentType::contains);
     }
 
     /**
