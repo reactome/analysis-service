@@ -52,6 +52,8 @@
 
     <bean class="org.reactome.server.analysis.service.helper.AnalysisHelper"/>
 
+    <bean class="org.reactome.server.analysis.core.result.utils.ExternalAnalysisResultCheck" />
+
     <bean id="fileCheckerController" class="org.reactome.server.analysis.service.helper.FileCheckerController" name="FileCheckerController" destroy-method="interrupt">
         <property name="pathDirectory" value="${analysis.data.tmp}"/>
         <property name="maxSize" value="2684354560"/> <!-- 2684354560 = 2.5 GB // 5368709120 = 5 GB // 10737418240 = 10 GB -->
