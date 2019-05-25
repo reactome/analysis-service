@@ -12,7 +12,7 @@
         <deploymentPath>/</deploymentPath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <analysis.core>3.3.0-SNAPSHOT</analysis.core>
+        <analysis.core>3.3.0</analysis.core>
         <analysis.report>1.1.4-SNAPSHOT</analysis.report>
         <spring.version>4.3.10.RELEASE</spring.version>
         <reactome.utils.version>1.0.8-SNAPSHOT</reactome.utils.version>
