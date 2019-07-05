@@ -19,7 +19,6 @@ import java.util.List;
 @RequestMapping(value = "/mapping")
 public class MappingController {
 
-    @Autowired
     private AnalysisHelper controller;
 
     @ApiOperation(value = "Maps the post identifiers over the different species and projects the result to Homo Sapiens",
@@ -109,4 +108,10 @@ public class MappingController {
         UserData ud = controller.getUserDataFromURL(url);
         return controller.getMapping(ud,  false, interactors);
     }
+
+    @Autowired
+    public void setController(AnalysisHelper controller) {
+        this.controller = controller;
+    }
+
 }

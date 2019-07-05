@@ -26,20 +26,28 @@ public class SpeciesController {
     @RequestMapping(value = "/homoSapiens/{species}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public AnalysisResult compareHomoSapiensTo( @ApiParam(name = "species", required = true, value = "The dbId of the species to compare to")
-                                              @PathVariable Long species,
-                                               @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
-                                              @RequestParam(required = false) Integer pageSize,
-                                               @ApiParam(name = "page", value = "page number", defaultValue = "1")
-                                              @RequestParam(required = false) Integer page,
-                                               @ApiParam(name = "sortBy", value = "how to sort the result", defaultValue = "ENTITIES_PVALUE", allowableValues = "NAME,TOTAL_ENTITIES,TOTAL_INTERACTORS,TOTAL_REACTIONS,FOUND_ENTITIES,FOUND_INTERACTORS,FOUND_REACTIONS,ENTITIES_RATIO,ENTITIES_PVALUE,ENTITIES_FDR,REACTIONS_RATIO")
-                                              @RequestParam(required = false) String sortBy,
-                                               @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
-                                              @RequestParam(required = false) String order,
-                                               @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
-                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                               @PathVariable Long species,
+                                                @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
+                                               @RequestParam(required = false) Integer pageSize,
+                                                @ApiParam(name = "page", value = "page number", defaultValue = "1")
+                                               @RequestParam(required = false) Integer page,
+                                                @ApiParam(name = "sortBy", value = "how to sort the result", defaultValue = "ENTITIES_PVALUE", allowableValues = "NAME,TOTAL_ENTITIES,TOTAL_INTERACTORS,TOTAL_REACTIONS,FOUND_ENTITIES,FOUND_INTERACTORS,FOUND_REACTIONS,ENTITIES_RATIO,ENTITIES_PVALUE,ENTITIES_FDR,REACTIONS_RATIO")
+                                               @RequestParam(required = false) String sortBy,
+                                                @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
+                                               @RequestParam(required = false) String order,
+                                                @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
+                                               @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                                @ApiParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", defaultValue = "1")
+                                               @RequestParam(required = false, defaultValue = "1") Double pValue,
+                                                @ApiParam(name = "min", value = "minimum number of contained entities per pathway (takes into account the resource)")
+                                               @RequestParam(required = false) Integer min,
+                                                @ApiParam(name = "max", value = "maximum number of contained entities per pathway (takes into account the resource)")
+                                               @RequestParam(required = false) Integer max,
                                                 HttpServletRequest request) {
         Long from = SpeciesNodeFactory.getHumanNode().getSpeciesID(); //For the time being let's do only human ;)
-        return controller.compareSpecies(from, species, request).getResultSummary(sortBy, order, resource, pageSize, page);
+        return controller.compareSpecies(from, species, request)
+                .filterPathways(resource, pValue, false, min, max)
+                .getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
 

@@ -17,7 +17,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @Api(tags="database", description = "Database info queries", position = 0)
 public class DatabaseController {
 
-    @Autowired
     private AnalysisData analysisData;
 
     @ApiOperation(value = "The name of current database")
@@ -50,4 +49,10 @@ public class DatabaseController {
     public DatabaseInfo getDatabaseInfo() {
         return analysisData.getDatabaseInfo();
     }
+
+    @Autowired
+    public void setAnalysisData(AnalysisData analysisData) {
+        this.analysisData = analysisData;
+    }
+
 }

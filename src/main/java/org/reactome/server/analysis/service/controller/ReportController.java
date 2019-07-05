@@ -57,10 +57,7 @@ public class ReportController {
 
     private static final Logger logger = LoggerFactory.getLogger("analysisReport");
 
-    @Autowired
     private AnalysisReport analysisReport;
-
-    @Autowired
     private TokenUtils token;
 
     @ApiOperation(value = "Downloads a report for a given pathway analysis result",
@@ -74,22 +71,23 @@ public class ReportController {
             @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
     @RequestMapping(value = "/{token}/{species}/{filename}.pdf", method = RequestMethod.GET, produces = "application/pdf" )
     @ResponseBody
-    public void generatePdfReport(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
-                                    @PathVariable String token,
-                                  @ApiParam(name = "species", required = true, defaultValue = "Homo sapiens", value = "The species for which results will be reported")
-                                    @PathVariable String species,
-                                  @ApiParam(name = "filename", required = true, defaultValue = "report", value = "The name of the file to be downloaded")
-                                      @SuppressWarnings("unused")  @PathVariable String filename,
-                                  @ApiParam(name = "number", value = "Number of pathways reported (max 50)", defaultValue = "25")
-                                    @RequestParam(required = false, defaultValue = "25") Integer number,
-                                  @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
-                                    @RequestParam(required = false, defaultValue = "TOTAL") String resource,
-                                  @ApiParam(value = "Diagram Color Profile", defaultValue = "Modern", allowableValues = "Modern, Standard")
-                                    @RequestParam(value = "diagramProfile", defaultValue = "Modern", required = false) String diagramProfile,
-                                  @ApiParam(value = "Analysis  Color Profile", defaultValue = "Standard", allowableValues = "Standard, Strosobar, Copper Plus")
-                                    @RequestParam(value = "analysisProfile", defaultValue = "Standard", required = false) String analysisProfile,
-                                  @ApiParam(value = "Diagram Color Profile", defaultValue = "Barium Lithium", allowableValues = "Cooper, Cooper Plus, Barium Lithium, Calcium Salts")
-                                    @RequestParam(value = "fireworksProfile", defaultValue = "Barium Lithium", required = false) String fireworksProfile,
+    public void generatePdfReport( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+                                  @PathVariable String token,
+                                   @ApiParam(name = "species", required = true, defaultValue = "Homo sapiens", value = "The species for which results will be reported")
+                                  @PathVariable String species,
+                                   @SuppressWarnings("unused")
+                                   @ApiParam(name = "filename", required = true, defaultValue = "report", value = "The name of the file to be downloaded")
+                                  @PathVariable String filename,
+                                   @ApiParam(name = "number", value = "Number of pathways reported (max 50)", defaultValue = "25")
+                                  @RequestParam(required = false, defaultValue = "25") Integer number,
+                                   @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
+                                  @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                   @ApiParam(value = "Diagram Color Profile", defaultValue = "Modern", allowableValues = "Modern, Standard")
+                                  @RequestParam(value = "diagramProfile", defaultValue = "Modern", required = false) String diagramProfile,
+                                   @ApiParam(value = "Analysis  Color Profile", defaultValue = "Standard", allowableValues = "Standard, Strosobar, Copper Plus")
+                                  @RequestParam(value = "analysisProfile", defaultValue = "Standard", required = false) String analysisProfile,
+                                   @ApiParam(value = "Diagram Color Profile", defaultValue = "Barium Lithium", allowableValues = "Cooper, Cooper Plus, Barium Lithium, Calcium Salts")
+                                  @RequestParam(value = "fireworksProfile", defaultValue = "Barium Lithium", required = false) String fireworksProfile,
                                   HttpServletRequest request, HttpServletResponse response) throws InterruptedException {
         long waitingTime = 0L;
         synchronized (REPORT_SEMAPHORE) {
@@ -129,6 +127,17 @@ public class ReportController {
             }
         }
     }
+
+    @Autowired
+    public void setAnalysisReport(AnalysisReport analysisReport) {
+        this.analysisReport = analysisReport;
+    }
+
+    @Autowired
+    public void setToken(TokenUtils token) {
+        this.token = token;
+    }
+
 
     private void doAsyncSearchReport(String ip, Long waitingTime, Long reportTime, Integer pages, String userAgent) {
         new Thread(() -> report(ip, waitingTime, reportTime, pages, userAgent), "AnalysisPDFWaitingReportThread").start();
@@ -181,4 +190,5 @@ public class ReportController {
         result.put("ip-address", remoteAddr);
         return result;
     }
+
 }
