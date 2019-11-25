@@ -112,12 +112,12 @@ public class ReportController {
             analysisReport.create(asr, resource, s.getDbId(), number, diagramProfile, analysisProfile, fireworksProfile, os);
 
             Long reportTime = System.currentTimeMillis() - reportStart;
-            logger.info(String.format("_REPORT_ format:PDF token:%s pathways:%d time:%s", token, number, FormatUtils.getTimeFormatted(reportTime)));
+            logger.debug(String.format("_REPORT_ format:PDF token:%s pathways:%d time:%s", token, number, FormatUtils.getTimeFormatted(reportTime)));
 
             Map<String, String> map = getReportInformation(request);
             doAsyncSearchReport(map.get("ip-address"), waitingTime, reportTime, number, map.get("user-agent"));
         } catch (PdfException | IllegalStateException | IOException ise) {
-            logger.info(String.format("_REPORT_ format:PDF token:%s User_Closed_Connection", token));
+            logger.debug(String.format("_REPORT_ format:PDF token:%s User_Closed_Connection", token));
         } catch (AnalysisExporterException  e) {
             throw new RuntimeException(e.getMessage());
         } finally {
