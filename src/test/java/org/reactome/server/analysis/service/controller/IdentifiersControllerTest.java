@@ -55,7 +55,6 @@ public class IdentifiersControllerTest extends AppTests {
     private MockMultipartFile overrepresentationFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", overrepresentationFileContent.getBytes());
     private MockMultipartFile expressionFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", expressionFileContent.getBytes());
 
-
     private Map<String, Object> params = new HashMap<>();
 
     // this is a constructor
@@ -70,8 +69,6 @@ public class IdentifiersControllerTest extends AppTests {
         params.put("pValue", 1);
         params.put("includeDisease", true);
     }
-
-
 
     @Test
     public void getPostTextToHuman() throws Exception {

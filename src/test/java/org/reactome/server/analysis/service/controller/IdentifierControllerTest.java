@@ -19,7 +19,7 @@ public class IdentifierControllerTest extends AppTests {
 
     private Map<String, Object> params = new HashMap<>();
 
-    public IdentifierControllerTest(){
+    public IdentifierControllerTest() {
         params.put("interactors", false);
         params.put("species", 48887);
         params.put("pageSize", 20);
