@@ -313,11 +313,11 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.16</version>
-                <configuration>
-                    <includes>
-                        <include>**/*Tests.java</include>
-                    </includes>
-                </configuration>
+<!--                <configuration>-->
+<!--                    <includes>-->
+<!--                        <include>**/*Tests.java</include>-->
+<!--                    </includes>-->
+<!--                </configuration>-->
             </plugin>
 
             <!-- Creates   -->

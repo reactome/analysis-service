@@ -33,6 +33,9 @@ public class AppTests {
 
     public static final String HOST = "";
 
+    public static String token;
+    public static String stId;
+
     /**
      * initialize the mockMvc object
      */

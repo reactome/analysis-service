@@ -16,15 +16,25 @@ public class ImporterControllerTest extends AppTests {
 
     @Test
     public void getPostText() {
-
-        // /
+        // /import/
+        // post
+        // body
+        //todo input value?
     }
 
     @Test
     public void getPostFile() {
+        // import/form
+        // post
+        // body
+        //todo input value?
     }
 
     @Test
     public void getPostURL() {
+        // import/url
+        // post
+        // body
+        //todo input value?
     }
 }

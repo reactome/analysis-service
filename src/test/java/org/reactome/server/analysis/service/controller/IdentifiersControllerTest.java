@@ -92,6 +92,9 @@ public class IdentifiersControllerTest extends AppTests {
 
         String response = result.getResponse().getContentAsString();
         AppTests.token = JsonPath.parse(response).read("$.summary.token").toString();
+        AppTests.stId = JsonPath.parse(response).read("$.pathways[0].stId").toString();
+        System.out.println(AppTests.token);
+        System.out.println(AppTests.stId);
     }
 
     @Test
