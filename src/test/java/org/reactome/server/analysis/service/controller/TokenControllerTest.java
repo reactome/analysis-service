@@ -36,11 +36,13 @@ public class TokenControllerTest extends AppTests {
     @Test
     public void getTokenFilterPathways() throws Exception {
 
-        // todo post
-        // todo input
-/*        String url = String.format("/token/%s/filter/pathways", AppTests.token);
-        String content = "A comma separated list with the identifiers of the pathways of interest";
-        mockMvcPostResult(url, content);*/
+        String url = String.format("/token/%s/filter/pathways", AppTests.token);
+        Map<String, Object> params = new HashMap<>();
+        params.put("resource", "TOTAL");
+        params.put("pValue", 1);
+        params.put("includeDisease", false);
+        String input = AppTests.stId;
+        mockMvcPostResult(url, input, params);
 
     }
 
@@ -75,10 +77,10 @@ public class TokenControllerTest extends AppTests {
     }
 
     @Test
-    public void getTokenHitEntitiesPathways() {
-        //todo post
-        //todo input
-        //String url = String.format("/token/%s/found/all", AppTests.token);
+    public void getTokenHitEntitiesPathways() throws Exception {
+        String url = String.format("/token/%s/found/all", AppTests.token);
+        String input = AppTests.stId;
+        mockMvcPostResult(url, input);
     }
 
     @Test
@@ -95,17 +97,18 @@ public class TokenControllerTest extends AppTests {
         mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, "page", "1");
     }
 
-    @Test
+   /* @Test
     public void getTokenInteractorsPathway() throws Exception {
-        //todo check content type
-        //String url = String.format("/token/%s/found/interactors/%s", AppTests.token, AppTests.stId);
-        String url = String.format("/token/%s/found/interactors/%s", "MjAyMDAzMTIwOTE4MjBfMw%3D%3D", "R-HSA-8948216");
+        //todo check content type  -- return blank page when there is no result
+        // empty page if there is no result found
+       // String url = String.format("/token/%s/found/interactors/%s", AppTests.token, AppTests.stId);
+        String url = String.format("/token/%s/found/interactors/%s", "MjAyMDAzMTIxMTMyMTZfMw%3D%3D", "R-HSA-8948216");
         Map<String, Object> params = new HashMap<>();
         params.put("pageSize", 20);
         params.put("page", 1);
         params.put("resource", "TOTAL");
         mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, params);
-    }
+    }*/
 
     @Test
     public void getNotFoundIdentifiers() throws Exception {
@@ -120,10 +123,16 @@ public class TokenControllerTest extends AppTests {
     }
 
     @Test
-    public void getTokenFilterPathwaysReactions() {
-        //post
-        //todo input
-        //String url = String.format("/token/%s/reactions/pathways", AppTests.token);
+    public void getTokenFilterPathwaysReactions() throws Exception {
+
+        String url = String.format("/token/%s/reactions/pathways", AppTests.token);
+        String input = AppTests.stId + "," + "R-HSA-8948216";
+        Map<String, Object> params = new HashMap<>();
+        params.put("resource", "TOTAL");
+        params.put("pValue", 1);
+        params.put("species", 48887);
+        params.put("includeDisease", false);
+        mockMvcPostResult(url, input, params);
 
     }
 
