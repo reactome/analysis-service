@@ -20,18 +20,27 @@ public class TokenControllerTest extends AppTests {
 
     @Test
     public void getToken() throws Exception {
+
         String url = String.format("/token/%s/", AppTests.token);
-        //todo parameters are not required
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, "pageSize", "20");
+        Map<String, Object> params = new HashMap<>();
+        params.put("species", 48887);
+        params.put("pageSize", 20);
+        params.put("page", 1);
+        params.put("sortBy", "ENTITIES_PVALUE");
+        params.put("order", "ASC");
+        params.put("pValue", 1);
+        params.put("includeDisease", false);
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, params);
     }
 
     @Test
-    public void getTokenFilterPathways() {
+    public void getTokenFilterPathways() throws Exception {
 
-        // token/{token}/filter/pathways
         // todo post
-        // input parameter is required
-        // String url = String.format("/token/%s/filter/pathways", AppTests.token);
+        // todo input
+/*        String url = String.format("/token/%s/filter/pathways", AppTests.token);
+        String content = "A comma separated list with the identifiers of the pathways of interest";
+        mockMvcPostResult(url, content);*/
 
     }
 
@@ -48,16 +57,19 @@ public class TokenControllerTest extends AppTests {
     @Test
     public void getPageOfPathway() throws Exception {
         String url = String.format("/token/%s/page/%s", AppTests.token, AppTests.stId);
-        //todo parameters are not required
-        //todo pathway id is not a static ID
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, null);
+        Map<String, Object> params = new HashMap<>();
+        params.put("pageSize", 20);
+        params.put("sortBy", "ENTITIES_PVALUE");
+        params.put("order", "ASC");
+        params.put("resource", "TOTAL");
+        params.put("pValue", 1);
+        params.put("includeDisease", true);
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, params);
 
     }
 
     @Test
     public void getTokenHitEntitiesPathway() throws Exception {
-        ///{token}/found/all/{pathway}
-        //todo pathway id is not a static ID
         String url = String.format("/token/%s/found/all/%s", AppTests.token, AppTests.stId);
         mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, "resource", "TOTAL");
     }
@@ -66,66 +78,70 @@ public class TokenControllerTest extends AppTests {
     public void getTokenHitEntitiesPathways() {
         //todo post
         //todo input
-        //  String url = String.format("/token/%s/found/all", AppTests.token);
+        //String url = String.format("/token/%s/found/all", AppTests.token);
     }
 
     @Test
     public void getTokenIdentifiersPathway() throws Exception {
-        ///{token}/found/entities/{pathway}
-        //todo pathway id is not a static ID
         String url = String.format("/token/%s/found/entities/%s", AppTests.token, AppTests.stId);
         mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, "page", "1");
     }
 
+    /* API ignored*/
+
     @Test
-    public void getTokenSummaryPathway() {
-        ///{token}/summary/{pathway}
-        //todo API ignore
-        // String url = String.format("/token/%s/summary/R-HSA-5669034", AppTests.token);
+    public void getTokenSummaryPathway() throws Exception {
+        String url = String.format("/token/%s/summary/%s", AppTests.token, AppTests.stId);
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, "page", "1");
     }
 
     @Test
-    public void getTokenInteractorsPathway() {
-        //get
-        // String url = String.format("/token/%s/found/interactors/R-HSA-5669034", AppTests.token);
-        //todo input and response content
-        //todo use the url above, the response body is empty
+    public void getTokenInteractorsPathway() throws Exception {
+        //todo check content type
+        //String url = String.format("/token/%s/found/interactors/%s", AppTests.token, AppTests.stId);
+        String url = String.format("/token/%s/found/interactors/%s", "MjAyMDAzMTIwOTE4MjBfMw%3D%3D", "R-HSA-8948216");
+        Map<String, Object> params = new HashMap<>();
+        params.put("pageSize", 20);
+        params.put("page", 1);
+        params.put("resource", "TOTAL");
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, params);
     }
 
     @Test
     public void getNotFoundIdentifiers() throws Exception {
-        ///{token}/notFound
-        //todo check the response
         String url = String.format("/token/%s/notFound", AppTests.token);
         mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, null);
     }
 
     @Test
     public void getTokenFilterPathwayReactions() throws Exception {
-        ///{token}/reactions/{pathway}
-        //todo pathway in path; check the result
-        String url = String.format("/token/%s/reactions/%s", AppTests.token, AppTests.token);
+        String url = String.format("/token/%s/reactions/%s", AppTests.token, AppTests.stId);
         mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, "resource", "TOTAL");
     }
 
     @Test
     public void getTokenFilterPathwaysReactions() {
-        ///{token}/reactions/pathways
         //post
         //todo input
+        //String url = String.format("/token/%s/reactions/pathways", AppTests.token);
+
     }
 
     @Test
     public void getResources() throws Exception {
-        // todo check the response result
         String url = String.format("/token/%s/resources", AppTests.token);
         mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, null);
     }
 
     @Test
     public void getPathwaysBinnedBySize() throws Exception {
-        //todo parameters are not required
         String url = String.format("/token/%s/pathways/binned", AppTests.token);
+        Map<String, Object> params = new HashMap<>();
+        params.put("binSize", 100);
+        params.put("resource", "TOTAL");
+        params.put("pValue", 1);
+        params.put("species", 48887);
+        params.put("includeDisease", true);
         mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, "resource", "TOTAL");
     }
 }
