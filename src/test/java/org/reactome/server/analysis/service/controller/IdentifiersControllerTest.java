@@ -84,7 +84,7 @@ public class IdentifiersControllerTest extends AppTests {
     public void getPostText() throws Exception {
         String content = "P02452 P08123 P02461 P12110 P49674 P35222 P09668 Q9NQC7";
         MvcResult result =
-                this.getMockMvc().perform(post("/identifiers/")
+                this.getMockMvc().perform(post("/identifiers/").param("interactors", "true").param("includeDisease","true")
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(content))
                         .andExpect(status().isOk())
