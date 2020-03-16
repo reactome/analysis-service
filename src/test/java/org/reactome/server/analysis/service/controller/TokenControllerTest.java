@@ -90,25 +90,21 @@ public class TokenControllerTest extends AppTests {
     }
 
     /* API ignored*/
-
     @Test
     public void getTokenSummaryPathway() throws Exception {
         String url = String.format("/token/%s/summary/%s", AppTests.token, AppTests.stId);
         mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, "page", "1");
     }
 
-   /* @Test
+    @Test
     public void getTokenInteractorsPathway() throws Exception {
-        //todo check content type  -- return blank page when there is no result
-        // empty page if there is no result found
-       // String url = String.format("/token/%s/found/interactors/%s", AppTests.token, AppTests.stId);
-        String url = String.format("/token/%s/found/interactors/%s", "MjAyMDAzMTIxMTMyMTZfMw%3D%3D", "R-HSA-8948216");
+        String url = String.format("/token/%s/found/interactors/%s", AppTests.token, "3000178");
         Map<String, Object> params = new HashMap<>();
         params.put("pageSize", 20);
         params.put("page", 1);
         params.put("resource", "TOTAL");
         mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, params);
-    }*/
+    }
 
     @Test
     public void getNotFoundIdentifiers() throws Exception {
