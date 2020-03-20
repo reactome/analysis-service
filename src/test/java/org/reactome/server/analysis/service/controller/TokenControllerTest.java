@@ -1,5 +1,6 @@
 package org.reactome.server.analysis.service.controller;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.reactome.server.analysis.AppTests;
@@ -17,6 +18,11 @@ import static org.junit.Assert.*;
 @ContextConfiguration({"file:src/test/resources/mvc-dispatcher-servlet-test.xml"})
 @WebAppConfiguration
 public class TokenControllerTest extends AppTests {
+
+    @Before
+    public void prepare(){
+        generateToken("P02452 P08123 P02461 P12110 P49674 P35222 P09668 Q9NQC7");
+    }
 
     @Test
     public void getToken() throws Exception {

@@ -1,5 +1,6 @@
 package org.reactome.server.analysis.service.controller;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.reactome.server.analysis.AppTests;
@@ -16,6 +17,11 @@ import static org.junit.Assert.*;
 @ContextConfiguration({"file:src/test/resources/mvc-dispatcher-servlet-test.xml"})
 @WebAppConfiguration
 public class ReportControllerTest extends AppTests{
+
+    @Before
+    public void prepare(){
+        generateToken("PTEN");
+    }
 
     @Test
     public void generatePdfReport() throws Exception {

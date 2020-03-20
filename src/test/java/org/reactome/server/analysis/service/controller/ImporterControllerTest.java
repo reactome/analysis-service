@@ -1,6 +1,7 @@
 package org.reactome.server.analysis.service.controller;
 
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,6 +23,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration({"file:src/test/resources/mvc-dispatcher-servlet-test.xml"})
 @WebAppConfiguration
 public class ImporterControllerTest extends AppTests {
+
+    @Before
+    public void prepare(){
+        generateToken("P02452 P08123 P02461 P12110 P49674 P35222 P09668 Q9NQC7");
+    }
 
 
     @Test

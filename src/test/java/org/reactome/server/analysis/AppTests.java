@@ -1,7 +1,11 @@
 package org.reactome.server.analysis;
 
-import junit.framework.Assert;
+
+import org.junit.Assert;
 import org.junit.Before;
+import org.reactome.server.analysis.core.model.UserData;
+import org.reactome.server.analysis.core.result.AnalysisStoredResult;
+import org.reactome.server.analysis.service.helper.AnalysisHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
@@ -12,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
 
 import javax.servlet.ServletContext;
 import java.awt.*;
@@ -24,17 +29,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
-public class AppTests {
+public abstract class AppTests {
 
     @Autowired
     private WebApplicationContext wac;
 
     private MockMvc mockMvc;
 
-    public static final String HOST = "";
-
     public static String token;
     public static String stId;
+    private AnalysisHelper analysisHelper;
 
     /**
      * initialize the mockMvc object
@@ -50,7 +54,7 @@ public class AppTests {
     }
 
     /* verify that we're loading the WebApplicationContext object (wac) properly */
-    public void findBeanByName(String beanName) {
+    protected void findBeanByName(String beanName) {
         ServletContext servletContext = wac.getServletContext();
 
         Assert.assertNotNull(servletContext);
@@ -58,10 +62,29 @@ public class AppTests {
         Assert.assertNotNull(wac.getBean(beanName));
     }
 
+    @Autowired
+    public void setAnalysisHelper(AnalysisHelper analysisHelper) {
+        this.analysisHelper = analysisHelper;
+    }
+
+    /**
+     * Generate a token which is going to be used in DownloadControllerTest,ImporterControllerTest
+     * ReportControllerTest,TokenControllerTest
+     *
+     * Use @Before annotation to execute before each test
+     * @param input identifiers
+     */
+    protected void generateToken(String input){
+        UserData ud = analysisHelper.getUserData(input);
+        AnalysisStoredResult asr = analysisHelper.analyse(ud, null, false, true);
+        AppTests.token = asr.getSummary().getToken();
+        AppTests.stId = asr.getPathways().get(0).getStId();
+    }
+
     /**
      * Get request testing of Spring MVC controllers
      */
-    public MvcResult mockMvcGetResult(String url, String contentType, String paramName, String paramValue) throws Exception {
+    protected MvcResult mockMvcGetResult(String url, String contentType, String paramName, String paramValue) throws Exception {
         if (paramName == null && paramValue == null) return mockMvcGetResult(url, contentType, null);
 
         Map<String, Object> params = new HashMap<>();
@@ -69,7 +92,7 @@ public class AppTests {
         return mockMvcGetResult(url, contentType, params);
     }
 
-    public MvcResult mockMvcGetResult(String url, Map<String, Object> params) throws Exception {
+    protected MvcResult mockMvcGetResult(String url, Map<String, Object> params) throws Exception {
 
         if (params != null && !params.isEmpty()) {
             return mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, params);
@@ -78,7 +101,7 @@ public class AppTests {
         }
     }
 
-    public MvcResult mockMvcGetResult(String url, String contentType, Map<String, Object> params) throws Exception {
+    protected MvcResult mockMvcGetResult(String url, String contentType, Map<String, Object> params) throws Exception {
         if (params != null && !params.isEmpty()) {
 
             MockHttpServletRequestBuilder requestBuilder = get(url);
@@ -116,7 +139,7 @@ public class AppTests {
         return mockMvcGetResultNotFound(url, null);
     }
 
-    public MvcResult mockMvcGetResultNotFound(String url, Map<String, Object> params) throws Exception {
+    private MvcResult mockMvcGetResultNotFound(String url, Map<String, Object> params) throws Exception {
         if (params != null && !params.isEmpty()) {
 
             MockHttpServletRequestBuilder requestBuilder = get(url);
@@ -137,7 +160,7 @@ public class AppTests {
     /**
      * Bad request testing of Spring MVC controllers
      */
-    public MvcResult mockMvcGetResultBadRequest(String url, Map<String, Object> params) throws Exception {
+    protected MvcResult mockMvcGetResultBadRequest(String url, Map<String, Object> params) throws Exception {
         if (params != null && !params.isEmpty()) {
 
             MockHttpServletRequestBuilder requestBuilder = get(url);
@@ -158,11 +181,11 @@ public class AppTests {
     /**
      * Post request testing of Spring MVC controllers
      */
-    public MvcResult mockMvcPostResult(String url, String content) throws Exception {
+    protected MvcResult mockMvcPostResult(String url, String content) throws Exception {
         return mockMvcPostResult(url, content, null);
     }
 
-    public MvcResult mockMvcPostResult(String url, String content, String paramName, String paramValue) throws Exception {
+    protected MvcResult mockMvcPostResult(String url, String content, String paramName, String paramValue) throws Exception {
         if (paramName == null && paramValue == null) return mockMvcPostResult(url, content, null);
 
         Map<String, Object> params = new HashMap<>();
@@ -170,7 +193,7 @@ public class AppTests {
         return mockMvcPostResult(url, content, params);
     }
 
-    public MvcResult mockMvcPostResult(String url, String content, Map<String, Object> params) throws Exception {
+    protected MvcResult mockMvcPostResult(String url, String content, Map<String, Object> params) throws Exception {
 
         if (params != null && !params.isEmpty()) {
 
@@ -183,7 +206,6 @@ public class AppTests {
 
             return this.mockMvc.perform(requestBuilder)
                     .andExpect(status().isOk())
-                   // .andExpect(content().contentType("application/json;charset=UTF-8"))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
 
                     .andReturn();
@@ -193,7 +215,6 @@ public class AppTests {
                             .contentType(MediaType.TEXT_PLAIN)
                             .content(content))
                     .andExpect(status().isOk())
-                 //   .andExpect(content().contentType("application/json;charset=UTF-8"))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                     .andReturn();
         }
@@ -203,7 +224,7 @@ public class AppTests {
     /**
      * post not found request testing of Spring MVC controllers
      */
-    public MvcResult mvcPostResultNotFound(String url, String content) throws Exception {
+    protected MvcResult mvcPostResultNotFound(String url, String content) throws Exception {
         return this.mockMvc.perform(
                 post(url)
                         .contentType(MediaType.TEXT_PLAIN)

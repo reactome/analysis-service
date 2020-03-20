@@ -1,6 +1,5 @@
 package org.reactome.server.analysis.service.controller;
 
-import com.jayway.jsonpath.JsonPath;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.reactome.server.analysis.AppTests;
@@ -89,12 +88,6 @@ public class IdentifiersControllerTest extends AppTests {
                         .content(content))
                         .andExpect(status().isOk())
                         .andReturn();
-
-        String response = result.getResponse().getContentAsString();
-        AppTests.token = JsonPath.parse(response).read("$.summary.token").toString();
-        AppTests.stId = JsonPath.parse(response).read("$.pathways[0].stId").toString();
-        System.out.println(AppTests.token);
-        System.out.println(AppTests.stId);
     }
 
     @Test
