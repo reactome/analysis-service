@@ -31,13 +31,13 @@ public class HandlerExceptionResolverImpl implements HandlerExceptionResolver {
         response.setContentType("application/json");
 
         if (ex instanceof MaxUploadSizeExceededException) {
-            response.setStatus(HttpStatus.REQUEST_ENTITY_TOO_LARGE.value());
+            response.setStatus(HttpStatus.PAYLOAD_TOO_LARGE.value());
 
-            Long maxSizeInBytes = ((MaxUploadSizeExceededException) ex).getMaxUploadSize();
-            Integer mb = (int) Math.floor(maxSizeInBytes / 1024 / 1024);
+            long maxSizeInBytes = ((MaxUploadSizeExceededException) ex).getMaxUploadSize();
+            int mb = (int) Math.floor(maxSizeInBytes / 1024 / 1024);
 
             AnalysisError error = new AnalysisError(
-                    HttpStatus.REQUEST_ENTITY_TOO_LARGE,
+                    HttpStatus.PAYLOAD_TOO_LARGE,
                     "Maximum upload size of " + mb + " MB per attachment exceeded"
             );
             try {

@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -103,7 +104,7 @@ public class HeaderFooterCacher extends Thread {
     private String getTemplate() {
         String templateURL = this.server + TEMPLATE_PAGE;
         try {
-            String rtn = IOUtils.toString(getTemplateInputStream(templateURL));
+            String rtn = IOUtils.toString(getTemplateInputStream(templateURL), Charset.defaultCharset());
 
             rtn = getReplaced(rtn, TITLE_OPEN, TITLE_CLOSE, TITLE_REPLACE);
             rtn = getReplaced(rtn, HEADER_CLOSE, HEADER_CLOSE, HEADER_CLOSE_REPLACE);
