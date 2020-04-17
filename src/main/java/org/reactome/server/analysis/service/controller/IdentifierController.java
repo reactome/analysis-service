@@ -58,7 +58,7 @@ public class IdentifierController {
                                                 HttpServletRequest request) {
         UserData ud = controller.getUserData(id);
         List<Species> speciesList = controller.getSpeciesList(species);
-        return controller.analyse(ud, request, true, interactors)
+        return controller.analyse(ud, request, true, interactors, includeDisease)
                 .filterPathways(speciesList, resource, pValue, includeDisease, min, max)
                 .getResultSummary(sortBy, order, resource, pageSize, page);
     }
@@ -96,7 +96,7 @@ public class IdentifierController {
                                          HttpServletRequest request) {
         UserData ud = controller.getUserData(id);
         List<Species> speciesList = controller.getSpeciesList(species);
-        return controller.analyse(ud, request, false, interactors)
+        return controller.analyse(ud, request, false, interactors, includeDisease)
                 .filterPathways(speciesList, resource, pValue, includeDisease, min, max)
                 .getResultSummary(sortBy, order, resource, pageSize, page);
     }

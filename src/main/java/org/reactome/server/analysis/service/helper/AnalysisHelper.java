@@ -106,17 +106,17 @@ public class AnalysisHelper {
         this.externalAnalysisResultCheck = externalAnalysisResultCheck;
     }
 
-    public AnalysisStoredResult analyse(UserData userData, HttpServletRequest request, boolean toHuman, boolean includeInteractors){
-        return analyse(userData, request, toHuman, includeInteractors, null);
+    public AnalysisStoredResult analyse(UserData userData, HttpServletRequest request, boolean toHuman, boolean includeInteractors, boolean includeDisease){
+        return analyse(userData, request, toHuman, includeInteractors, null, includeDisease);
     }
 
-    public AnalysisStoredResult analyse(UserData userData, HttpServletRequest request, Boolean toHuman, Boolean includeInteractors, String userFileName){
+    public AnalysisStoredResult analyse(UserData userData, HttpServletRequest request, Boolean toHuman, Boolean includeInteractors, String userFileName, boolean includeDisease){
         AnalysisType type =  userData.getExpressionColumnNames().isEmpty() ? AnalysisType.OVERREPRESENTATION : AnalysisType.EXPRESSION;
         ReportParameters reportParams = new ReportParameters(type, toHuman, includeInteractors);
         SpeciesNode speciesNode = toHuman ? SpeciesNodeFactory.getHumanNode() : null;
         if(Tokenizer.hasToken(userData.getInputMD5(), toHuman, includeInteractors)){
             String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman, includeInteractors);
-            AnalysisSummary summary = tokenUtils.getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName, getServerName(request));
+            AnalysisSummary summary = tokenUtils.getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName, getServerName(request), includeDisease);
             try {
                 String fileName = tokenUtils.getFileName(token);
                 return ResultDataUtils.getAnalysisResult(fileName, reportParams);
@@ -128,7 +128,7 @@ public class AnalysisHelper {
             }
         }
         String token = Tokenizer.getOrCreateToken(userData.getInputMD5(), toHuman, includeInteractors);
-        AnalysisSummary summary = tokenUtils.getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName, getServerName(request));
+        AnalysisSummary summary = tokenUtils.getAnalysisSummary(token, toHuman, includeInteractors, userData.getSampleName(), type, userFileName, getServerName(request), includeDisease);
         return analyse(summary, userData, speciesNode, includeInteractors, reportParams);
     }
 
@@ -152,7 +152,7 @@ public class AnalysisHelper {
         try {
             UserData ud = speciesComparison.getSyntheticUserData(speciesTo);
             String token = Tokenizer.getOrCreateToken(fakeMD5, human, false);
-            AnalysisSummary summary = new AnalysisSummary(token, null, false,  null, AnalysisType.SPECIES_COMPARISON, to, getServerName(request));
+            AnalysisSummary summary = new AnalysisSummary(token, null, false,  null, AnalysisType.SPECIES_COMPARISON, to, getServerName(request), true);
             return analyse(summary, ud, speciesFrom, false, reportParams);
         } catch (SpeciesNotFoundException e) {
             throw new ResourceNotFoundException();

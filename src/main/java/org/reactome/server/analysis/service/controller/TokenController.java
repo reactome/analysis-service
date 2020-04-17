@@ -1,6 +1,7 @@
 package org.reactome.server.analysis.service.controller;
 
 import io.swagger.annotations.*;
+import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.core.result.exception.ResourceNotFoundException;
 import org.reactome.server.analysis.core.result.model.*;
 import org.reactome.server.analysis.core.result.utils.TokenUtils;
@@ -34,32 +35,36 @@ public class TokenController {
             @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
     @RequestMapping(value = "/{token}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public AnalysisResult getToken( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+    public AnalysisResult getToken(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
                                    @PathVariable String token,
-                                    @ApiParam(name = "species", value = "list of species to filter the result (accepts taxonomy ids, species names and dbId)")
+                                   @ApiParam(name = "species", value = "list of species to filter the result (accepts taxonomy ids, species names and dbId)")
                                    @RequestParam(required = false) String species,
-                                    @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
+                                   @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
                                    @RequestParam(required = false) Integer pageSize,
-                                    @ApiParam(name = "page", value = "page number", defaultValue = "1")
+                                   @ApiParam(name = "page", value = "page number", defaultValue = "1")
                                    @RequestParam(required = false) Integer page,
-                                     @ApiParam(name = "sortBy", value = "how to sort the result", defaultValue = "ENTITIES_PVALUE", allowableValues = "NAME,TOTAL_ENTITIES,TOTAL_INTERACTORS,TOTAL_REACTIONS,FOUND_ENTITIES,FOUND_INTERACTORS,FOUND_REACTIONS,ENTITIES_RATIO,ENTITIES_PVALUE,ENTITIES_FDR,REACTIONS_RATIO")
+                                   @ApiParam(name = "sortBy", value = "how to sort the result", defaultValue = "ENTITIES_PVALUE", allowableValues = "NAME,TOTAL_ENTITIES,TOTAL_INTERACTORS,TOTAL_REACTIONS,FOUND_ENTITIES,FOUND_INTERACTORS,FOUND_REACTIONS,ENTITIES_RATIO,ENTITIES_PVALUE,ENTITIES_FDR,REACTIONS_RATIO")
                                    @RequestParam(required = false) String sortBy,
-                                     @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
+                                   @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
                                    @RequestParam(required = false) String order,
-                                     @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
+                                   @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
                                    @RequestParam(required = false, defaultValue = "TOTAL") String resource,
-                                     @ApiParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", defaultValue = "1")
+                                   @ApiParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", defaultValue = "1")
                                    @RequestParam(required = false, defaultValue = "1") Double pValue,
-                                     @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)", defaultValue = "true")
-                                   @RequestParam(required = false, defaultValue = "true") Boolean includeDisease,
-                                     @ApiParam(name = "min", value = "minimum number of contained entities per pathway (takes into account the resource)")
+                                   @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)")
+                                   @RequestParam(required = false) Boolean includeDisease,
+                                   @ApiParam(name = "min", value = "minimum number of contained entities per pathway (takes into account the resource)")
                                    @RequestParam(required = false) Integer min,
-                                     @ApiParam(name = "max", value = "maximum number of contained entities per pathway (takes into account the resource)")
+                                   @ApiParam(name = "max", value = "maximum number of contained entities per pathway (takes into account the resource)")
                                    @RequestParam(required = false) Integer max) {
         List<Species> speciesList = analysis.getSpeciesList(species);
-        return this.token.getFromToken(token)
-                .filterPathways(speciesList, resource, pValue, includeDisease, min, max)
-                .getResultSummary(sortBy, order, resource, pageSize, page);
+        AnalysisStoredResult asr = this.token.getFromToken(token);
+
+        if (includeDisease != null) asr.getSummary().setIncludeDisease(includeDisease);
+        else includeDisease = asr.getSummary().isIncludeDisease();
+
+        return asr.filterPathways(speciesList, resource, pValue, includeDisease, min, max)
+                  .getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
     @ApiOperation(value = "Returns the result for the pathway ids sent by post (when they are present in the original result)",
@@ -78,8 +83,8 @@ public class TokenController {
                                                        @RequestParam(required = false, defaultValue = "1") Double pValue,
                                                         @ApiParam(name = "species", value = "list of species to filter the result (accepts taxonomy ids, species names and dbId)")
                                                        @RequestParam(required = false) String species,
-                                                        @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)", defaultValue = "true")
-                                                       @RequestParam(required = false, defaultValue = "true") Boolean includeDisease,
+                                                        @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)")
+                                                       @RequestParam(required = false) Boolean includeDisease,
                                                         @ApiParam(name = "min", value = "minimum number of contained entities per pathway (takes into account the resource)")
                                                        @RequestParam(required = false) Integer min,
                                                         @ApiParam(name = "max", value = "maximum number of contained entities per pathway (takes into account the resource)")
@@ -88,9 +93,13 @@ public class TokenController {
                                                        @RequestBody String input) {
         List<Species> speciesList = analysis.getSpeciesList(species);
         List<String> inputIdentifiers = analysis.getInputIdentifiers(input);
-        return this.token.getFromToken(token)
-                .filterPathways(speciesList, resource, pValue, includeDisease, min, max)
-                .filterByPathways(inputIdentifiers, resource);
+        AnalysisStoredResult asr = this.token.getFromToken(token);
+
+        if (includeDisease != null) asr.getSummary().setIncludeDisease(includeDisease);
+        else includeDisease = asr.getSummary().isIncludeDisease();
+
+        return asr.filterPathways(speciesList, resource, pValue, includeDisease, min, max)
+                  .filterByPathways(inputIdentifiers, resource);
     }
 
     @ApiOperation(value = "Filters the result by species")
@@ -136,15 +145,20 @@ public class TokenController {
                                 @RequestParam(required = false, defaultValue = "TOTAL") String resource,
                                  @ApiParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", defaultValue = "1")
                                 @RequestParam(required = false, defaultValue = "1") Double pValue,
-                                 @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)", defaultValue = "true")
-                                @RequestParam(required = false, defaultValue = "true") Boolean includeDisease,
+                                 @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)")
+                                @RequestParam(required = false) Boolean includeDisease,
                                  @ApiParam(name = "min", value = "minimum number of contained entities per pathway (takes into account the resource)")
                                 @RequestParam(required = false) Integer min,
                                  @ApiParam(name = "max", value = "maximum number of contained entities per pathway (takes into account the resource)")
                                 @RequestParam(required = false) Integer max) {
-        return this.token.getFromToken(token)
-                .filterPathways(resource, pValue, includeDisease, min, max)
-                .getPage(pathway, sortBy, order, resource, pageSize);
+
+        AnalysisStoredResult asr = this.token.getFromToken(token);
+
+        if (includeDisease != null) asr.getSummary().setIncludeDisease(includeDisease);
+        else includeDisease = asr.getSummary().isIncludeDisease();
+
+        return asr.filterPathways(resource, pValue, includeDisease, min, max)
+                  .getPage(pathway, sortBy, order, resource, pageSize);
     }
 
     @ApiOperation(value = "Returns a summary of the contained identifiers and interactors for a given pathway and token",
@@ -281,13 +295,20 @@ public class TokenController {
                                                     @RequestParam(required = false, defaultValue = "TOTAL") String resource,
                                                      @ApiParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", defaultValue = "1")
                                                     @RequestParam(required = false, defaultValue = "1") Double pValue,
-                                                     @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)", defaultValue = "true")
-                                                    @RequestParam(required = false, defaultValue = "true") Boolean includeDisease,
+                                                     @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)")
+                                                    @RequestParam(required = false) Boolean includeDisease,
                                                      @ApiParam(name = "min", value = "minimum number of contained entities per pathway (takes into account the resource)")
                                                     @RequestParam(required = false) Integer min,
                                                      @ApiParam(name = "max", value = "maximum number of contained entities per pathway (takes into account the resource)")
                                                     @RequestParam(required = false) Integer max) {
-        return this.token.getFromToken(token).filterPathways(resource, pValue, includeDisease, min, max).getFoundReactions(pathway, resource);
+
+        AnalysisStoredResult asr = this.token.getFromToken(token);
+
+        if (includeDisease != null) asr.getSummary().setIncludeDisease(includeDisease);
+        else includeDisease = asr.getSummary().isIncludeDisease();
+
+        return asr.filterPathways(resource, pValue, includeDisease, min, max)
+                  .getFoundReactions(pathway, resource);
     }
 
     @ApiOperation(value = "Returns the reaction ids of the pathway ids sent by post that are present in the original result",
@@ -306,14 +327,20 @@ public class TokenController {
                                                      @RequestParam(required = false, defaultValue = "TOTAL") String resource,
                                                       @ApiParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", defaultValue = "1")
                                                      @RequestParam(required = false, defaultValue = "1") Double pValue,
-                                                      @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)", defaultValue = "true")
-                                                     @RequestParam(required = false, defaultValue = "true") Boolean includeDisease,
+                                                      @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)")
+                                                     @RequestParam(required = false) Boolean includeDisease,
                                                       @ApiParam(name = "min", value = "minimum number of contained entities per pathway (takes into account the resource)")
                                                      @RequestParam(required = false) Integer min,
                                                       @ApiParam(name = "max", value = "maximum number of contained entities per pathway (takes into account the resource)")
                                                      @RequestParam(required = false) Integer max) {
         List<String> pathwayIds = analysis.getInputIdentifiers(input);
-        return this.token.getFromToken(token).filterPathways(resource, pValue, includeDisease, min, max).getFoundReactions(pathwayIds, resource);
+        AnalysisStoredResult asr = this.token.getFromToken(token);
+
+        if (includeDisease != null) asr.getSummary().setIncludeDisease(includeDisease);
+        else includeDisease = asr.getSummary().isIncludeDisease();
+
+        return asr.filterPathways(resource, pValue, includeDisease, min, max)
+                  .getFoundReactions(pathwayIds, resource);
     }
 
     @ApiOperation(value = "Returns the resources summary associated with the token",
@@ -345,11 +372,16 @@ public class TokenController {
                                              @RequestParam(required = false) String species,
                                               @ApiParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", defaultValue = "1")
                                              @RequestParam(required = false, defaultValue = "1") Double pValue,
-                                              @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)", defaultValue = "true")
-                                             @RequestParam(required = false, defaultValue = "true") Boolean includeDisease) {
+                                              @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)")
+                                             @RequestParam(required = false) Boolean includeDisease) {
         List<Species> speciesList = analysis.getSpeciesList(species);
         binSize = Math.max(binSize, 100);
-        return this.token.getFromToken(token).getBinnedPathwaySize(binSize, resource, speciesList, pValue, includeDisease);
+        AnalysisStoredResult asr = this.token.getFromToken(token);
+
+        if (includeDisease != null) asr.getSummary().setIncludeDisease(includeDisease);
+        else includeDisease = asr.getSummary().isIncludeDisease();
+
+        return asr.getBinnedPathwaySize(binSize, resource, speciesList, pValue, includeDisease);
     }
 
     @Autowired

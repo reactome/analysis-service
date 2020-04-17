@@ -55,7 +55,7 @@ public class IdentifiersController {
                                              @RequestParam(required = false) Integer max,
                                               HttpServletRequest request) {
         UserData ud = controller.getUserData(input);
-        return controller.analyse(ud, request, true, interactors)
+        return controller.analyse(ud, request, true, interactors, includeDisease)
                 .filterPathways(resource, pValue, includeDisease, min, max)
                 .getResultSummary(sortBy, order, resource, pageSize, page);
     }
@@ -94,7 +94,7 @@ public class IdentifiersController {
                                        HttpServletRequest request) {
         UserData ud = controller.getUserData(input);
         List<Species> speciesList = controller.getSpeciesList(species);
-        return controller.analyse(ud, request, false, interactors)
+        return controller.analyse(ud, request, false, interactors, includeDisease)
                 .filterPathways(speciesList, resource, pValue, includeDisease, min, max)
                 .getResultSummary(sortBy, order, resource, pageSize, page);
     }
@@ -134,7 +134,7 @@ public class IdentifiersController {
                                              @RequestParam(required = false) Integer max,
                                               HttpServletRequest request) {
         UserData ud = controller.getUserData(file);
-        return controller.analyse(ud, request, true, interactors, file.getOriginalFilename())
+        return controller.analyse(ud, request, true, interactors, file.getOriginalFilename(), includeDisease)
                 .filterPathways(resource, pValue, includeDisease, min, max)
                 .getResultSummary(sortBy, order, resource, pageSize, page);
     }
@@ -176,7 +176,7 @@ public class IdentifiersController {
                                        HttpServletRequest request) {
         UserData ud = controller.getUserData(file);
         List<Species> speciesList = controller.getSpeciesList(species);
-        return controller.analyse(ud, request, false, interactors, file.getOriginalFilename())
+        return controller.analyse(ud, request, false, interactors, file.getOriginalFilename(), includeDisease)
                 .filterPathways(speciesList, resource, pValue, includeDisease, min, max)
                 .getResultSummary(sortBy, order, resource, pageSize, page);
     }
@@ -218,7 +218,7 @@ public class IdentifiersController {
                                              HttpServletRequest request) {
         UserData ud = controller.getUserDataFromURL(url);
         String fileName = controller.getFileNameFromURL(url);
-        return controller.analyse(ud, request, true, interactors, fileName)
+        return controller.analyse(ud, request, true, interactors, fileName, includeDisease)
                 .filterPathways(resource, pValue, includeDisease, min, max)
                 .getResultSummary(sortBy, order, resource, pageSize, page);
     }
@@ -262,7 +262,7 @@ public class IdentifiersController {
         UserData ud = controller.getUserDataFromURL(url);
         String fileName = controller.getFileNameFromURL(url);
         List<Species> speciesList = controller.getSpeciesList(species);
-        return controller.analyse(ud, request, false, interactors, fileName)
+        return controller.analyse(ud, request, false, interactors, fileName, includeDisease)
                 .filterPathways(speciesList, resource, pValue, includeDisease, min, max)
                 .getResultSummary(sortBy, order, resource, pageSize, page);
     }

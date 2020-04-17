@@ -26,7 +26,7 @@ public class MappingController {
     @ApiResponses({@ApiResponse( code = 400, message = "Bad request" )})
     @RequestMapping(value = "/projection", method = RequestMethod.POST, consumes = "text/plain",  produces = "application/json")
     @ResponseBody
-    public List<MappedEntity> getMappingToHuman(@ApiParam(name = "input", required = true, value = "Identifiers to be mapped (if expression values åre submitted these will be omitted in the result)")
+    public List<MappedEntity> getMappingToHuman(@ApiParam(name = "input", required = true, value = "Identifiers to be mapped (if expression values are submitted these will be omitted in the result)")
                                             @RequestBody String input,
                                                 @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
                                             @RequestParam(required = false, defaultValue = "false") Boolean interactors) {
@@ -59,7 +59,7 @@ public class MappingController {
                                                    @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
                                                     @RequestParam(required = false, defaultValue = "false") Boolean interactors) {
         UserData ud = controller.getUserData(file);
-        return controller.getMapping(ud,  false, interactors);
+        return controller.getMapping(ud,  true, interactors);
     }
 
     @ApiOperation(value = "Maps the identifiers in the file over the different species")
@@ -74,7 +74,8 @@ public class MappingController {
                                             @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
                                              @RequestParam(required = false, defaultValue = "false") Boolean interactors) {
         UserData ud = controller.getUserData(file);
-        return controller.getMapping(ud,  false, interactors);    }
+        return controller.getMapping(ud,  false, interactors);
+    }
 
     @ApiOperation(value = "Maps the identifiers contained in the provided url over the different species and projects the result to Homo Sapiens",
                   notes = "The projection is calculated by the orthologous slot in the Reactome database.")
@@ -90,7 +91,7 @@ public class MappingController {
                                                   @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
                                                    @RequestParam(required = false, defaultValue = "false") Boolean interactors) {
         UserData ud = controller.getUserDataFromURL(url);
-        return controller.getMapping(ud,  false, interactors);
+        return controller.getMapping(ud,  true, interactors);
     }
 
     @ApiOperation(value = "Maps the identifiers contained in the provided url over the different species")
