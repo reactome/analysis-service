@@ -30,12 +30,16 @@
         <jstl.api.version>1.2</jstl.api.version>
         <xml.security.version>1.0.4</xml.security.version>
         <xalan.version>2.7.1</xalan.version>
-        <junit.version>4.8.2</junit.version>
+        <junit.version>4.13</junit.version>
         <mail.version>1.6.0</mail.version>
         <activation.version>1.1.1</activation.version>
 
         <maven.compiler.version>3.5.1</maven.compiler.version>
         <jdk.version>1.8</jdk.version>
+
+        <hamcrest.library.version>2.2</hamcrest.library.version>
+        <json.path.version>2.4.0</json.path.version>
+
     </properties>
 
     <developers>
@@ -213,6 +217,31 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.25</version>
         </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <version>${hamcrest.library.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${json.path.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!--        Compilation failure:/HeaderFooterCacher.java:[12,24] cannot find symbol-->
+        <!--        [ERROR]   symbol:   class PreDestroy-->
+        <!--        [ERROR]   location: package javax.annotation-->
+        <!--        <dependency>-->
+        <!--            <groupId>javax.annotation</groupId>-->
+        <!--            <artifactId>javax.annotation-api</artifactId>-->
+        <!--            <version>1.3.2</version>-->
+        <!--        </dependency>-->
+
     </dependencies>
 
     <build>
@@ -284,11 +313,11 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.16</version>
-                <configuration>
-                    <includes>
-                        <include>**/*Tests.java</include>
-                    </includes>
-                </configuration>
+<!--                <configuration>-->
+<!--                    <includes>-->
+<!--                        <include>**/*Tests.java</include>-->
+<!--                    </includes>-->
+<!--                </configuration>-->
             </plugin>
 
             <!-- Creates   -->
