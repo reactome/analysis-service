@@ -4,14 +4,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.reactome.server.analysis.AppTests;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"file:src/test/resources/mvc-dispatcher-servlet-test.xml"})
@@ -32,6 +31,6 @@ public class ReportControllerTest extends AppTests{
         params.put("diagramProfile","Modern");
         params.put("analysisProfile","Standard");
         params.put("fireworksProfile","Cooper");
-        mockMvcGetResult(url,"application/pdf", params);
+        mockMvcGetResult(url, MediaType.APPLICATION_PDF_VALUE, params);
     }
 }

@@ -9,8 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import static org.junit.Assert.*;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"file:src/test/resources/mvc-dispatcher-servlet-test.xml"})
 @WebAppConfiguration
@@ -30,7 +28,7 @@ public class DownloadControllerTest extends AppTests {
     @Test
     public void downloadResultJSON() throws Exception {
         String url = String.format("/download/%s/result.json", AppTests.token);
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE,null);
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE,null);
     }
 
     @Test

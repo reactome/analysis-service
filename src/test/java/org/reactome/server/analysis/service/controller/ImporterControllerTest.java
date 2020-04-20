@@ -4,16 +4,13 @@ package org.reactome.server.analysis.service.controller;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.reactome.server.analysis.AppTests;
-
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
-
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,7 +30,7 @@ public class ImporterControllerTest extends AppTests {
     @Test
     public void getPostText() throws Exception {
         String url = String.format("/download/%s/result.json", AppTests.token);
-        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, null);
+        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, null);
         String response = result.getResponse().getContentAsString();
 
         mockMvcPostResult("/import/", response);
@@ -45,7 +42,7 @@ public class ImporterControllerTest extends AppTests {
 
         // generate a content string
         String url = String.format("/download/%s/result.json", AppTests.token);
-        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, null);
+        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, null);
         String response = result.getResponse().getContentAsString();
 
         MockMultipartFile importFile = new MockMultipartFile("file", "result.json", "multipart/form-data", response.getBytes());

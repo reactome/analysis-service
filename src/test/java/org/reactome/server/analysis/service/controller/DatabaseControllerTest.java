@@ -3,11 +3,11 @@ package org.reactome.server.analysis.service.controller;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.reactome.server.analysis.AppTests;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,7 +39,7 @@ public class DatabaseControllerTest extends AppTests {
     @Test
     public void getDatabaseInfo() throws Exception {
         // todo null
-        mockMvcGetResult("/database/info", "application/json;charset=UTF-8", null);
+        mockMvcGetResult("/database/info", MediaType.APPLICATION_JSON_VALUE, null);
     }
 
 }

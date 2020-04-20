@@ -17,9 +17,7 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-
 import javax.servlet.ServletContext;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +74,7 @@ public abstract class AppTests {
      */
     protected void generateToken(String input){
         UserData ud = analysisHelper.getUserData(input);
-        AnalysisStoredResult asr = analysisHelper.analyse(ud, null, false, true);
+        AnalysisStoredResult asr = analysisHelper.analyse(ud, null, false, true, true);
         AppTests.token = asr.getSummary().getToken();
         AppTests.stId = asr.getPathways().get(0).getStId();
     }
@@ -95,9 +93,9 @@ public abstract class AppTests {
     protected MvcResult mockMvcGetResult(String url, Map<String, Object> params) throws Exception {
 
         if (params != null && !params.isEmpty()) {
-            return mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, params);
+            return mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, params);
         } else {
-            return mockMvcGetResult(url, MediaType.APPLICATION_JSON_UTF8_VALUE, null);
+            return mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, null);
         }
     }
 
@@ -206,7 +204,7 @@ public abstract class AppTests {
 
             return this.mockMvc.perform(requestBuilder)
                     .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
 
                     .andReturn();
         } else {
@@ -215,7 +213,7 @@ public abstract class AppTests {
                             .contentType(MediaType.TEXT_PLAIN)
                             .content(content))
                     .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                     .andReturn();
         }
     }
