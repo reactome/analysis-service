@@ -254,7 +254,9 @@ public class TokenController {
                                                         @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
                                                        @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
         FoundInteractors fi = this.token.getFromToken(token).getFoundInteractors(pathway);
-        if (fi == null) throw new ResourceNotFoundException();
+        if (fi == null || fi.getFound() == 0 ) {
+            throw new ResourceNotFoundException();
+        }
         return fi.filter(resource, pageSize, page);
     }
 

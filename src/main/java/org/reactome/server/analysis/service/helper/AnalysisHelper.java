@@ -448,6 +448,9 @@ public class AnalysisHelper {
      * @return the name of the server with its corresponding protocol
      */
     private String getServerName(HttpServletRequest request){
+        // add if statement to help generate a token in testing
+        if (request == null) return "http://localhost";
+
         String rtn;
         try {
             Boolean supportsSSL = Boolean.valueOf(request.getHeader("supports-ssl"));

@@ -33,7 +33,7 @@ public class IdentifierControllerTest extends AppTests {
     @Test
     public void getIdentifierToHuman() throws Exception {
         //OVERREPRESENTATION
-        mockMvcGetResult(AppTests.HOST + "/identifier/P21802", params);
+        mockMvcGetResult("/identifier/P21802", params);
     }
 
     @Test
