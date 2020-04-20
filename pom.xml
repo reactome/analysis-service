@@ -22,7 +22,7 @@
         <commons.codec>1.11</commons.codec>
         <jackson.version>2.7.3</jackson.version>
         <swagger.version>2.7.0</swagger.version>
-        <tika.version>1.12</tika.version>
+        <tika.version>1.22</tika.version>
         <jackson.asl.version>1.9.12</jackson.asl.version>
 
         <servlet.version>4.0.0-b01</servlet.version>
