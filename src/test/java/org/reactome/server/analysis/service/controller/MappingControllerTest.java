@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +91,7 @@ public class MappingControllerTest extends AppTests {
         files.add(overrepresentationFile);
         files.add(expressionFile);
 
-        MockMultipartHttpServletRequestBuilder requestBuilder = fileUpload("/mapping/form");
+        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.multipart("/mapping/form");
 
         for (MockMultipartFile file : files) {
             requestBuilder.file(file);

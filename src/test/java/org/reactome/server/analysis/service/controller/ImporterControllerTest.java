@@ -11,8 +11,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -31,9 +32,9 @@ public class ImporterControllerTest extends AppTests {
     public void getPostText() throws Exception {
         String url = String.format("/download/%s/result.json", AppTests.token);
         MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, null);
-        String response = result.getResponse().getContentAsString();
+        String responseResult = result.getResponse().getContentAsString();
 
-        mockMvcPostResult("/import/", response);
+        mockMvcPostResult("/import/", responseResult);
 
     }
 
@@ -47,7 +48,15 @@ public class ImporterControllerTest extends AppTests {
 
         MockMultipartFile importFile = new MockMultipartFile("file", "result.json", "multipart/form-data", response.getBytes());
 
-        this.getMockMvc().perform(fileUpload("/import/form").file(importFile)).andExpect(status().isOk()).andReturn();
+        MockHttpServletRequestBuilder builder =
+                MockMvcRequestBuilders.multipart("/import/form")
+                        .file(importFile);
+
+        this.getMockMvc().perform(builder)
+                .andExpect(status().isOk())
+                .andReturn();
+        //todo delete below
+       // this.getMockMvc().perform(fileUpload("/import/form").file(importFile)).andExpect(status().isOk()).andReturn();
 
     }
 

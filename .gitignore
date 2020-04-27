@@ -36,4 +36,8 @@ local.properties
 # Log files
 *.out
 
+# Header and Footer
+footer.jsp
+header.jsp
+
 .DS_Store

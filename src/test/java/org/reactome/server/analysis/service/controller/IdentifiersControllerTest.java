@@ -8,8 +8,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +18,6 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -82,12 +81,12 @@ public class IdentifiersControllerTest extends AppTests {
     @Test
     public void getPostText() throws Exception {
         String content = "P02452 P08123 P02461 P12110 P49674 P35222 P09668 Q9NQC7";
-        MvcResult result =
-                this.getMockMvc().perform(post("/identifiers/").param("interactors", "true").param("includeDisease","true")
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .content(content))
-                        .andExpect(status().isOk())
-                        .andReturn();
+
+        this.getMockMvc().perform(post("/identifiers/").param("interactors", "true").param("includeDisease", "true")
+                .contentType(MediaType.TEXT_PLAIN)
+                .content(content))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 
     @Test
@@ -97,7 +96,7 @@ public class IdentifiersControllerTest extends AppTests {
         files.add(overrepresentationFile);
         files.add(expressionFile);
 
-        MockMultipartHttpServletRequestBuilder requestBuilder = fileUpload("/identifiers/form/projection");
+        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.multipart("/identifiers/form/projection");
 
         for (MockMultipartFile file : files) {
             requestBuilder.file(file);
@@ -124,7 +123,7 @@ public class IdentifiersControllerTest extends AppTests {
         files.add(overrepresentationFile);
         files.add(expressionFile);
 
-        MockMultipartHttpServletRequestBuilder requestBuilder = fileUpload("/identifiers/form/");
+        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.multipart("/identifiers/form/");
 
         for (MockMultipartFile file : files) {
             requestBuilder.file(file);
