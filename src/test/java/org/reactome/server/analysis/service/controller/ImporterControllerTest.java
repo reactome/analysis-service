@@ -55,9 +55,6 @@ public class ImporterControllerTest extends AppTests {
         this.getMockMvc().perform(builder)
                 .andExpect(status().isOk())
                 .andReturn();
-        //todo delete below
-       // this.getMockMvc().perform(fileUpload("/import/form").file(importFile)).andExpect(status().isOk()).andReturn();
-
     }
 
     /**
