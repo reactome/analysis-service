@@ -14,7 +14,7 @@
 
         <analysis.core>3.3.2</analysis.core>
         <analysis.report>1.1.5</analysis.report>
-        <spring.version>4.3.10.RELEASE</spring.version>
+        <spring.version>5.2.8.RELEASE</spring.version>
         <reactome.utils.version>1.0.9</reactome.utils.version>
 
         <sl4j.version>1.7.2</sl4j.version>
