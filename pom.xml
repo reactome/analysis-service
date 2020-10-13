@@ -30,7 +30,7 @@
         <jstl.api.version>1.2</jstl.api.version>
         <xml.security.version>1.0.4</xml.security.version>
         <xalan.version>2.7.1</xalan.version>
-        <junit.version>4.13</junit.version>
+        <junit.version>4.13.1</junit.version>
         <mail.version>1.6.0</mail.version>
         <activation.version>1.1.1</activation.version>
 
