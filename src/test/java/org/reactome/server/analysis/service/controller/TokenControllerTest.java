@@ -151,6 +151,6 @@ public class TokenControllerTest extends AppTests {
         params.put("pValue", 1);
         params.put("species", 48887);
         params.put("includeDisease", true);
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, "resource", "TOTAL");
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, params);
     }
 }
