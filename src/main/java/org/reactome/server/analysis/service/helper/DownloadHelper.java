@@ -76,8 +76,9 @@ public class DownloadHelper {
             sb.append("Submitted identifier").append(DELIMITER).append("Found identifier").append(DELIMITER).append("Resource\n");
             fw.write(sb.toString());
 
-            for (Identifier identifier : asr.getFoundEntitiesMap().keySet()) {
-                projection.add(identifier.getValue().getId(), asr.getFoundEntitiesMap().getElements(identifier));
+            MapSet<Identifier, MainIdentifier> aux = asr.getFoundEntitiesMap();
+            for (Identifier identifier : aux.keySet()) {
+                projection.add(identifier.getValue().getId(), aux.getElements(identifier));
             }
             for (String identifier : projection.keySet()) {
                 for (MainIdentifier mainIdentifier : projection.getElements(identifier)) {
