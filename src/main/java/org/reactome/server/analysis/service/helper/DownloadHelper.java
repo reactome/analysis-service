@@ -19,7 +19,9 @@ import org.reactome.server.analysis.core.result.model.AnalysisSummary;
 import org.reactome.server.analysis.core.result.report.AnalysisReport;
 import org.reactome.server.analysis.core.result.report.ReportParameters;
 import org.reactome.server.analysis.core.util.MapSet;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.*;
@@ -28,15 +30,24 @@ import java.util.zip.GZIPOutputStream;
 /**
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
+@Component
 public class DownloadHelper {
 
     private static final String DELIMITER = ",";
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    private static String downloadFileTempDir;
+
+    @Value("${analysis.export.temp.folder}")
+    public void setPath(String dir) {
+        DownloadHelper.downloadFileTempDir = dir;
+    }
+
     public static FileSystemResource getHitPathwaysCVS(String filename, AnalysisStoredResult asr, String resource) throws IOException {
         long start = System.currentTimeMillis();
-        File f = File.createTempFile(filename, "csv");
+        String uuid = UUID.randomUUID().toString();
+        File f = new File(DownloadHelper.downloadFileTempDir + "/" + filename + "-" + uuid + ".csv");
         FileWriter fw = new FileWriter(f);
 
         List<PathwayNodeSummary> pathways = filterPathwaysByResource(asr.getPathways(), resource);
@@ -67,7 +78,8 @@ public class DownloadHelper {
 
     public static FileSystemResource getIdentifiersFoundMappingCVS(String filename, AnalysisStoredResult asr, String resource) throws IOException {
         long start = System.currentTimeMillis();
-        File f = File.createTempFile(filename, "csv");
+        String uuid = UUID.randomUUID().toString();
+        File f = new File(DownloadHelper.downloadFileTempDir + "/" + filename + "-" + uuid + ".csv");
         FileWriter fw = new FileWriter(f);
         StringBuilder sb = new StringBuilder();
 
@@ -122,7 +134,8 @@ public class DownloadHelper {
     }
 
     public static FileSystemResource getExternalResultsGZIP(String filename, ExternalAnalysisResult er) throws IOException {
-        File f = File.createTempFile(filename, "json.gz");
+        String uuid = UUID.randomUUID().toString();
+        File f = new File(DownloadHelper.downloadFileTempDir + "/" + filename + "-" + uuid + ".csv");
         String json = mapper.writeValueAsString(er);
         OutputStream os = new FileOutputStream(f);
         GZIPOutputStream gzipOutputStream = new GZIPOutputStream(os);
@@ -134,7 +147,8 @@ public class DownloadHelper {
 
     public static FileSystemResource getNotFoundIdentifiers(String filename, AnalysisStoredResult asr) throws IOException {
         long start = System.currentTimeMillis();
-        File f = File.createTempFile(filename, "csv");
+        String uuid = UUID.randomUUID().toString();
+        File f = new File(DownloadHelper.downloadFileTempDir + "/" + filename + "-" + uuid + ".csv");
         FileWriter fw = new FileWriter(f);
 
         StringBuilder sb = new StringBuilder("Not found");

@@ -52,6 +52,8 @@
 
     <bean class="org.reactome.server.analysis.service.helper.AnalysisHelper"/>
 
+    <bean class="org.reactome.server.analysis.service.helper.DownloadHelper"/>
+
     <bean class="org.reactome.server.analysis.core.result.utils.ExternalAnalysisResultCheck" />
 
     <bean id="fileCheckerController" class="org.reactome.server.analysis.service.helper.FileCheckerController" name="FileCheckerController" destroy-method="interrupt">
@@ -65,6 +67,8 @@
     <bean id="tokenUtils" class="org.reactome.server.analysis.core.result.utils.TokenUtils">
         <property name="pathDirectory" value="${analysis.data.tmp}"/>
     </bean>
+
+    <bean class="org.reactome.server.analysis.service.handler.FileDeletorScheduler"/>
 
      <!-- Creates a controller at /api-docs from this uri, which serves swagger's raw documentation in JSON format. -->
     <bean name="/applicationSwaggerConfig" class="org.reactome.server.analysis.service.swagger.AnalysisServiceSwaggerConfig" />
