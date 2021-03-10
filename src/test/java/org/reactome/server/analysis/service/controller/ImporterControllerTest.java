@@ -49,7 +49,7 @@ public class ImporterControllerTest extends AppTests {
         MockMultipartFile importFile = new MockMultipartFile("file", "result.json", "multipart/form-data", response.getBytes());
 
         MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart("/import/form")
+                MockMvcRequestBuilders.fileUpload("/import/form")
                         .file(importFile);
 
         this.getMockMvc().perform(builder)

@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -96,7 +94,7 @@ public class IdentifiersControllerTest extends AppTests {
         files.add(overrepresentationFile);
         files.add(expressionFile);
 
-        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.multipart("/identifiers/form/projection");
+        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.fileUpload("/identifiers/form/projection");
 
         for (MockMultipartFile file : files) {
             requestBuilder.file(file);
@@ -123,7 +121,7 @@ public class IdentifiersControllerTest extends AppTests {
         files.add(overrepresentationFile);
         files.add(expressionFile);
 
-        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.multipart("/identifiers/form/");
+        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.fileUpload("/identifiers/form/");
 
         for (MockMultipartFile file : files) {
             requestBuilder.file(file);
