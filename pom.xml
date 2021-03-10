@@ -4,8 +4,8 @@
     <groupId>org.reactome.server.tools</groupId>
     <artifactId>analysis-service</artifactId>
     <packaging>war</packaging>
-    <version>3.0.1</version>
-    <name>AnalysisService</name>
+    <version>3.0.2</version>
+    <name>analysis-service</name>
     <description>Pathway enrichment and expression analysis as well as species comparison tool</description>
 
     <properties>
@@ -312,7 +312,7 @@
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.16</version>
+                <version>2.22.2</version>
 <!--                <configuration>-->
 <!--                    <includes>-->
 <!--                        <include>**/*Tests.java</include>-->
