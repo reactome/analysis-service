@@ -1,12 +1,12 @@
 package org.reactome.server.analysis.service.controller;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.reactome.server.analysis.AppTests;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -19,7 +19,7 @@ import java.util.Map;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration({"file:src/test/resources/mvc-dispatcher-servlet-test.xml"})
 @WebAppConfiguration
 public class IdentifiersControllerTest extends AppTests {
@@ -54,7 +54,6 @@ public class IdentifiersControllerTest extends AppTests {
 
     private MockMultipartFile overrepresentationFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", overrepresentationFileContent.getBytes());
     private MockMultipartFile expressionFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", expressionFileContent.getBytes());
-
     private Map<String, Object> params = new HashMap<>();
 
     // this is a constructor
@@ -94,12 +93,11 @@ public class IdentifiersControllerTest extends AppTests {
         files.add(overrepresentationFile);
         files.add(expressionFile);
 
-        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.fileUpload("/identifiers/form/projection");
+        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.multipart("/identifiers/form/projection");
 
         for (MockMultipartFile file : files) {
             requestBuilder.file(file);
         }
-
         this.getMockMvc().perform(requestBuilder
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .param("interactors", "false")
@@ -121,12 +119,11 @@ public class IdentifiersControllerTest extends AppTests {
         files.add(overrepresentationFile);
         files.add(expressionFile);
 
-        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.fileUpload("/identifiers/form/");
+        MockMultipartHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.multipart("/identifiers/form/");
 
         for (MockMultipartFile file : files) {
             requestBuilder.file(file);
         }
-
         this.getMockMvc().perform(requestBuilder
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .param("interactors", "false")
@@ -139,14 +136,12 @@ public class IdentifiersControllerTest extends AppTests {
                 .param("includeDisease", "true"))
                 .andExpect(status().isOk())
                 .andReturn();
-
     }
 
     @Test
     public void getPostURLToHuman() throws Exception {
         String uniProtACFileUrl = "https://raw.githubusercontent.com/Chuqiaoo/reactome-analysis-service-testing-files/master/uniprotACs.txt";
         mockMvcPostResult("/identifiers/url", uniProtACFileUrl, params);
-
     }
 
     @Test

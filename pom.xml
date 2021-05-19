@@ -4,42 +4,46 @@
     <groupId>org.reactome.server.tools</groupId>
     <artifactId>analysis-service</artifactId>
     <packaging>war</packaging>
-    <version>3.0.2</version>
+    <version>3.1.0-SNAPSHOT</version>
     <name>analysis-service</name>
     <description>Pathway enrichment and expression analysis as well as species comparison tool</description>
 
     <properties>
         <deploymentPath>/</deploymentPath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdk.version>11</jdk.version>
+        <spring.version>5.3.7</spring.version>
 
-        <analysis.core>3.3.7-SNAPSHOT</analysis.core>
-        <analysis.report>1.1.6-SNAPSHOT</analysis.report>
-        <spring.version>4.3.10.RELEASE</spring.version>
-        <reactome.utils.version>1.0.10</reactome.utils.version>
+        <analysis.core>3.4.0-SNAPSHOT</analysis.core>
+        <analysis.report>1.2.0-SNAPSHOT</analysis.report>
+        <reactome.utils.version>1.1.0-SNAPSHOT</reactome.utils.version>
 
-        <sl4j.version>1.7.2</sl4j.version>
-        <fileupload.version>1.3</fileupload.version>
-        <commons.codec>1.11</commons.codec>
-        <jackson.version>2.9.8</jackson.version>
-        <swagger.version>2.7.0</swagger.version>
-        <tika.version>1.12</tika.version>
-        <jackson.asl.version>1.9.12</jackson.asl.version>
+        <fileupload.version>1.4</fileupload.version>
+        <commons.codec>1.15</commons.codec>
+        <jackson.version>2.12.2</jackson.version>
+        <swagger.version>3.0.0</swagger.version>
+        <tika.version>2.0.0-ALPHA</tika.version>
 
-        <servlet.version>4.0.0-b01</servlet.version>
-        <jsp.api.version>2.1</jsp.api.version>
+        <servlet.version>4.0.1</servlet.version>
+        <jsp.api.version>2.3.3</jsp.api.version>
         <jstl.api.version>1.2</jstl.api.version>
-        <xml.security.version>1.0.4</xml.security.version>
-        <xalan.version>2.7.1</xalan.version>
-        <junit.version>4.13</junit.version>
-        <mail.version>1.6.0</mail.version>
+        <xalan.version>2.7.2</xalan.version>
+        <junit.version>5.8.0-M1</junit.version>
+        <mail.version>1.6.2</mail.version>
         <activation.version>1.1.1</activation.version>
-
-        <maven.compiler.version>3.5.1</maven.compiler.version>
-        <jdk.version>1.8</jdk.version>
-
+        <jaxb.core.version>3.0.0</jaxb.core.version>
+        <commons.io.version>2.8.0</commons.io.version>
+        <slf4j.api.version>2.0.0-alpha1</slf4j.api.version>
+        <slf4j.log4j12.version>2.0.0-alpha1</slf4j.log4j12.version>
         <hamcrest.library.version>2.2</hamcrest.library.version>
-        <json.path.version>2.4.0</json.path.version>
+        <json.path.version>2.5.0</json.path.version>
+        <javax.annotation.version>1.3.2</javax.annotation.version>
 
+        <maven.compiler.version>3.8.1</maven.compiler.version>
+        <tomcat7.maven.version>2.2</tomcat7.maven.version>
+        <jetty.maven.version>8.1.14.v20131031</jetty.maven.version>
+        <maven.surefire.version>3.0.0-M5</maven.surefire.version>
+        <maven.jar.version>3.2.0</maven.jar.version>
     </properties>
 
     <developers>
@@ -83,14 +87,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.5</version>
-        </dependency>
-        <!--json-->
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jackson.asl.version}</version>
-            <scope>runtime</scope>
+            <version>${commons.io.version}</version>
         </dependency>
 
         <dependency>
@@ -151,10 +148,11 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
-            <artifactId>jsp-api</artifactId>
+            <artifactId>javax.servlet.jsp-api</artifactId>
             <version>${jsp.api.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!-- This artifact was moved to: jstl, however maven cannot download it-->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
@@ -164,7 +162,7 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>2.3.0</version>
+            <version>${jaxb.core.version}</version>
         </dependency>
 
         <dependency>
@@ -174,8 +172,8 @@
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
@@ -209,13 +207,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.2</version>
+            <version>${slf4j.api.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.25</version>
+            <version>${slf4j.log4j12.version}</version>
         </dependency>
 
         <!-- Testing -->
@@ -232,7 +230,11 @@
             <scope>test</scope>
         </dependency>
 
-
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${javax.annotation.version}</version>
+        </dependency>
         <!--        Compilation failure:/HeaderFooterCacher.java:[12,24] cannot find symbol-->
         <!--        [ERROR]   symbol:   class PreDestroy-->
         <!--        [ERROR]   location: package javax.annotation-->
@@ -261,7 +263,7 @@
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
+                <version>${tomcat7.maven.version}</version>
                 <configuration>
                     <!--
                     **** Memory configuration ****
@@ -278,7 +280,7 @@
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.1.14.v20131031</version>
+                <version>${jetty.maven.version}</version>
                 <configuration>
                     <!--
                     **** Memory configuration ****
@@ -303,28 +305,28 @@
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <version>${maven.compiler.version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
                 </configuration>
             </plugin>
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-<!--                <configuration>-->
-<!--                    <includes>-->
-<!--                        <include>**/*Tests.java</include>-->
-<!--                    </includes>-->
-<!--                </configuration>-->
+                <version>${maven.surefire.version}</version>
+                <!--                <configuration>-->
+                <!--                    <includes>-->
+                <!--                        <include>**/*Tests.java</include>-->
+                <!--                    </includes>-->
+                <!--                </configuration>-->
             </plugin>
 
             <!-- Creates   -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
+                <version>${maven.jar.version}</version>
                 <executions>
                     <execution>
                         <id>make-a-jar</id>

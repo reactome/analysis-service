@@ -1,9 +1,6 @@
 package org.reactome.server.analysis.service.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.reactome.server.analysis.core.data.AnalysisData;
 import org.reactome.server.analysis.core.model.DatabaseInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
-@Api(tags="database", description = "Database info queries", position = 0)
+@Api(tags={"database"})
 public class DatabaseController {
 
     private AnalysisData analysisData;

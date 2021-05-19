@@ -42,7 +42,7 @@ import java.util.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags = "report", description = "Retrieves report files in PDF format", position = 5)
+@Api(tags = {"report"})
 @RequestMapping(value = "/report")
 public class ReportController {
 

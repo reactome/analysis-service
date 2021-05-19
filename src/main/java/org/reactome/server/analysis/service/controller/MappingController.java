@@ -15,7 +15,7 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags = "mapping", description = "Identifiers mapping methods", position = 7)
+@Api(tags = {"mapping"})
 @RequestMapping(value = "/mapping")
 public class MappingController {
 

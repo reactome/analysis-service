@@ -17,7 +17,7 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags = "identifiers", description = "Queries for multiple identifiers", position = 2)
+@Api(tags = {"identifiers"})
 @RequestMapping(value = "/identifiers")
 public class IdentifiersController {
 

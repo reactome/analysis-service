@@ -1,8 +1,8 @@
 package org.reactome.server.analysis;
 
 
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.reactome.server.analysis.core.model.UserData;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.service.helper.AnalysisHelper;
@@ -41,7 +41,7 @@ public abstract class AppTests {
     /**
      * initialize the mockMvc object
      */
-    @Before
+    @BeforeEach
     public void setup() {
         DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
         this.mockMvc = builder.build();
@@ -55,9 +55,9 @@ public abstract class AppTests {
     protected void findBeanByName(String beanName) {
         ServletContext servletContext = wac.getServletContext();
 
-        Assert.assertNotNull(servletContext);
-        Assert.assertTrue(servletContext instanceof MockServletContext);
-        Assert.assertNotNull(wac.getBean(beanName));
+        Assertions.assertNotNull(servletContext);
+        Assertions.assertTrue(servletContext instanceof MockServletContext);
+        Assertions.assertNotNull(wac.getBean(beanName));
     }
 
     @Autowired
@@ -68,11 +68,12 @@ public abstract class AppTests {
     /**
      * Generate a token which is going to be used in DownloadControllerTest,ImporterControllerTest
      * ReportControllerTest,TokenControllerTest
-     *
+     * <p>
      * Use @Before annotation to execute before each test
+     *
      * @param input identifiers
      */
-    protected void generateToken(String input){
+    protected void generateToken(String input) {
         UserData ud = analysisHelper.getUserData(input);
         AnalysisStoredResult asr = analysisHelper.analyse(ud, null, false, true, true);
         AppTests.token = asr.getSummary().getToken();

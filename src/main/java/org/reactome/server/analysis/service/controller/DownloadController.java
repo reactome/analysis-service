@@ -20,7 +20,7 @@ import java.io.IOException;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags = "download", description = "Methods to download different views of a result", position = 5)
+@Api(tags = {"download"})
 @RequestMapping(value = "/download")
 public class DownloadController {
 

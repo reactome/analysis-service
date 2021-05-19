@@ -1,24 +1,25 @@
 package org.reactome.server.analysis.service.controller;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.reactome.server.analysis.AppTests;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration({"file:src/test/resources/mvc-dispatcher-servlet-test.xml"})
 @WebAppConfiguration
 public class TokenControllerTest extends AppTests {
 
-    @Before
-    public void prepare(){
+    @BeforeEach
+    public void prepare() {
         generateToken("P02452 P08123 P02461 P12110 P49674 P35222 P09668 Q9NQC7");
     }
 
@@ -47,7 +48,6 @@ public class TokenControllerTest extends AppTests {
         params.put("includeDisease", false);
         String input = AppTests.stId;
         mockMvcPostResult(url, input, params);
-
     }
 
     @Test
@@ -71,7 +71,6 @@ public class TokenControllerTest extends AppTests {
         params.put("pValue", 1);
         params.put("includeDisease", true);
         mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, params);
-
     }
 
     @Test
@@ -133,7 +132,6 @@ public class TokenControllerTest extends AppTests {
         params.put("species", 48887);
         params.put("includeDisease", false);
         mockMvcPostResult(url, input, params);
-
     }
 
     @Test
