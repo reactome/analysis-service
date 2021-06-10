@@ -1,19 +1,11 @@
 package org.reactome.server.analysis.service.controller;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.reactome.server.analysis.AppTests;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration({"file:src/test/resources/mvc-dispatcher-servlet-test.xml"})
-@WebAppConfiguration
 public class IdentifierControllerTest extends AppTests {
 
     private Map<String, Object> params = new HashMap<>();

@@ -1,3 +1,4 @@
+<!--
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
@@ -12,7 +13,7 @@
     <context:component-scan base-package="org.reactome.server.analysis.service.entrypoint"/>
     <context:component-scan base-package="org.reactome.server.analysis.service.utils"/>
 
-    <!-- Standard xml based mvc config-->
+    &lt;!&ndash; Standard xml based mvc config&ndash;&gt;
     <mvc:annotation-driven>
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
@@ -31,7 +32,7 @@
 
     <mvc:resources mapping="/**" location="/resources/" />
 
-    <!-- Enables swgger ui-->
+    &lt;!&ndash; Enables swgger ui&ndash;&gt;
     <mvc:resources mapping="swagger-ui.html" location="classpath:/META-INF/resources/"/>
     <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/"/>
 
@@ -41,7 +42,7 @@
     </bean>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="maxUploadSize" value="52428800"/> <!-- 10485760 = 10 MB  // 52428800 = 50 MB-->
+        <property name="maxUploadSize" value="52428800"/> &lt;!&ndash; 10485760 = 10 MB  // 52428800 = 50 MB&ndash;&gt;
     </bean>
 
     <bean class= "org.reactome.server.analysis.service.handler.HandlerExceptionResolverImpl" />
@@ -58,10 +59,10 @@
 
     <bean id="fileCheckerController" class="org.reactome.server.analysis.service.helper.FileCheckerController" name="FileCheckerController" destroy-method="interrupt">
         <property name="pathDirectory" value="${analysis.data.tmp}"/>
-        <property name="maxSize" value="2684354560"/> <!-- 2684354560 = 2.5 GB // 5368709120 = 5 GB // 10737418240 = 10 GB -->
-        <property name="threshold" value="524288000"/> <!-- 10485760 = 10MB // 524288000 = 500MB // 1073741824 = 1GB -->
-        <property name="time" value="10000"/> <!-- 10 sec -->
-        <property name="ttl" value="604800000"/> <!-- 1 week (SAB suggestion) -->
+        <property name="maxSize" value="2684354560"/> &lt;!&ndash; 2684354560 = 2.5 GB // 5368709120 = 5 GB // 10737418240 = 10 GB &ndash;&gt;
+        <property name="threshold" value="524288000"/> &lt;!&ndash; 10485760 = 10MB // 524288000 = 500MB // 1073741824 = 1GB &ndash;&gt;
+        <property name="time" value="10000"/> &lt;!&ndash; 10 sec &ndash;&gt;
+        <property name="ttl" value="604800000"/> &lt;!&ndash; 1 week (SAB suggestion) &ndash;&gt;
     </bean>
 
     <bean id="tokenUtils" class="org.reactome.server.analysis.core.result.utils.TokenUtils">
@@ -70,7 +71,7 @@
 
     <bean class="org.reactome.server.analysis.service.handler.FileDeletorScheduler"/>
 
-    <!-- Creates a controller at /api-docs from this uri, which serves swagger's raw documentation in JSON format. -->
+    &lt;!&ndash; Creates a controller at /api-docs from this uri, which serves swagger's raw documentation in JSON format. &ndash;&gt;
     <bean name="/applicationSwaggerConfig" class="org.reactome.server.analysis.service.swagger.AnalysisServiceSwaggerConfig" />
 
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
@@ -79,7 +80,7 @@
         <property name="username" value="${mail.username}" />
         <property name="password" value="${mail.password}" />
 
-        <!-- The name of the property, following JavaBean naming conventions -->
+        &lt;!&ndash; The name of the property, following JavaBean naming conventions &ndash;&gt;
         <property name="javaMailProperties">
             <props>
                 <prop key="mail.transport.protocol">smtp</prop>
@@ -104,4 +105,5 @@
         <constructor-arg name="analysisPath" value="${analysis.data.tmp}"/>
         <constructor-arg name="svgSummary" value="${svg.summary.file}"/>
     </bean>
-</beans>
+
+</beans>-->

@@ -1,3 +1,4 @@
+<!--
 <web-app version="2.4"
 	xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
@@ -5,7 +6,7 @@
 
 	<display-name>Spring MVC Application</display-name>
 
-    <!-- Default file when none is indicated in the URL-->
+    &lt;!&ndash; Default file when none is indicated in the URL&ndash;&gt;
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
@@ -21,7 +22,7 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
-    <!-- Adds the headers to support cross-origin resource sharing in the web clients -->
+    &lt;!&ndash; Adds the headers to support cross-origin resource sharing in the web clients &ndash;&gt;
     <filter>
         <filter-name>cors</filter-name>
         <filter-class>org.reactome.server.analysis.service.utils.CorsFilter</filter-class>
@@ -153,4 +154,4 @@
         <servlet-name>Content</servlet-name>
         <url-pattern>/content/*</url-pattern>
     </servlet-mapping>
-</web-app>
+</web-app>-->

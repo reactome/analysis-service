@@ -8,11 +8,17 @@
     <name>analysis-service</name>
     <description>Pathway enrichment and expression analysis as well as species comparison tool</description>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.5</version>
+    </parent>
+
     <properties>
         <deploymentPath>/</deploymentPath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>11</jdk.version>
-        <spring.version>5.3.7</spring.version>
+        <!--        <spring.version>5.3.7</spring.version>-->
 
         <analysis.core>3.4.0-SNAPSHOT</analysis.core>
         <analysis.report>1.2.0-SNAPSHOT</analysis.report>
@@ -40,7 +46,7 @@
         <javax.annotation.version>1.3.2</javax.annotation.version>
 
         <maven.compiler.version>3.8.1</maven.compiler.version>
-        <tomcat7.maven.version>2.2</tomcat7.maven.version>
+        <!--        <tomcat7.maven.version>2.2</tomcat7.maven.version>-->
         <jetty.maven.version>8.1.14.v20131031</jetty.maven.version>
         <maven.surefire.version>3.0.0-M5</maven.surefire.version>
         <maven.jar.version>3.2.0</maven.jar.version>
@@ -56,10 +62,36 @@
     </developers>
 
     <dependencies>
+
+                <dependency>
+                    <groupId>org.reactome.server.graph</groupId>
+                    <artifactId>graph-core</artifactId>
+                    <version>2.0.0-SNAPSHOT1</version>
+                    <exclusions>  <!-- TODO remove when spring-boot upgrade is enough for spring-data-neo4j -->
+                        <exclusion>
+                            <groupId>org.springframework.data</groupId>
+                            <artifactId>spring-data-neo4j</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <!-- TODO remove when spring-boot upgrade is enough for spring-data-neo4j -->
+                <dependency>
+                    <groupId>org.springframework.data</groupId>
+                    <artifactId>spring-data-neo4j</artifactId>
+                    <version>6.0.9</version>
+                </dependency>
+
+
         <dependency>
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-core</artifactId>
             <version>${analysis.core}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>graph-core</artifactId>
+                    <groupId>org.reactome.server.graph</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -90,54 +122,97 @@
             <version>${commons.io.version}</version>
         </dependency>
 
+
+        <!-- Spring Boot -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!-- Enable Mailing Features -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
         </dependency>
 
+        <!--provides support for . jsp file rendering        -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework</groupId>-->
+        <!--            <artifactId>spring-core</artifactId>-->
+        <!--            <version>${spring.version}</version>-->
+        <!--        </dependency>-->
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework</groupId>-->
+        <!--            <artifactId>spring-web</artifactId>-->
+        <!--            <version>${spring.version}</version>-->
+        <!--        </dependency>-->
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework</groupId>-->
+        <!--            <artifactId>spring-webmvc</artifactId>-->
+        <!--            <version>${spring.version}</version>-->
+        <!--        </dependency>-->
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework</groupId>-->
+        <!--            <artifactId>spring-test</artifactId>-->
+        <!--            <version>${spring.version}</version>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
+
+        <!-- Enable Mailing Features -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework</groupId>-->
+        <!--            <artifactId>spring-context-support</artifactId>-->
+        <!--            <version>${spring.version}</version>-->
+        <!--        </dependency>-->
+
         <!-- Mail Service -->
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>javax.mail-api</artifactId>
-            <version>${mail.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>${mail.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <version>${activation.version}</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>javax.mail</groupId>-->
+        <!--            <artifactId>javax.mail-api</artifactId>-->
+        <!--            <version>${mail.version}</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.sun.mail</groupId>-->
+        <!--            <artifactId>javax.mail</artifactId>-->
+        <!--            <version>${mail.version}</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>javax.activation</groupId>-->
+        <!--            <artifactId>activation</artifactId>-->
+        <!--            <version>${activation.version}</version>-->
+        <!--        </dependency>-->
 
         <!--Jsp Servlets -->
         <dependency>
@@ -260,23 +335,23 @@
         </resources>
 
         <plugins>
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>${tomcat7.maven.version}</version>
-                <configuration>
-                    <!--
-                    **** Memory configuration ****
-                    Adding the system properties to pom.xml won't work, it's too late.
-                    You have to pass such parameters directly to the JVM
-                       » IntelliJ -> Preferences -> Maven -> Runner
-                            In the VM options add
-                                  -Xms2048m -Xmx5120m
-                    -->
-                    <path>${deploymentPath}</path>
-                    <port>8080</port>
-                </configuration>
-            </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.tomcat.maven</groupId>-->
+            <!--                <artifactId>tomcat7-maven-plugin</artifactId>-->
+            <!--                <version>${tomcat7.maven.version}</version>-->
+            <!--                <configuration>-->
+            <!--                    &lt;!&ndash;-->
+            <!--                    **** Memory configuration ****-->
+            <!--                    Adding the system properties to pom.xml won't work, it's too late.-->
+            <!--                    You have to pass such parameters directly to the JVM-->
+            <!--                       » IntelliJ -> Preferences -> Maven -> Runner-->
+            <!--                            In the VM options add-->
+            <!--                                  -Xms2048m -Xmx5120m-->
+            <!--                    &ndash;&gt;-->
+            <!--                    <path>${deploymentPath}</path>-->
+            <!--                    <port>8080</port>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>

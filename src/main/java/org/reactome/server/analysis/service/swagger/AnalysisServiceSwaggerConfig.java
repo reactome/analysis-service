@@ -25,7 +25,7 @@ public class AnalysisServiceSwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage("org.reactome.server"))
                 .paths(PathSelectors.any())
                 .build()
                 .tags(new Tag("database", "Database info queries"))
