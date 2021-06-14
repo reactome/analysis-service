@@ -28,13 +28,13 @@ public class DatabaseControllerTest extends AppTests {
     @Test
     public void getDBVersion() throws Exception {
         // todo null
-        mockMvcGetResult("/database/version", "text/plain;charset=ISO-8859-1", null);
+        mockMvcGetResult("/database/version", "text/plain;charset=UTF-8", null);
     }
 
     @Test
     public void getDatabaseInfo() throws Exception {
         // todo null
-        mockMvcGetResult("/database/info", MediaType.APPLICATION_JSON_VALUE, null);
+        mockMvcGetResult("/database/info", "application/json;charset=UTF-8", null);
     }
 
 }

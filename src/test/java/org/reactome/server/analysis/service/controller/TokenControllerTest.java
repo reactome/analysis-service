@@ -29,7 +29,7 @@ public class TokenControllerTest extends AppTests {
         params.put("order", "ASC");
         params.put("pValue", 1);
         params.put("includeDisease", false);
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, params);
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", params);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class TokenControllerTest extends AppTests {
         params.put("sortBy", "ENTITIES_PVALUE");
         params.put("order", "ASC");
         params.put("resource", "TOTAL");
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, params);
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", params);
     }
 
     @Test
@@ -64,13 +64,13 @@ public class TokenControllerTest extends AppTests {
         params.put("resource", "TOTAL");
         params.put("pValue", 1);
         params.put("includeDisease", true);
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, params);
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", params);
     }
 
     @Test
     public void getTokenHitEntitiesPathway() throws Exception {
         String url = String.format("/token/%s/found/all/%s", AppTests.token, AppTests.stId);
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, "resource", "TOTAL");
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", "resource", "TOTAL");
     }
 
     @Test
@@ -83,14 +83,14 @@ public class TokenControllerTest extends AppTests {
     @Test
     public void getTokenIdentifiersPathway() throws Exception {
         String url = String.format("/token/%s/found/entities/%s", AppTests.token, AppTests.stId);
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, "page", "1");
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", "page", "1");
     }
 
     /* API ignored*/
     @Test
     public void getTokenSummaryPathway() throws Exception {
         String url = String.format("/token/%s/summary/%s", AppTests.token, AppTests.stId);
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, "page", "1");
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", "page", "1");
     }
 
     @Test
@@ -100,19 +100,19 @@ public class TokenControllerTest extends AppTests {
         params.put("pageSize", 20);
         params.put("page", 1);
         params.put("resource", "TOTAL");
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, params);
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", params);
     }
 
     @Test
     public void getNotFoundIdentifiers() throws Exception {
         String url = String.format("/token/%s/notFound", AppTests.token);
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, null);
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", null);
     }
 
     @Test
     public void getTokenFilterPathwayReactions() throws Exception {
         String url = String.format("/token/%s/reactions/%s", AppTests.token, AppTests.stId);
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, "resource", "TOTAL");
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", "resource", "TOTAL");
     }
 
     @Test
@@ -131,7 +131,7 @@ public class TokenControllerTest extends AppTests {
     @Test
     public void getResources() throws Exception {
         String url = String.format("/token/%s/resources", AppTests.token);
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, null);
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", null);
     }
 
     @Test
@@ -143,6 +143,6 @@ public class TokenControllerTest extends AppTests {
         params.put("pValue", 1);
         params.put("species", 48887);
         params.put("includeDisease", true);
-        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, params);
+        mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", params);
     }
 }

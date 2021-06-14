@@ -26,6 +26,6 @@ public class ReportControllerTest extends AppTests {
         params.put("diagramProfile", "Modern");
         params.put("analysisProfile", "Standard");
         params.put("fireworksProfile", "Cooper");
-        mockMvcGetResult(url, MediaType.APPLICATION_PDF_VALUE, params);
+        mockMvcGetResult(url, MediaType.APPLICATION_PDF_VALUE + ";charset=UTF-8", params);
     }
 }

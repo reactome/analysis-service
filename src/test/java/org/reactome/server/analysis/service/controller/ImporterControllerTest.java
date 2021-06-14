@@ -24,7 +24,7 @@ public class ImporterControllerTest extends AppTests {
     @Test
     public void getPostText() throws Exception {
         String url = String.format("/download/%s/result.json", AppTests.token);
-        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, null);
+        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", null);
         String responseResult = result.getResponse().getContentAsString();
         mockMvcPostResult("/import/", responseResult);
     }
@@ -33,7 +33,7 @@ public class ImporterControllerTest extends AppTests {
     public void getPostFile() throws Exception {
         // generate a content string
         String url = String.format("/download/%s/result.json", AppTests.token);
-        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, null);
+        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", null);
         String response = result.getResponse().getContentAsString();
 
         MockMultipartFile importFile = new MockMultipartFile("file", "result.json", "multipart/form-data", response.getBytes());

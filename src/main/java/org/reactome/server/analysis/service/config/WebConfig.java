@@ -21,13 +21,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
+
+@PropertySource("classpath:application.properties")
 @Configuration
-@EnableAspectJAutoProxy(proxyTargetClass = true)
-@ComponentScans({@ComponentScan("org.reactome.server.analysis.core.methods"),
-        @ComponentScan("org.reactome.server.analysis.service.utils"),
-        @ComponentScan("org.reactome.server.graph"),
-        @ComponentScan("org.reactome.server.analysis.service.entrypoint"),
-        @ComponentScan("org.reactome.server.analysis.service.controller")})
 public class WebConfig implements WebMvcConfigurer {
 
     @Value("${analysis.data.file}")
@@ -116,7 +112,6 @@ public class WebConfig implements WebMvcConfigurer {
                                          @Value("${spring.neo4j.authentication.password}") String password) {
         return new ReactomeGraphConfig(uri, userName, password);
     }
-
 
     @Bean
     @DependsOn({"graphCore"})

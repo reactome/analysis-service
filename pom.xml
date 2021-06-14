@@ -35,7 +35,7 @@
         <jstl.api.version>1.2</jstl.api.version>
         <xalan.version>2.7.2</xalan.version>
         <junit.version>5.8.0-M1</junit.version>
-        <mail.version>1.6.2</mail.version>
+        <!--        <mail.version>1.6.2</mail.version>-->
         <activation.version>1.1.1</activation.version>
         <jaxb.core.version>3.0.0</jaxb.core.version>
         <commons.io.version>2.8.0</commons.io.version>
@@ -44,6 +44,8 @@
         <hamcrest.library.version>2.2</hamcrest.library.version>
         <json.path.version>2.5.0</json.path.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
+        <jackson.core>2.12.3</jackson.core>
+        <jackson.annotations.version>2.12.3</jackson.annotations.version>
 
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <!--        <tomcat7.maven.version>2.2</tomcat7.maven.version>-->
@@ -63,23 +65,23 @@
 
     <dependencies>
 
-                <dependency>
-                    <groupId>org.reactome.server.graph</groupId>
-                    <artifactId>graph-core</artifactId>
-                    <version>2.0.0-SNAPSHOT1</version>
-                    <exclusions>  <!-- TODO remove when spring-boot upgrade is enough for spring-data-neo4j -->
-                        <exclusion>
-                            <groupId>org.springframework.data</groupId>
-                            <artifactId>spring-data-neo4j</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <!-- TODO remove when spring-boot upgrade is enough for spring-data-neo4j -->
-                <dependency>
+        <dependency>
+            <groupId>org.reactome.server.graph</groupId>
+            <artifactId>graph-core</artifactId>
+            <version>2.0.0-SNAPSHOT1</version>
+            <exclusions>  <!-- TODO remove when spring-boot upgrade is enough for spring-data-neo4j -->
+                <exclusion>
                     <groupId>org.springframework.data</groupId>
                     <artifactId>spring-data-neo4j</artifactId>
-                    <version>6.0.9</version>
-                </dependency>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- TODO remove when spring-boot upgrade is enough for spring-data-neo4j -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-neo4j</artifactId>
+            <version>6.0.9</version>
+        </dependency>
 
 
         <dependency>
@@ -164,38 +166,6 @@
             <scope>provided</scope>
         </dependency>
 
-
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework</groupId>-->
-        <!--            <artifactId>spring-core</artifactId>-->
-        <!--            <version>${spring.version}</version>-->
-        <!--        </dependency>-->
-
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework</groupId>-->
-        <!--            <artifactId>spring-web</artifactId>-->
-        <!--            <version>${spring.version}</version>-->
-        <!--        </dependency>-->
-
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework</groupId>-->
-        <!--            <artifactId>spring-webmvc</artifactId>-->
-        <!--            <version>${spring.version}</version>-->
-        <!--        </dependency>-->
-
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework</groupId>-->
-        <!--            <artifactId>spring-test</artifactId>-->
-        <!--            <version>${spring.version}</version>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
-
-        <!-- Enable Mailing Features -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework</groupId>-->
-        <!--            <artifactId>spring-context-support</artifactId>-->
-        <!--            <version>${spring.version}</version>-->
-        <!--        </dependency>-->
 
         <!-- Mail Service -->
         <!--        <dependency>-->
@@ -289,6 +259,18 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j.log4j12.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.core}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.annotations.version}</version>
         </dependency>
 
         <!-- Testing -->
