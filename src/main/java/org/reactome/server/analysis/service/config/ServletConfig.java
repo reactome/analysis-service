@@ -71,9 +71,9 @@ public class ServletConfig {
         ServletRegistrationBean<ProxyServlet> bean = new ServletRegistrationBean<>(new ProxyServlet(), "/content/*");
         bean.setName("Content");
         bean.setInitParameters(Map.of(
-                "proxyHost", "localhost",
-                "proxyPort", "8484",
-                "proxyPath", "/")
+                "proxyHost", this.proxyHost,
+                "proxyPort", "80",
+                "proxyPath", "/content")
         );
         return bean;
     }

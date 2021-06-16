@@ -18,7 +18,6 @@
         <deploymentPath>/</deploymentPath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>11</jdk.version>
-        <!--        <spring.version>5.3.7</spring.version>-->
 
         <analysis.core>3.4.0-SNAPSHOT</analysis.core>
         <analysis.report>1.2.0-SNAPSHOT</analysis.report>
@@ -35,7 +34,6 @@
         <jstl.api.version>1.2</jstl.api.version>
         <xalan.version>2.7.2</xalan.version>
         <junit.version>5.8.0-M1</junit.version>
-        <!--        <mail.version>1.6.2</mail.version>-->
         <activation.version>1.1.1</activation.version>
         <jaxb.core.version>3.0.0</jaxb.core.version>
         <commons.io.version>2.8.0</commons.io.version>
@@ -48,7 +46,6 @@
         <jackson.annotations.version>2.12.3</jackson.annotations.version>
 
         <maven.compiler.version>3.8.1</maven.compiler.version>
-        <!--        <tomcat7.maven.version>2.2</tomcat7.maven.version>-->
         <jetty.maven.version>8.1.14.v20131031</jetty.maven.version>
         <maven.surefire.version>3.0.0-M5</maven.surefire.version>
         <maven.jar.version>3.2.0</maven.jar.version>
@@ -88,12 +85,6 @@
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-core</artifactId>
             <version>${analysis.core}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>graph-core</artifactId>
-                    <groupId>org.reactome.server.graph</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -123,7 +114,6 @@
             <artifactId>commons-io</artifactId>
             <version>${commons.io.version}</version>
         </dependency>
-
 
         <!-- Spring Boot -->
         <dependency>
@@ -166,23 +156,11 @@
             <scope>provided</scope>
         </dependency>
 
-
-        <!-- Mail Service -->
-        <!--        <dependency>-->
-        <!--            <groupId>javax.mail</groupId>-->
-        <!--            <artifactId>javax.mail-api</artifactId>-->
-        <!--            <version>${mail.version}</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.sun.mail</groupId>-->
-        <!--            <artifactId>javax.mail</artifactId>-->
-        <!--            <version>${mail.version}</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>javax.activation</groupId>-->
-        <!--            <artifactId>activation</artifactId>-->
-        <!--            <version>${activation.version}</version>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>${activation.version}</version>
+        </dependency>
 
         <!--Jsp Servlets -->
         <dependency>
@@ -254,7 +232,6 @@
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.api.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -273,25 +250,6 @@
             <version>${jackson.annotations.version}</version>
         </dependency>
 
-        <!-- Testing -->
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <version>${hamcrest.library.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <version>${json.path.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <version>${javax.annotation.version}</version>
-        </dependency>
         <!--        Compilation failure:/HeaderFooterCacher.java:[12,24] cannot find symbol-->
         <!--        [ERROR]   symbol:   class PreDestroy-->
         <!--        [ERROR]   location: package javax.annotation-->
