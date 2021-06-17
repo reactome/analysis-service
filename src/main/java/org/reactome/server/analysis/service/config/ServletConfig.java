@@ -1,8 +1,11 @@
 package org.reactome.server.analysis.service.config;
 
+import org.apache.catalina.Context;
+import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.reactome.server.analysis.service.utils.CorsFilter;
 import org.reactome.server.utils.proxy.ProxyServlet;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -86,5 +89,16 @@ public class ServletConfig {
         registration.addUrlPatterns("/*");
         registration.setName("cors");
         return registration;
+    }
+
+    //FileNotFoundException warning during embedded Tomcat startup and try to scan jars from classloader, disable the StandardJarScanner for manifest files
+    @Bean
+    public TomcatServletWebServerFactory tomcatFactory() {
+        return new TomcatServletWebServerFactory() {
+            @Override
+            protected void postProcessContext(Context context) {
+                ((StandardJarScanner) context.getJarScanner()).setScanManifest(false);
+            }
+        };
     }
 }

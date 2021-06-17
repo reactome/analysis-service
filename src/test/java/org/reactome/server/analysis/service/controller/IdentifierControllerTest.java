@@ -1,14 +1,14 @@
 package org.reactome.server.analysis.service.controller;
 
 import org.junit.jupiter.api.Test;
-import org.reactome.server.analysis.AppTests;
+import org.reactome.server.analysis.service.AppTests;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class IdentifierControllerTest extends AppTests {
 
-    private Map<String, Object> params = new HashMap<>();
+    private final Map<String, Object> params = new HashMap<>();
 
     public IdentifierControllerTest() {
         params.put("interactors", false);
