@@ -50,6 +50,8 @@ public class ReportController {
     private static long REPORT_COUNT = 0L;
     private static final int ALLOWED_CONCURRENT_REPORTS = 2;
 
+    @Value("${report.url:http://localhost:8080}")
+    private String reportURL;
     @Value("${report.user:default}")
     private String reportUser;
     @Value("${report.password:default}")
@@ -149,7 +151,7 @@ public class ReportController {
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(reportUser, reportPassword);
             provider.setCredentials(AuthScope.ANY, credentials);
             CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(provider).build();
-            URIBuilder uriBuilder = new URIBuilder("http://localhost:8080/report/analysis/pdf/waiting");
+            URIBuilder uriBuilder = new URIBuilder(this.reportURL + "/report/analysis/pdf/waiting");
             List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("ip", ip));
             params.add(new BasicNameValuePair("waitingTime", String.valueOf(waitingTime)));
@@ -162,7 +164,7 @@ public class ReportController {
             CloseableHttpResponse response = client.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
-                logger.error("[REP001] The url {} returned the code {} and the report hasn't been created.", uriBuilder.toString(), statusCode);
+                logger.error("[REP001] The url {} returned the code {} and the report hasn't been created.", uriBuilder, statusCode);
             }
             client.close();
         } catch (ConnectException e) {
