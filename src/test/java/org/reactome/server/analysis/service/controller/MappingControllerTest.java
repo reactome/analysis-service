@@ -1,7 +1,7 @@
 package org.reactome.server.analysis.service.controller;
 
 import org.junit.jupiter.api.Test;
-import org.reactome.server.analysis.AppTests;
+import org.reactome.server.analysis.service.AppTests;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class MappingControllerTest extends AppTests {
 
-    private String overrepresentationData = "#GBM Uniprot\n" +
+    private final String overrepresentationData = "#GBM Uniprot\n" +
             "P01023\n" +
             "Q99758\n" +
             "O15439\n" +
@@ -28,7 +28,7 @@ public class MappingControllerTest extends AppTests {
             "Q96GD4\n" +
             "Q13145";
 
-    private String expressionData = "XPO1        \t       1\t        0\t    1\n" +
+    private final String expressionData = "XPO1        \t       1\t        0\t    1\n" +
             "YWHAE       \t       1\t        0\t    1\n" +
             "ZBTB16      \t       1\t        0\t    1\n" +
             "ZCCHC8      \t       1\t        0\t    1\n" +
@@ -38,11 +38,11 @@ public class MappingControllerTest extends AppTests {
             "ZNF521      \t       1\t        0\t    1";
 
 
-    private MockMultipartFile overrepresentationFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", overrepresentationData.getBytes());
-    private MockMultipartFile expressionFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", expressionData.getBytes());
+    private final MockMultipartFile overrepresentationFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", overrepresentationData.getBytes());
+    private final MockMultipartFile expressionFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", expressionData.getBytes());
 
-    private String uniProtACFileUrl = "https://raw.githubusercontent.com/Chuqiaoo/reactome-analysis-service-testing-files/master/uniprotACs.txt";
-    private String cosmicFileUrl = "https://raw.githubusercontent.com/Chuqiaoo/reactome-analysis-service-testing-files/master/COSMIC.txt";
+    private final String uniProtACFileUrl = "https://raw.githubusercontent.com/Chuqiaoo/reactome-analysis-service-testing-files/master/uniprotACs.txt";
+    private final String cosmicFileUrl = "https://raw.githubusercontent.com/Chuqiaoo/reactome-analysis-service-testing-files/master/COSMIC.txt";
 
     @Test
     public void getMappingToHuman() throws Exception {

@@ -1,7 +1,7 @@
 package org.reactome.server.analysis.service.controller;
 
 import org.junit.jupiter.api.Test;
-import org.reactome.server.analysis.AppTests;
+import org.reactome.server.analysis.service.AppTests;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class IdentifiersControllerTest extends AppTests {
 
-    private String overrepresentationFileContent = "#GBM Uniprot\n" +
+    private final String overrepresentationFileContent = "#GBM Uniprot\n" +
             "P01023\n" +
             "Q99758\n" +
             "O15439\n" +
@@ -34,7 +34,7 @@ public class IdentifiersControllerTest extends AppTests {
             "Q96GD4\n" +
             "Q13145";
 
-    private String expressionFileContent = "#Gene symbol\t#Somatic\t#Germline\tTotal\n" +
+    private final String expressionFileContent = "#Gene symbol\t#Somatic\t#Germline\tTotal\n" +
             "TP53        \t       8\t        5\t   18\n" +
             "APC         \t       6\t        6\t   17\n" +
             "TERT        \t       9\t        1\t   15\n" +
@@ -46,9 +46,9 @@ public class IdentifiersControllerTest extends AppTests {
             "CTNNB1      \t       5\t        0\t   10\n" +
             "ERBB2       \t       5\t        0\t   10";
 
-    private MockMultipartFile overrepresentationFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", overrepresentationFileContent.getBytes());
-    private MockMultipartFile expressionFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", expressionFileContent.getBytes());
-    private Map<String, Object> params = new HashMap<>();
+    private final MockMultipartFile overrepresentationFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", overrepresentationFileContent.getBytes());
+    private final MockMultipartFile expressionFile = new MockMultipartFile("file", "tuple-mentha-psimitab-ex.txt", "multipart/form-data", expressionFileContent.getBytes());
+    private final Map<String, Object> params = new HashMap<>();
 
     // this is a constructor
     public IdentifiersControllerTest() {

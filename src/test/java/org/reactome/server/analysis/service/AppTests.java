@@ -1,4 +1,4 @@
-package org.reactome.server.analysis;
+package org.reactome.server.analysis.service;
 
 
 import org.reactome.server.analysis.core.model.UserData;
@@ -7,9 +7,6 @@ import org.reactome.server.analysis.service.helper.AnalysisHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,11 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
+//@SpringBootTest(classes = AnalysisServiceApplication.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(AnalysisHelper.class)
-//@ContextConfiguration(classes = TestWebConfig.class)
-public abstract class AppTests {
+public class AppTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,9 +32,8 @@ public abstract class AppTests {
     public static String token;
     public static String stId;
 
-
     @Autowired
-    public AnalysisHelper analysisHelper;
+    private AnalysisHelper analysisHelper;
 
     protected MockMvc getMockMvc() {
         return mockMvc;

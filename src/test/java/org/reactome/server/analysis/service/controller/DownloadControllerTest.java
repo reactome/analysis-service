@@ -3,7 +3,7 @@ package org.reactome.server.analysis.service.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.reactome.server.analysis.AppTests;
+import org.reactome.server.analysis.service.AppTests;
 import org.springframework.http.MediaType;
 
 

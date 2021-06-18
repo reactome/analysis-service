@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,9 +31,15 @@ public class FileDeletorScheduler {
     @Scheduled(cron = "0 0/15 * * * * ") // every 15 minutes
     public void quarterHourDeleteFiles() throws IOException {
         Path path = Paths.get(exportedFilesTempDir);
-        Files.walk(path)
-                .filter(filePath -> Files.isRegularFile(filePath))
-                .forEach(this::deleteOlderFiles);
+         //todo test below
+        // check if directory is empty
+        if (Files.isDirectory(path)) {
+            if (Files.list(path).findAny().isPresent()) {
+                Files.walk(path)
+                        .filter(filePath -> Files.isRegularFile(filePath))
+                        .forEach(this::deleteOlderFiles);
+            }
+        }
     }
 
     private void deleteOlderFiles(Path path) {
