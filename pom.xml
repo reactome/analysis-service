@@ -62,6 +62,7 @@
 
     <dependencies>
 
+        <!-- todo: TODO remove when spring-boot upgrade is enough for spring-data-neo4j -->
         <dependency>
             <groupId>org.reactome.server.graph</groupId>
             <artifactId>graph-core</artifactId>

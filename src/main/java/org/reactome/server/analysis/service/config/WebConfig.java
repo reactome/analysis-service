@@ -21,7 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
-
+// adding this property source to fix problems when application starts and it could not resolve placeholder 'spring.neo4j.uri' in value "${spring.neo4j.uri}"
 @PropertySource("classpath:application.properties")
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
