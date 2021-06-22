@@ -1,67 +1,102 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.reactome.server.tools</groupId>
     <artifactId>analysis-service</artifactId>
-    <packaging>war</packaging>
     <version>3.0.2</version>
-    <name>analysis-service</name>
+    <packaging>war</packaging>
+
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>Pathway enrichment and expression analysis as well as species comparison tool</description>
+    <url>https://github.com/reactome/analysis-service</url>
 
-    <properties>
-        <deploymentPath>/</deploymentPath>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <organization>
+        <name>The European Bioinformatics Institute</name>
+        <url>https://www.ebi.ac.uk/</url>
+    </organization>
 
-        <analysis.core>3.3.7</analysis.core>
-        <analysis.report>1.1.6</analysis.report>
-        <spring.version>4.3.10.RELEASE</spring.version>
-        <reactome.utils.version>1.0.10</reactome.utils.version>
-
-        <sl4j.version>1.7.2</sl4j.version>
-        <fileupload.version>1.3</fileupload.version>
-        <commons.codec>1.11</commons.codec>
-        <jackson.version>2.9.8</jackson.version>
-        <swagger.version>2.7.0</swagger.version>
-        <tika.version>1.12</tika.version>
-        <jackson.asl.version>1.9.12</jackson.asl.version>
-
-        <servlet.version>4.0.0-b01</servlet.version>
-        <jsp.api.version>2.1</jsp.api.version>
-        <jstl.api.version>1.2</jstl.api.version>
-        <xml.security.version>1.0.4</xml.security.version>
-        <xalan.version>2.7.1</xalan.version>
-        <junit.version>4.13</junit.version>
-        <mail.version>1.6.0</mail.version>
-        <activation.version>1.1.1</activation.version>
-
-        <maven.compiler.version>3.5.1</maven.compiler.version>
-        <jdk.version>1.8</jdk.version>
-
-        <hamcrest.library.version>2.2</hamcrest.library.version>
-        <json.path.version>2.4.0</json.path.version>
-
-    </properties>
+    <licenses>
+        <license>
+            <name></name>
+            <url></url>
+        </license>
+    </licenses>
 
     <developers>
         <developer>
             <id>fabregat</id>
             <name>Antonio Fabregat</name>
-            <email>fabregat@ebi.ac.uk</email>
-            <organization>http://www.ebi.ac.uk/</organization>
+            <roles>
+                <role>alumni</role>
+            </roles>
         </developer>
     </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/reactome/analysis-service.git</connection>
+        <developerConnection>scm:git:ssh://github.com:reactome/analysis-service.git</developerConnection>
+        <url>https://github.com/reactome/analysis-service/tree/master</url>
+    </scm>
+
+    <properties>
+        <deploymentPath>/</deploymentPath>
+
+        <!-- dependencies -->
+        <activation.version>1.1.1</activation.version>
+        <commons.codec.version>1.11</commons.codec.version>
+        <commons.io.version>2.5</commons.io.version>
+        <fileupload.version>1.3</fileupload.version>
+        <hamcrest.library.version>2.2</hamcrest.library.version>
+        <jackson.asl.version>1.9.12</jackson.asl.version>
+        <jackson.version>2.9.8</jackson.version>
+        <json.path.version>2.4.0</json.path.version>
+        <jabx.core.version>2.3.0</jabx.core.version>
+        <jsp.api.version>2.1</jsp.api.version>
+        <jstl.api.version>1.2</jstl.api.version>
+        <junit.version>4.13</junit.version>
+        <mail.version>1.6.0</mail.version>
+        <reactome.analysis.core.version>3.3.7</reactome.analysis.core.version>
+        <reactome.analysis.report.version>1.1.6</reactome.analysis.report.version>
+        <reactome.utils.version>1.0.10</reactome.utils.version>
+        <servlet.version>4.0.0-b01</servlet.version>
+        <slf4j.api.version>1.7.2</slf4j.api.version>
+        <slf4j.log4j12.version>1.7.25</slf4j.log4j12.version>
+        <spring.version>4.3.10.RELEASE</spring.version>
+        <swagger.version>2.7.0</swagger.version>
+        <tika.version>1.12</tika.version>
+        <xalan.version>2.7.1</xalan.version>
+        <xml.security.version>1.0.4</xml.security.version>
+
+        <!-- build -->
+        <jdk.version>1.8</jdk.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- maven build and plugins -->
+        <maven.compiler.version>3.0</maven.compiler.version>
+        <maven.gpg.version>1.5</maven.gpg.version>
+        <maven.jar.version>2.6</maven.jar.version>
+        <maven.javadoc.version>2.10.3</maven.javadoc.version>
+        <maven.jetty.version>8.1.14.v20131031</maven.jetty.version>
+        <maven.release.version>2.5.3</maven.release.version>
+        <maven.source.version>2.4</maven.source.version>
+        <maven.surefire.version>2.22.2</maven.surefire.version>
+        <maven.tomcat7.version>2.2</maven.tomcat7.version>
+        <nexus-staging-maven-plugin>1.6.7</nexus-staging-maven-plugin>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-core</artifactId>
-            <version>${analysis.core}</version>
+            <version>${reactome.analysis.core.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-report</artifactId>
-            <version>${analysis.report}</version>
+            <version>${reactome.analysis.report.version}</version>
         </dependency>
 
         <dependency>
@@ -75,16 +110,19 @@
             <artifactId>commons-fileupload</artifactId>
             <version>${fileupload.version}</version>
         </dependency>
+
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>${commons.codec}</version>
+            <version>${commons.codec.version}</version>
         </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.5</version>
+            <version>${commons.io.version}</version>
         </dependency>
+
         <!--json-->
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
@@ -131,11 +169,13 @@
             <artifactId>javax.mail-api</artifactId>
             <version>${mail.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
             <version>${mail.version}</version>
         </dependency>
+
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
@@ -149,12 +189,14 @@
             <version>${servlet.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
             <version>${jsp.api.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
@@ -164,7 +206,7 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>2.3.0</version>
+            <version>${jabx.core.version}</version>
         </dependency>
 
         <dependency>
@@ -180,7 +222,8 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Apache Tika - Apache Tika™ toolkit detects and extracts metadata and text from over a thousand different file types -->
+        <!-- Apache Tika - Apache Tika™ toolkit detects and extracts metadata
+        and text from over a thousand different file types -->
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
@@ -200,6 +243,7 @@
             <artifactId>springfox-swagger2</artifactId>
             <version>${swagger.version}</version>
         </dependency>
+
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
@@ -209,13 +253,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.2</version>
+            <version>${slf4j.api.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.25</version>
+            <version>${slf4j.log4j12.version}</version>
         </dependency>
 
         <!-- Testing -->
@@ -225,6 +269,7 @@
             <version>${hamcrest.library.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
@@ -241,7 +286,6 @@
         <!--            <artifactId>javax.annotation-api</artifactId>-->
         <!--            <version>1.3.2</version>-->
         <!--        </dependency>-->
-
     </dependencies>
 
     <build>
@@ -261,7 +305,7 @@
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
+                <version>${maven.tomcat7.version}</version>
                 <configuration>
                     <!--
                     **** Memory configuration ****
@@ -275,10 +319,11 @@
                     <port>8080</port>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.1.14.v20131031</version>
+                <version>${maven.jetty.version}</version>
                 <configuration>
                     <!--
                     **** Memory configuration ****
@@ -303,16 +348,16 @@
 
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
+                <version>${maven.compiler.version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
                 </configuration>
             </plugin>
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>${maven.surefire.version}</version>
 <!--                <configuration>-->
 <!--                    <includes>-->
 <!--                        <include>**/*Tests.java</include>-->
@@ -324,7 +369,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
+                <version>${maven.jar.version}</version>
                 <executions>
                     <execution>
                         <id>make-a-jar</id>
@@ -380,6 +425,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+
         <!-- EBI SNAPSHOT repo -->
         <repository>
             <id>nexus-ebi-snapshot-repo</id>
@@ -394,4 +440,20 @@
         </repository>
     </repositories>
 
+    <!-- Configures the distribution to nexus repository -->
+    <distributionManagement>
+        <!-- Sonatype Release repo -->
+        <repository>
+            <id>ossrh</id>
+            <name>Sonatype Release Repository</name>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+
+        <!-- Sonatype SNAPSHOT repo -->
+        <snapshotRepository>
+            <id>ossrh</id>
+            <name>Sonatype Snapshot Repository</name>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
