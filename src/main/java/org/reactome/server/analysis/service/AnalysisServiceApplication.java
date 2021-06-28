@@ -23,6 +23,12 @@ public class AnalysisServiceApplication extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
+
+        // BEWARE:
+        // If you ran into this exception: InstanceAlreadyExistsException: org.springframework.boot:type=Admin,name=SpringApplication
+        // Make sure you disable JMX Agent in Eclipse / IntelliJ
+        // https://stackoverflow.com/questions/50436108/javax-management-instancenotfoundexception-org-springframework-boottype-admin
+
         // fix the IllegalStateException: No Scope registered for scope name 'restart'
         context = new AnnotationConfigApplicationContext(AnalysisServiceApplication.class);
         SpringApplication.run(AnalysisServiceApplication.class, args);

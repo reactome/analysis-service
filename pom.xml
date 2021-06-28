@@ -50,22 +50,12 @@
         <maven.jar.version>3.2.0</maven.jar.version>
     </properties>
 
-    <developers>
-        <developer>
-            <id>fabregat</id>
-            <name>Antonio Fabregat</name>
-            <email>fabregat@ebi.ac.uk</email>
-            <organization>http://www.ebi.ac.uk/</organization>
-        </developer>
-    </developers>
-
     <dependencies>
-
         <!-- todo: TODO remove when spring-boot upgrade is enough for spring-data-neo4j -->
         <dependency>
             <groupId>org.reactome.server.graph</groupId>
             <artifactId>graph-core</artifactId>
-            <version>2.0.0-SNAPSHOT1</version>
+            <version>2.0.0-SNAPSHOT</version>
             <exclusions>  <!-- TODO remove when spring-boot upgrade is enough for spring-data-neo4j -->
                 <exclusion>
                     <groupId>org.springframework.data</groupId>
