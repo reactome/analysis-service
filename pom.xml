@@ -34,7 +34,6 @@
         <jstl.api.version>1.2</jstl.api.version>
         <xalan.version>2.7.2</xalan.version>
         <junit.version>5.8.0-M1</junit.version>
-        <activation.version>1.1.1</activation.version>
         <jaxb.core.version>3.0.0</jaxb.core.version>
         <commons.io.version>2.8.0</commons.io.version>
         <slf4j.api.version>2.0.0-alpha1</slf4j.api.version>
@@ -155,12 +154,6 @@
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <version>${activation.version}</version>
         </dependency>
 
         <!--Jsp Servlets -->
