@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -64,8 +65,11 @@ public class DownloadController {
             @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
     @RequestMapping(value = "/{token}/result.json.gz", method = RequestMethod.GET, produces = {"application/x-gzip", "application/gzip"})
     @ResponseBody
-    public FileSystemResource downloadResultGZIP( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
-                                                 @PathVariable String token) throws IOException {
+    public FileSystemResource downloadResultGZIP(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+                                                 @PathVariable String token,
+                                                 HttpServletResponse response) throws IOException {
+        response.setContentType("application/gzip");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + "result.json.gz" + "\"");
         AnalysisStoredResult result = this.token.getFromToken(token);
         final ExternalAnalysisResult er = new ExternalAnalysisResult(result, generalService.getDBInfo().getVersion());
         return DownloadHelper.getExternalResultsGZIP("result", er);

@@ -109,7 +109,9 @@ public class ReportController {
             long reportStart = System.currentTimeMillis();
             AnalysisStoredResult asr = this.token.getFromToken(token);
 
-            response.addHeader("Content-Type", "application/pdf");
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + "report" + "\"");
+
             OutputStream os = response.getOutputStream();
             analysisReport.create(asr, resource, s.getDbId(), number, diagramProfile, analysisProfile, fireworksProfile, os);
 
