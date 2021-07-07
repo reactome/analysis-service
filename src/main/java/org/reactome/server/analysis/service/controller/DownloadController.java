@@ -68,7 +68,7 @@ public class DownloadController {
     public FileSystemResource downloadResultGZIP(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
                                                  @PathVariable String token,
                                                  HttpServletResponse response) throws IOException {
-        response.setContentType("application/gzip");
+        response.setContentType("application/x-gzip");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "result.json.gz" + "\"");
         AnalysisStoredResult result = this.token.getFromToken(token);
         final ExternalAnalysisResult er = new ExternalAnalysisResult(result, generalService.getDBInfo().getVersion());
