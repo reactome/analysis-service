@@ -55,7 +55,7 @@ mvn tomcat7:run -P AnalysisService-Local
 
 in case you didn't set up the profile it is still possible to run Reactome Analysis Service. You may need to add all the properties into a command-line call.
 ```console
-mvn tomcat7:run \
+mvn spring-boot:run  \
     -Dlog4j.root=/Users/reactome/Reactome/analysis/log \
     -Dtemplate.server=http://reactomedev.oicr.on.ca/ \
     -Danalysis.structure.file=/Users/reactome/Reactome/analysis/data/analysis.bin \
