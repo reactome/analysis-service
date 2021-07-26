@@ -15,7 +15,6 @@
     </parent>
 
     <properties>
-        <deploymentPath>/</deploymentPath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>11</jdk.version>
 
@@ -44,6 +43,7 @@
         <jackson.core>2.12.3</jackson.core>
         <jackson.annotations.version>2.12.3</jackson.annotations.version>
 
+        <spring.boot.version>2.5.2</spring.boot.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <jetty.maven.version>8.1.14.v20131031</jetty.maven.version>
         <maven.surefire.version>3.0.0-M5</maven.surefire.version>
@@ -254,50 +254,14 @@
         </resources>
 
         <plugins>
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.tomcat.maven</groupId>-->
-            <!--                <artifactId>tomcat7-maven-plugin</artifactId>-->
-            <!--                <version>${tomcat7.maven.version}</version>-->
-            <!--                <configuration>-->
-            <!--                    &lt;!&ndash;-->
-            <!--                    **** Memory configuration ****-->
-            <!--                    Adding the system properties to pom.xml won't work, it's too late.-->
-            <!--                    You have to pass such parameters directly to the JVM-->
-            <!--                       » IntelliJ -> Preferences -> Maven -> Runner-->
-            <!--                            In the VM options add-->
-            <!--                                  -Xms2048m -Xmx5120m-->
-            <!--                    &ndash;&gt;-->
-            <!--                    <path>${deploymentPath}</path>-->
-            <!--                    <port>8080</port>-->
-            <!--                </configuration>-->
-            <!--            </plugin>-->
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty.maven.version}</version>
-                <configuration>
-                    <!--
-                    **** Memory configuration ****
-                    Adding the system properties to pom.xml won't work, it's too late.
-                    You have to pass such parameters directly to the JVM
-                       » IntelliJ -> Preferences -> Maven -> Runner
-                            In the VM options add
-                                  -Xms2048m -Xmx5120m
-                    -->
-                    <webAppConfig>
-                        <contextPath>${deploymentPath}</contextPath>
-                    </webAppConfig>
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
-                    <connectors>
-                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>8080</port>
-                        </connector>
-                    </connectors>
-                    <jettyConfig>${project.build.directory}/classes/META-INF/jetty.xml</jettyConfig>
-                </configuration>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.2</version>
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.version}</version>
                 <configuration>
@@ -307,6 +271,7 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.version}</version>
                 <!--                <configuration>-->
