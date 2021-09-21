@@ -46,7 +46,7 @@ public class SpeciesController {
                                                 HttpServletRequest request) {
         Long from = SpeciesNodeFactory.getHumanNode().getSpeciesID(); //For the time being let's do only human ;)
         return controller.compareSpecies(from, species, request)
-                .filterPathways(resource, pValue, false, min, max)
+                .filterPathways(resource, pValue, true, min, max)
                 .getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
