@@ -18,7 +18,7 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags="identifier", description = "Queries for only one identifier", position = 1)
+@Api(tags={"identifier"})
 @RequestMapping(value = "/identifier")
 public class IdentifierController {
 

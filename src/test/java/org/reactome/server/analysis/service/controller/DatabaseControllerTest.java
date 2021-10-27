@@ -1,26 +1,15 @@
 package org.reactome.server.analysis.service.controller;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.reactome.server.analysis.AppTests;
+import org.junit.jupiter.api.Test;
+import org.reactome.server.analysis.service.AppTests;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"file:src/test/resources/mvc-dispatcher-servlet-test.xml"})
-@WebAppConfiguration
-public class DatabaseControllerTest extends AppTests {
 
-    @Test
-    public void getBean() {
-        findBeanByName("databaseController");
-    }
+public class DatabaseControllerTest extends AppTests {
 
     @Test
     public void getDBName() throws Exception {
@@ -33,13 +22,12 @@ public class DatabaseControllerTest extends AppTests {
     @Test
     public void getDBVersion() throws Exception {
         // todo null
-        mockMvcGetResult("/database/version", "text/plain;charset=ISO-8859-1", null);
+        mockMvcGetResult("/database/version", MediaType.TEXT_PLAIN_VALUE + ";charset=UTF-8", null);
     }
 
     @Test
     public void getDatabaseInfo() throws Exception {
         // todo null
-        mockMvcGetResult("/database/info", MediaType.APPLICATION_JSON_VALUE, null);
+        mockMvcGetResult("/database/info", MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", null);
     }
-
 }
