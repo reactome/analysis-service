@@ -4,7 +4,7 @@
     <groupId>org.reactome.server.tools</groupId>
     <artifactId>analysis-service</artifactId>
     <packaging>war</packaging>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.1.0</version>
     <name>analysis-service</name>
     <description>Pathway enrichment and expression analysis as well as species comparison tool</description>
 
@@ -18,9 +18,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>11</jdk.version>
 
-        <analysis.core>3.4.0-SNAPSHOT</analysis.core>
-        <analysis.report>1.2.0-SNAPSHOT</analysis.report>
-        <reactome.utils.version>1.1.0-SNAPSHOT</reactome.utils.version>
+        <analysis.core>3.4.0</analysis.core>
+        <analysis.report>1.2.0</analysis.report>
+        <reactome.utils.version>1.1.0</reactome.utils.version>
 
         <fileupload.version>1.4</fileupload.version>
         <commons.codec>1.15</commons.codec>
