@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-@Api(tags = "species", description= "Species comparison", position = 4)
+@Api(tags = "species")
 @RequestMapping(value = "/species")
 public class SpeciesController {
 

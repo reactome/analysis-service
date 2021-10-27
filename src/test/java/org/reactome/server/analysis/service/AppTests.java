@@ -1,23 +1,17 @@
-package org.reactome.server.analysis;
+package org.reactome.server.analysis.service;
 
 
-import org.junit.Assert;
-import org.junit.Before;
 import org.reactome.server.analysis.core.model.UserData;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.service.helper.AnalysisHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContext;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,53 +20,34 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Component
-public abstract class AppTests {
+
+//@SpringBootTest(classes = AnalysisServiceApplication.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+public class AppTests {
 
     @Autowired
-    private WebApplicationContext wac;
-
     private MockMvc mockMvc;
 
     public static String token;
     public static String stId;
-    private AnalysisHelper analysisHelper;
 
-    /**
-     * initialize the mockMvc object
-     */
-    @Before
-    public void setup() {
-        DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
-        this.mockMvc = builder.build();
-    }
+    @Autowired
+    private AnalysisHelper analysisHelper;
 
     protected MockMvc getMockMvc() {
         return mockMvc;
     }
 
-    /* verify that we're loading the WebApplicationContext object (wac) properly */
-    protected void findBeanByName(String beanName) {
-        ServletContext servletContext = wac.getServletContext();
-
-        Assert.assertNotNull(servletContext);
-        Assert.assertTrue(servletContext instanceof MockServletContext);
-        Assert.assertNotNull(wac.getBean(beanName));
-    }
-
-    @Autowired
-    public void setAnalysisHelper(AnalysisHelper analysisHelper) {
-        this.analysisHelper = analysisHelper;
-    }
-
     /**
      * Generate a token which is going to be used in DownloadControllerTest,ImporterControllerTest
      * ReportControllerTest,TokenControllerTest
-     *
+     * <p>
      * Use @Before annotation to execute before each test
+     *
      * @param input identifiers
      */
-    protected void generateToken(String input){
+    protected void generateToken(String input) {
         UserData ud = analysisHelper.getUserData(input);
         AnalysisStoredResult asr = analysisHelper.analyse(ud, null, false, true, true);
         AppTests.token = asr.getSummary().getToken();
@@ -93,9 +68,9 @@ public abstract class AppTests {
     protected MvcResult mockMvcGetResult(String url, Map<String, Object> params) throws Exception {
 
         if (params != null && !params.isEmpty()) {
-            return mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, params);
+            return mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", params);
         } else {
-            return mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, null);
+            return mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", null);
         }
     }
 
@@ -204,7 +179,7 @@ public abstract class AppTests {
 
             return this.mockMvc.perform(requestBuilder)
                     .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8"))
 
                     .andReturn();
         } else {
@@ -213,7 +188,7 @@ public abstract class AppTests {
                             .contentType(MediaType.TEXT_PLAIN)
                             .content(content))
                     .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8"))
                     .andReturn();
         }
     }

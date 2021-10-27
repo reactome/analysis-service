@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags = "import", description = "Imports an external result", position = 8)
+@Api(tags = {"import"})
 @RequestMapping(value = "/import")
 public class ImporterController {
 

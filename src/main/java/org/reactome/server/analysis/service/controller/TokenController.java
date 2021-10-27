@@ -19,7 +19,7 @@ import java.util.Set;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags = "token", description = "Previous queries filter", position = 1)
+@Api(tags = "token" )
 @RequestMapping(value = "/token")
 public class TokenController {
 

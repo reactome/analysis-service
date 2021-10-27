@@ -1,15 +1,11 @@
 package org.reactome.server.analysis.service.controller;
 
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.reactome.server.analysis.AppTests;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.reactome.server.analysis.service.AppTests;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -17,13 +13,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"file:src/test/resources/mvc-dispatcher-servlet-test.xml"})
-@WebAppConfiguration
 public class ImporterControllerTest extends AppTests {
 
-    @Before
-    public void prepare(){
+    @BeforeEach
+    public void prepare() {
         generateToken("P02452 P08123 P02461 P12110 P49674 P35222 P09668 Q9NQC7");
     }
 
@@ -31,25 +24,22 @@ public class ImporterControllerTest extends AppTests {
     @Test
     public void getPostText() throws Exception {
         String url = String.format("/download/%s/result.json", AppTests.token);
-        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, null);
+        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", null);
         String responseResult = result.getResponse().getContentAsString();
-
         mockMvcPostResult("/import/", responseResult);
-
     }
 
     @Test
     public void getPostFile() throws Exception {
-
         // generate a content string
         String url = String.format("/download/%s/result.json", AppTests.token);
-        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE, null);
+        MvcResult result = mockMvcGetResult(url, MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8", null);
         String response = result.getResponse().getContentAsString();
 
         MockMultipartFile importFile = new MockMultipartFile("file", "result.json", "multipart/form-data", response.getBytes());
 
         MockHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.fileUpload("/import/form")
+                MockMvcRequestBuilders.multipart("/import/form")
                         .file(importFile);
 
         this.getMockMvc().perform(builder)
