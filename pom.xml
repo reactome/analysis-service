@@ -4,22 +4,23 @@
     <groupId>org.reactome.server.tools</groupId>
     <artifactId>analysis-service</artifactId>
     <packaging>war</packaging>
-    <version>3.1.0</version>
+    <version>3.1.1</version>
     <name>analysis-service</name>
     <description>Pathway enrichment and expression analysis as well as species comparison tool</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.3</version>
+        <version>2.6.4</version>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>11</jdk.version>
 
-        <analysis.core>3.4.0</analysis.core>
-        <analysis.report>1.2.0</analysis.report>
+        <graph.core>2.0.1</graph.core>
+        <analysis.core>3.4.1</analysis.core>
+        <analysis.report>1.2.1</analysis.report>
         <reactome.utils.version>1.1.0</reactome.utils.version>
 
         <fileupload.version>1.4</fileupload.version>
@@ -40,8 +41,8 @@
         <hamcrest.library.version>2.2</hamcrest.library.version>
         <json.path.version>2.5.0</json.path.version>
         <javax.annotation.version>1.3.2</javax.annotation.version>
-        <jackson.core>2.12.3</jackson.core>
-        <jackson.annotations.version>2.12.3</jackson.annotations.version>
+        <jackson.core>2.13.1</jackson.core>
+        <jackson.annotations.version>2.13.1</jackson.annotations.version>
 
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <jetty.maven.version>8.1.14.v20131031</jetty.maven.version>
@@ -53,7 +54,7 @@
         <dependency>
             <groupId>org.reactome.server.graph</groupId>
             <artifactId>graph-core</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>${graph.core}</version>
         </dependency>
 
         <dependency>
