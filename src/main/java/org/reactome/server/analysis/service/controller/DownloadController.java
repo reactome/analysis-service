@@ -1,6 +1,12 @@
 package org.reactome.server.analysis.service.controller;
 
-import io.swagger.annotations.*;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.core.result.external.ExternalAnalysisResult;
 import org.reactome.server.analysis.core.result.utils.TokenUtils;
@@ -9,10 +15,7 @@ import org.reactome.server.graph.service.GeneralService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -21,51 +24,51 @@ import java.io.IOException;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags = {"download"})
+@Tag(name = "download", description = "Methods to download different views of a result")
 @RequestMapping(value = "/download")
 public class DownloadController {
 
     private TokenUtils token;
     private GeneralService generalService;
 
-    @ApiOperation(value = "Downloads all hit pathways for a given analysis",
-                  notes = "The results are filtered by the selected resource. The filename is the one to be suggested in the download window.")
+    @Operation(summary = "Downloads all hit pathways for a given analysis",
+            description = "The results are filtered by the selected resource. The filename is the one to be suggested in the download window.")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "No result corresponding to the token was found"),
-            @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
-    @RequestMapping(value = "/{token}/pathways/{resource}/{filename}.csv", method = RequestMethod.GET, produces = "text/csv" )
+            @ApiResponse(responseCode = "404", description = "No result corresponding to the token was found"),
+            @ApiResponse(responseCode = "410", description = "Result deleted due to a new data release")})
+    @RequestMapping(value = "/{token}/pathways/{resource}/{filename}.csv", method = RequestMethod.GET, produces = "text/csv")
     @ResponseBody
-    public FileSystemResource downloadResultCSV( @ApiParam(name = "token", required = true, value = "The token associated with the data to download")
+    public FileSystemResource downloadResultCSV(@Parameter(name = "token", required = true, description = "The token associated with the data to download")
                                                 @PathVariable String token,
-                                                 @ApiParam(name = "resource", value = "the preferred resource", required = true, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
+                                                @Parameter(name = "resource", schema = @Schema(description = "the preferred resource", required = true, example = "TOTAL", allowableValues = {"TOTAL", "UNIPROT", "ENSEMBL", "CHEBI", "IUPHAR", "MIRBASE", "NCBI", "PROTEIN", "EMBL", "COMPOUND", "PUBCHEM_COMPOUND"}))
                                                 @PathVariable String resource,
-                                                 @ApiParam(name = "filename", value = "the file name for the downloaded information", required = true, defaultValue = "result")
+                                                @Parameter(name = "filename", description = "the file name for the downloaded information", required = true, example = "result")
                                                 @PathVariable String filename) throws IOException {
         AnalysisStoredResult asr = this.token.getFromToken(token);
         return DownloadHelper.getHitPathwaysCVS(filename, asr, resource);
     }
 
-    @ApiOperation(value = "Returns the complete result in json format",
-                  notes = "The results are not filtered by any means. The json file contains the whole stored result based on chosen analysis options and submitted data.")
+    @Operation(summary = "Returns the complete result in json format",
+            description = "The results are not filtered by any means. The json file contains the whole stored result based on chosen analysis options and submitted data.")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "No result corresponding to the token was found"),
-            @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
+            @ApiResponse(responseCode = "404", description = "No result corresponding to the token was found"),
+            @ApiResponse(responseCode = "410", description = "Result deleted due to a new data release")})
     @RequestMapping(value = "/{token}/result.json", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public ExternalAnalysisResult downloadResultJSON( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+    public ExternalAnalysisResult downloadResultJSON(@Parameter(name = "token", required = true, description = "The token associated with the data to query")
                                                      @PathVariable String token) {
         AnalysisStoredResult result = this.token.getFromToken(token);
         return new ExternalAnalysisResult(result, generalService.getDBInfo().getVersion());
     }
 
-    @ApiOperation(value = "Returns the complete result in json format (gzipped)",
-            notes = "The results are not filtered by any means. The json file contains the whole stored result based on chosen analysis options and submitted data.")
+    @Operation(summary = "Returns the complete result in json format (gzipped)",
+            description = "The results are not filtered by any means. The json file contains the whole stored result based on chosen analysis options and submitted data.")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "No result corresponding to the token was found"),
-            @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
+            @ApiResponse(responseCode = "404", description = "No result corresponding to the token was found"),
+            @ApiResponse(responseCode = "410", description = "Result deleted due to a new data release")})
     @RequestMapping(value = "/{token}/result.json.gz", method = RequestMethod.GET, produces = {"application/x-gzip", "application/gzip"})
     @ResponseBody
-    public FileSystemResource downloadResultGZIP(@ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+    public FileSystemResource downloadResultGZIP(@Parameter(name = "token", required = true, description = "The token associated with the data to query")
                                                  @PathVariable String token,
                                                  HttpServletResponse response) throws IOException {
         response.setContentType("application/x-gzip");
@@ -76,33 +79,33 @@ public class DownloadController {
     }
 
 
-    @ApiOperation(value = "Downloads found identifiers for a given analysis and resource",
-                  notes = "The identifiers are filtered by the selected resource. The filename is the one to be suggested in the download window.")
+    @Operation(summary = "Downloads found identifiers for a given analysis and resource",
+            description = "The identifiers are filtered by the selected resource. The filename is the one to be suggested in the download window.")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "No result corresponding to the token was found"),
-            @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
-    @RequestMapping(value = "/{token}/entities/found/{resource}/{filename}.csv", method = RequestMethod.GET, produces = "text/csv" )
+            @ApiResponse(responseCode = "404", description = "No result corresponding to the token was found"),
+            @ApiResponse(responseCode = "410", description = "Result deleted due to a new data release")})
+    @RequestMapping(value = "/{token}/entities/found/{resource}/{filename}.csv", method = RequestMethod.GET, produces = "text/csv")
     @ResponseBody
-    public FileSystemResource downloadMappingResult( @ApiParam(name = "token", required = true, value = "The token associated with the data to download")
+    public FileSystemResource downloadMappingResult(@Parameter(name = "token", required = true, description = "The token associated with the data to download")
                                                     @PathVariable String token,
-                                                     @ApiParam(name = "resource", value = "the preferred resource", required = true, defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
+                                                    @Parameter(name = "resource", schema = @Schema(description = "the preferred resource", required = true, example = "TOTAL", allowableValues = {"TOTAL", "UNIPROT", "ENSEMBL", "CHEBI", "IUPHAR", "MIRBASE", "NCBI_PROTEIN", "EMBL", "COMPOUND", "PUBCHEM_COMPOUND"}))
                                                     @PathVariable String resource,
-                                                     @ApiParam(name = "filename", value = "the file name for the downloaded information", required = true, defaultValue = "result")
+                                                    @Parameter(name = "filename", description = "the file name for the downloaded information", required = true, example = "result")
                                                     @PathVariable String filename) throws IOException {
         AnalysisStoredResult asr = this.token.getFromToken(token);
         return DownloadHelper.getIdentifiersFoundMappingCVS(filename, asr, resource);
     }
 
-    @ApiOperation(value = "Downloads a list of the not found identifiers",
-                  notes = "Those identifiers from the user sample that are not present up to the current data version. The filename is the one to be suggested in the download window.")
+    @Operation(summary = "Downloads a list of the not found identifiers",
+            description = "Those identifiers from the user sample that are not present up to the current data version. The filename is the one to be suggested in the download window.")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "No result corresponding to the token was found"),
-            @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
-    @RequestMapping(value = "/{token}/entities/notfound/{filename}.csv", method = RequestMethod.GET, produces = "text/csv" )
+            @ApiResponse(responseCode = "404", description = "No result corresponding to the token was found"),
+            @ApiResponse(responseCode = "410", description = "Result deleted due to a new data release")})
+    @RequestMapping(value = "/{token}/entities/notfound/{filename}.csv", method = RequestMethod.GET, produces = "text/csv")
     @ResponseBody
-    public FileSystemResource downloadNotFound( @ApiParam(name = "token", required = true, value = "The token associated with the data to download")
+    public FileSystemResource downloadNotFound(@Parameter(name = "token", required = true, description = "The token associated with the data to download")
                                                @PathVariable String token,
-                                                @ApiParam(name = "filename", value = "the file name for the downloaded information", required = true, defaultValue = "result")
+                                               @Parameter(name = "filename", description = "the file name for the downloaded information", required = true, example = "result")
                                                @PathVariable String filename) throws IOException {
         AnalysisStoredResult asr = this.token.getFromToken(token);
         return DownloadHelper.getNotFoundIdentifiers(filename, asr);

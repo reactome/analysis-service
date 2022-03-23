@@ -1,7 +1,12 @@
 package org.reactome.server.analysis.service.controller;
 
 import com.itextpdf.kernel.PdfException;
-import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
@@ -42,7 +47,7 @@ import java.util.*;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags = {"report"})
+@Tag(name = "report", description = "Retrieves report files in PDF format")
 @RequestMapping(value = "/report")
 public class ReportController {
 
@@ -62,33 +67,33 @@ public class ReportController {
     private AnalysisReport analysisReport;
     private TokenUtils token;
 
-    @ApiOperation(value = "Downloads a report for a given pathway analysis result",
-                  notes = "This method provides a report for a given pathway analysis result in a PDF document. " +
-                          "This document contains data about the analysis itself followed by the pathways overview and " +
-                          "the most significant pathways overlaid with the analysis result. Users can download and store " +
-                          "this information in a convenient format to be checked in the future when the 'token' is not " +
-                          "longer available.")
+    @Operation(summary = "Downloads a report for a given pathway analysis result",
+            description = "This method provides a report for a given pathway analysis result in a PDF document. " +
+                    "This document contains data about the analysis itself followed by the pathways overview and " +
+                    "the most significant pathways overlaid with the analysis result. Users can download and store " +
+                    "this information in a convenient format to be checked in the future when the 'token' is not " +
+                    "longer available.")
     @ApiResponses(value = {
-            @ApiResponse(code = 404, message = "No result corresponding to the token was found"),
-            @ApiResponse(code = 410, message = "Result deleted due to a new data release")})
-    @RequestMapping(value = "/{token}/{species}/{filename}.pdf", method = RequestMethod.GET, produces = "application/pdf" )
+            @ApiResponse(responseCode = "404", description = "No result corresponding to the token was found"),
+            @ApiResponse(responseCode = "410", description = "Result deleted due to a new data release")})
+    @RequestMapping(value = "/{token}/{species}/{filename}.pdf", method = RequestMethod.GET, produces = "application/pdf")
     @ResponseBody
-    public void generatePdfReport( @ApiParam(name = "token", required = true, value = "The token associated with the data to query")
+    public void generatePdfReport(@Parameter(name = "token", required = true, description = "The token associated with the data to query")
                                   @PathVariable String token,
-                                   @ApiParam(name = "species", required = true, defaultValue = "Homo sapiens", value = "The species for which results will be reported")
+                                  @Parameter(name = "species", required = true, example = "Homo sapiens", description = "The species for which results will be reported")
                                   @PathVariable String species,
-                                   @SuppressWarnings("unused")
-                                   @ApiParam(name = "filename", required = true, defaultValue = "report", value = "The name of the file to be downloaded")
+                                  @SuppressWarnings("unused")
+                                  @Parameter(name = "filename", required = true, example = "report", description = "The name of the file to be downloaded")
                                   @PathVariable String filename,
-                                   @ApiParam(name = "number", value = "Number of pathways reported (max 50)", defaultValue = "25")
+                                  @Parameter(name = "number", description = "Number of pathways reported (max 50)", example = "25")
                                   @RequestParam(required = false, defaultValue = "25") Integer number,
-                                   @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
+                                  @Parameter(name = "resource", schema = @Schema(description = "the resource to sort", example = "TOTAL", allowableValues = {"TOTAL", "UNIPROT", "ENSEMBL", "CHEBI", "IUPHAR", "MIRBASE", "NCBI_PROTEIN", "EMBL", "COMPOUND", "PUBCHEM_COMPOUND"}))
                                   @RequestParam(required = false, defaultValue = "TOTAL") String resource,
-                                   @ApiParam(value = "Diagram Color Profile", defaultValue = "Modern", allowableValues = "Modern, Standard")
+                                  @Parameter(schema = @Schema(description = "Diagram Color Profile", example = "Modern", allowableValues = {"Modern", "Standard"}))
                                   @RequestParam(value = "diagramProfile", defaultValue = "Modern", required = false) String diagramProfile,
-                                   @ApiParam(value = "Analysis  Color Profile", defaultValue = "Standard", allowableValues = "Standard, Strosobar, Copper Plus")
+                                  @Parameter(schema = @Schema(description = "Analysis  Color Profile", example = "Standard", allowableValues = {"Standard", "Strosobar", "Copper Plus"}))
                                   @RequestParam(value = "analysisProfile", defaultValue = "Standard", required = false) String analysisProfile,
-                                   @ApiParam(value = "Diagram Color Profile", defaultValue = "Barium Lithium", allowableValues = "Cooper, Cooper Plus, Barium Lithium, Calcium Salts")
+                                  @Parameter(schema = @Schema(description = "Diagram Color Profile", example = "Barium Lithium", allowableValues = {"Cooper", "Cooper Plus", "Barium Lithium", "Calcium Salts"}))
                                   @RequestParam(value = "fireworksProfile", defaultValue = "Barium Lithium", required = false) String fireworksProfile,
                                   HttpServletRequest request, HttpServletResponse response) throws InterruptedException {
         long waitingTime = 0L;
@@ -122,7 +127,7 @@ public class ReportController {
             doAsyncSearchReport(map.get("ip-address"), waitingTime, reportTime, number, map.get("user-agent"));
         } catch (PdfException | IllegalStateException | IOException ise) {
             logger.debug(String.format("_REPORT_ format:PDF token:%s User_Closed_Connection", token));
-        } catch (AnalysisExporterException  e) {
+        } catch (AnalysisExporterException e) {
             throw new RuntimeException(e.getMessage());
         } finally {
             synchronized (REPORT_SEMAPHORE) {

@@ -26,14 +26,14 @@
         <fileupload.version>1.4</fileupload.version>
         <commons.codec>1.15</commons.codec>
         <jackson.version>2.12.2</jackson.version>
-        <swagger.version>3.0.0</swagger.version>
+        <springdoc.version>1.6.6</springdoc.version>
         <tika.version>2.0.0</tika.version>
 
         <servlet.version>4.0.1</servlet.version>
         <jsp.api.version>2.3.3</jsp.api.version>
         <jstl.api.version>1.2</jstl.api.version>
         <xalan.version>2.7.2</xalan.version>
-        <junit.version>5.8.0-M1</junit.version>
+        <junit.version>5.8.1</junit.version>
         <jaxb.core.version>3.0.0</jaxb.core.version>
         <commons.io.version>2.8.0</commons.io.version>
         <slf4j.api.version>2.0.0-alpha1</slf4j.api.version>
@@ -170,6 +170,12 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Apache Tika - Apache Tika™ toolkit detects and extracts metadata and text from over a thousand different file types -->
         <dependency>
@@ -187,9 +193,9 @@
 
         <!-- Swagger for API Documentation -->
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-            <version>${swagger.version}</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
 
         <dependency>

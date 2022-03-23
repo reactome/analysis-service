@@ -1,8 +1,9 @@
 package org.reactome.server.analysis.service.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.reactome.server.analysis.core.model.UserData;
 import org.reactome.server.analysis.core.result.model.AnalysisResult;
 import org.reactome.server.analysis.service.helper.AnalysisHelper;
@@ -18,44 +19,44 @@ import java.util.List;
  * @author Antonio Fabregat <fabregat@ebi.ac.uk>
  */
 @Controller
-@Api(tags={"identifier"})
+@Tag(name = "identifier", description = "Queries for only one identifier")
 @RequestMapping(value = "/identifier")
 public class IdentifierController {
 
     private AnalysisHelper controller;
 
-    @ApiOperation(value = "Analyse the identifier over the different species in the database and projects the result to Homo Sapiens",
-                  notes = "The projection is calculated by the orthologous slot in the Reactome database. Use page and pageSize " +
-                          "to reduce the amount of data retrieved. Use sortBy and order to sort the result by your preferred option. " +
-                          "The resource field will filter the results to show only those corresponding to the preferred molecule type " +
-                          "(TOTAL includes all the different molecules type)")
-    @RequestMapping(value = "/{id}/projection", method = RequestMethod.GET , produces = "application/json")
+    @Operation(summary = "Analyse the identifier over the different species in the database and projects the result to Homo Sapiens",
+            description = "The projection is calculated by the orthologous slot in the Reactome database. Use page and pageSize " +
+                    "to reduce the amount of data retrieved. Use sortBy and order to sort the result by your preferred option. " +
+                    "The resource field will filter the results to show only those corresponding to the preferred molecule type " +
+                    "(TOTAL includes all the different molecules type)")
+    @RequestMapping(value = "/{id}/projection", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public AnalysisResult getIdentifierToHuman( @ApiParam(name = "id", required = true, value = "The identifier of the element to be retrieved")
+    public AnalysisResult getIdentifierToHuman(@Parameter(name = "id", required = true, description = "The identifier of the element to be retrieved")
                                                @PathVariable String id,
-                                                @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
+                                               @Parameter(name = "interactors", description = "Include interactors", example = "false")
                                                @RequestParam(required = false, defaultValue = "false") Boolean interactors,
-                                                @ApiParam(name = "species", value = "list of species to filter the result (accepts taxonomy ids, species names and dbId)")
+                                               @Parameter(name = "species", description = "list of species to filter the result (accepts taxonomy ids, species names and dbId)")
                                                @RequestParam(required = false) String species,
-                                                @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
+                                               @Parameter(name = "pageSize", description = "pathways per page", example = "20")
                                                @RequestParam(required = false) Integer pageSize,
-                                                @ApiParam(name = "page", value = "page number", defaultValue = "1")
+                                               @Parameter(name = "page", description = "page number", example = "1")
                                                @RequestParam(required = false) Integer page,
-                                                @ApiParam(name = "sortBy", value = "how to sort the result", defaultValue = "ENTITIES_PVALUE", allowableValues = "NAME,TOTAL_ENTITIES,TOTAL_INTERACTORS,TOTAL_REACTIONS,FOUND_ENTITIES,FOUND_INTERACTORS,FOUND_REACTIONS,ENTITIES_RATIO,ENTITIES_PVALUE,ENTITIES_FDR,REACTIONS_RATIO")
+                                               @Parameter(name = "sortBy", schema = @Schema(description = "how to sort the result", example = "ENTITIES_PVALUE", allowableValues = {"NAME", "TOTAL_ENTITIES", "TOTAL_INTERACTORS", "TOTAL_REACTIONS", "FOUND_ENTITIES", "FOUND_INTERACTORS", "FOUND_REACTIONS", "ENTITIES_RATIO", "ENTITIES_PVALUE", "ENTITIES_FDR", "REACTIONS_RATIO"}))
                                                @RequestParam(required = false) String sortBy,
-                                                @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
+                                               @Parameter(name = "order", schema = @Schema(description = "specifies the order", example = "ASC", allowableValues = {"ASC", "DESC"}))
                                                @RequestParam(required = false) String order,
-                                                @ApiParam(name = "resource", value = "resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
+                                               @Parameter(name = "resource", schema = @Schema(description = "resource to sort", example = "TOTAL", allowableValues = {"TOTAL", "UNIPROT", "ENSEMBL", "CHEBI", "IUPHAR", "MIRBASE", "NCBI_PROTEIN", "EMBL","COMPOUND", "PUBCHEM_COMPOUND"}))
                                                @RequestParam(required = false, defaultValue = "TOTAL") String resource,
-                                                @ApiParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", defaultValue = "1")
+                                               @Parameter(name = "pValue", description = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", example = "1")
                                                @RequestParam(required = false, defaultValue = "1") Double pValue,
-                                                @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)", defaultValue = "true")
+                                               @Parameter(name = "includeDisease", description = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)", example = "true")
                                                @RequestParam(required = false, defaultValue = "true") Boolean includeDisease,
-                                                @ApiParam(name = "min", value = "minimum number of contained entities per pathway (takes into account the resource)")
+                                               @Parameter(name = "min", description = "minimum number of contained entities per pathway (takes into account the resource)")
                                                @RequestParam(required = false) Integer min,
-                                                @ApiParam(name = "max", value = "maximum number of contained entities per pathway (takes into account the resource)")
+                                               @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
                                                @RequestParam(required = false) Integer max,
-                                                HttpServletRequest request) {
+                                               HttpServletRequest request) {
         UserData ud = controller.getUserData(id);
         List<Species> speciesList = controller.getSpeciesList(species);
         return controller.analyse(ud, request, true, interactors, includeDisease)
@@ -63,37 +64,37 @@ public class IdentifierController {
                 .getResultSummary(sortBy, order, resource, pageSize, page);
     }
 
-    @ApiOperation(value = "Analyse the identifier over the different species in the database",
-                  notes = "Use page and pageSize to reduce the amount of data retrieved. Use sortBy and order to sort the result by your " +
-                          "preferred option. The resource field will filter the results to show only those corresponding to the preferred " +
-                          "molecule type (TOTAL includes all the different molecules type)")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET , produces = "application/json")
+    @Operation(summary = "Analyse the identifier over the different species in the database",
+            description = "Use page and pageSize to reduce the amount of data retrieved. Use sortBy and order to sort the result by your " +
+                    "preferred option. The resource field will filter the results to show only those corresponding to the preferred " +
+                    "molecule type (TOTAL includes all the different molecules type)")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public AnalysisResult getIdentifier( @ApiParam(name = "id" , required = true, value = "The identifier of the element to be retrieved")
-                                       @PathVariable String id,
-                                         @ApiParam(name = "interactors", value = "Include interactors", defaultValue = "false")
-                                       @RequestParam(required = false, defaultValue = "false") Boolean interactors,
-                                         @ApiParam(name = "species", value = "list of species to filter the result (accepts taxonomy ids, species names and dbId)")
-                                       @RequestParam(required = false) String species,
-                                        @ApiParam(name = "pageSize", value = "pathways per page", defaultValue = "20")
-                                       @RequestParam(required = false) Integer pageSize,
-                                        @ApiParam(name = "page", value = "page number", defaultValue = "1")
-                                       @RequestParam(required = false) Integer page,
-                                        @ApiParam(name = "sortBy", value = "how to sort the result", defaultValue = "ENTITIES_PVALUE", allowableValues = "NAME,TOTAL_ENTITIES,TOTAL_INTERACTORS,TOTAL_REACTIONS,FOUND_ENTITIES,FOUND_INTERACTORS,FOUND_REACTIONS,ENTITIES_RATIO,ENTITIES_PVALUE,ENTITIES_FDR,REACTIONS_RATIO")
-                                       @RequestParam(required = false) String sortBy,
-                                        @ApiParam(name = "order", value = "specifies the order", defaultValue = "ASC", allowableValues = "ASC,DESC")
-                                       @RequestParam(required = false) String order,
-                                        @ApiParam(name = "resource", value = "the resource to sort", defaultValue = "TOTAL", allowableValues = "TOTAL,UNIPROT,ENSEMBL,CHEBI,IUPHAR,MIRBASE,NCBI_PROTEIN,EMBL,COMPOUND,PUBCHEM_COMPOUND")
-                                       @RequestParam(required = false, defaultValue = "TOTAL") String resource,
-                                        @ApiParam(name = "pValue", value = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", defaultValue = "1")
-                                       @RequestParam(required = false, defaultValue = "1") Double pValue,
-                                        @ApiParam(name = "includeDisease", value = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)", defaultValue = "true")
-                                       @RequestParam(required = false, defaultValue = "true") Boolean includeDisease,
-                                        @ApiParam(name = "min", value = "minimum number of contained entities per pathway (takes into account the resource)")
-                                       @RequestParam(required = false) Integer min,
-                                        @ApiParam(name = "max", value = "maximum number of contained entities per pathway (takes into account the resource)")
-                                       @RequestParam(required = false) Integer max,
-                                         HttpServletRequest request) {
+    public AnalysisResult getIdentifier(@Parameter(name = "id", required = true, description = "The identifier of the element to be retrieved")
+                                        @PathVariable String id,
+                                        @Parameter(name = "interactors", description = "Include interactors", example = "false")
+                                        @RequestParam(required = false, defaultValue = "false") Boolean interactors,
+                                        @Parameter(name = "species", description = "list of species to filter the result (accepts taxonomy ids, species names and dbId)")
+                                        @RequestParam(required = false) String species,
+                                        @Parameter(name = "pageSize", description = "pathways per page", example = "20")
+                                        @RequestParam(required = false) Integer pageSize,
+                                        @Parameter(name = "page", description = "page number", example = "1")
+                                        @RequestParam(required = false) Integer page,
+                                        @Parameter(name = "sortBy", schema = @Schema(description = "how to sort the result", example = "ENTITIES_PVALUE", allowableValues = {"NAME", "TOTAL_ENTITIES", "TOTAL_INTERACTORS", "TOTAL_REACTIONS", "FOUND_ENTITIES", "FOUND_INTERACTORS", "FOUND_REACTIONS", "ENTITIES_RATIO", "ENTITIES_PVALUE", "ENTITIES_FDR", "REACTIONS_RATIO"}))
+                                        @RequestParam(required = false) String sortBy,
+                                        @Parameter(name = "order", schema = @Schema(description = "specifies the order", example = "ASC", allowableValues = {"ASC", "DESC"}))
+                                        @RequestParam(required = false) String order,
+                                        @Parameter(name = "resource", schema = @Schema(description = "the resource to sort", example = "TOTAL", allowableValues = {"TOTAL", "UNIPROT", "ENSEMBL", "CHEBI", "IUPHAR", "MIRBASE", "NCBI_PROTEIN", "EMBL", "COMPOUND", "PUBCHEM_COMPOUND"}))
+                                        @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                        @Parameter(name = "pValue", description = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", example = "1")
+                                        @RequestParam(required = false, defaultValue = "1") Double pValue,
+                                        @Parameter(name = "includeDisease", description = "set to 'false' to exclude the disease pathways from the result (it does not alter the statistics)", example = "true")
+                                        @RequestParam(required = false, defaultValue = "true") Boolean includeDisease,
+                                        @Parameter(name = "min", description = "minimum number of contained entities per pathway (takes into account the resource)")
+                                        @RequestParam(required = false) Integer min,
+                                        @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
+                                        @RequestParam(required = false) Integer max,
+                                        HttpServletRequest request) {
         UserData ud = controller.getUserData(id);
         List<Species> speciesList = controller.getSpeciesList(species);
         return controller.analyse(ud, request, false, interactors, includeDisease)
