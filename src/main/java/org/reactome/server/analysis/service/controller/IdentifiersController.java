@@ -72,7 +72,9 @@ public class IdentifiersController {
     @Operation(summary = "Analyse the post identifiers over the different species",
             description = "Use page and pageSize to reduce the amount of data retrieved. Use sortBy and order to sort the result by your " +
                     "preferred option. The resource field will filter the results to show only those corresponding to the preferred " +
-                    "molecule type (TOTAL includes all the different molecules type)")
+                    "molecule type (TOTAL includes all the different molecules type). " +
+                    "The token which includes analysis results are available for 7 days after your last execution, " +
+                    "you have to re-generate it if you would like to keep using the token.")
     @ApiResponses({@ApiResponse(responseCode = "400", description = "Bad request")})
     @RequestMapping(value = "/", method = RequestMethod.POST, consumes = "text/plain", produces = "application/json")
     @ResponseBody
