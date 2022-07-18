@@ -35,7 +35,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${analysis.data.tmp}")
     String analysisDataTmpPath;
 
-
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         ObjectMapper objectMapper = new ObjectMapper();
