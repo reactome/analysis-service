@@ -31,7 +31,7 @@ public class AnalysisServiceSwaggerConfig {
                                 .url("https://creativecommons.org/licenses/by/3.0/legalcode"))
                         .termsOfService("/license")
                         .contact(new Contact()
-                                .name("Reaction")
+                                .name("Reactome")
                                 .email("help@reactome.org")
                                 .url("https://reactome.org"))
                 );
