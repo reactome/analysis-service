@@ -11,6 +11,7 @@ import org.reactome.server.analysis.core.result.model.AnalysisResult;
 import org.reactome.server.analysis.service.helper.AnalysisHelper;
 import org.reactome.server.graph.domain.model.Species;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -123,7 +124,7 @@ public class IdentifiersController {
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "413", description = "The file size is larger than the maximum configured size (50MB)"),
             @ApiResponse(responseCode = "415", description = "Unsupported Media Type (only 'text/plain')")})
-    @RequestMapping(value = "/form/projection", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/form/projection",  produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public AnalysisResult getPostFileToHuman(@Parameter(name = "file", required = true, description = "A file with the data to be analysed")
                                              @RequestPart MultipartFile file,
@@ -162,7 +163,7 @@ public class IdentifiersController {
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "413", description = "The file size is larger than the maximum configured size (50MB)"),
             @ApiResponse(responseCode = "415", description = "Unsupported Media Type (only 'text/plain')")})
-    @RequestMapping(value = "/form", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/form", produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public AnalysisResult getPostFile(@Parameter(name = "file", required = true, description = "A file with the data to be analysed")
                                       @RequestPart MultipartFile file,

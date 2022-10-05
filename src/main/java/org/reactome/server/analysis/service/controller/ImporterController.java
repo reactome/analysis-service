@@ -55,7 +55,7 @@ public class ImporterController {
             @ApiResponse(responseCode = "400", description = "Bad request. See more details in the response body"),
             @ApiResponse(responseCode = "413", description = "The file size is larger than the maximum configured size (50MB)"),
             @ApiResponse(responseCode = "415", description = "Unsupported Media Type (only 'text/plain' or 'application/json')")})
-    @RequestMapping(value = "/form", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value = "/form", produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public AnalysisSummary getPostFile(@Parameter(name = "file", required = true, description = "A file with the data to be analysed")
                                        @RequestPart MultipartFile file,
