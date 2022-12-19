@@ -50,7 +50,7 @@ export MAVEN_OPTS="-Xms2048m -Xmx5120m"
 
 ##### Running Analysis Service activating ```AnalysisService-Local``` profile
 ```console
-mvn tomcat7:run -P AnalysisService-Local
+mvn spring-boot:run -P AnalysisService-Local
 ```
 
 in case you didn't set up the profile it is still possible to run Reactome Analysis Service. You may need to add all the properties into a command-line call.
