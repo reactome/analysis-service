@@ -9,7 +9,7 @@
     <description>Pathway enrichment and expression analysis as well as species comparison tool</description>
 
     <parent>
-        <groupId>org.reactome.server</groupId>
+        <groupId>org.reactome.maven</groupId>
         <artifactId>reactome-parent</artifactId>
         <version>1.0.0</version>
     </parent>
