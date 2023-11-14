@@ -160,13 +160,13 @@ public class AnalysisHelper {
 
     }
 
-    public List<MappedEntity> getMapping(UserData userData, boolean toHuman, boolean includeInteractors) {
+    public List<MappedEntity> getMapping(UserData userData, boolean toHuman, boolean includeInteractors, boolean importableOnly) {
         Set<String> identifiers = new HashSet<>();
         for (AnalysisIdentifier identifier : userData.getIdentifiers()) {
             identifiers.add(identifier.getId());
         }
         SpeciesNode speciesNode = toHuman ? SpeciesNodeFactory.getHumanNode() : null;
-        return identifiersMapping.run(identifiers, speciesNode, includeInteractors);
+        return identifiersMapping.run(identifiers, speciesNode, includeInteractors, importableOnly);
     }
 
     public <T> List<T> filter(List<T> list, Integer pageSize, Integer page){

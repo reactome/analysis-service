@@ -38,9 +38,12 @@ public class MappingController {
             )
             @RequestBody String input,
             @Parameter(name = "interactors", description = "Include interactors", example = "false")
-            @RequestParam(required = false, defaultValue = "false") Boolean interactors) {
+            @RequestParam(required = false, defaultValue = "false") Boolean interactors,
+            @Parameter(name = "importableOnly", description = "Only include resources which can be later imported", example = "false")
+            @RequestParam(required = false, defaultValue = "false") Boolean importableOnly
+    ) {
         UserData ud = controller.getUserData(input);
-        return controller.getMapping(ud, true, interactors);
+        return controller.getMapping(ud, true, interactors, importableOnly);
     }
 
     @Operation(description = "Maps the post identifiers over the different species")
@@ -54,9 +57,11 @@ public class MappingController {
             )
             @RequestBody String input,
             @Parameter(name = "interactors", description = "Include interactors", example = "false")
-            @RequestParam(required = false, defaultValue = "false") Boolean interactors) {
+            @RequestParam(required = false, defaultValue = "false") Boolean interactors,
+            @Parameter(name = "importableOnly", description = "Only include resources which can be later imported", example = "false")
+            @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
         UserData ud = controller.getUserData(input);
-        return controller.getMapping(ud, false, interactors);
+        return controller.getMapping(ud, false, interactors, false);
     }
 
     @Operation(summary = "Maps the identifiers in the file over the different species and projects the result to Homo Sapiens",
@@ -70,9 +75,11 @@ public class MappingController {
     public List<MappedEntity> getMappingPostFileToHuman(@Parameter(name = "file", required = true, description = "A file with the data to be mapped")
                                                         @RequestPart MultipartFile file,
                                                         @Parameter(name = "interactors", description = "Include interactors", example = "false")
-                                                        @RequestParam(required = false, defaultValue = "false") Boolean interactors) {
+                                                        @RequestParam(required = false, defaultValue = "false") Boolean interactors,
+                                                        @Parameter(name = "importableOnly", description = "Only include resources which can be later imported", example = "false")
+                                                        @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
         UserData ud = controller.getUserData(file);
-        return controller.getMapping(ud, true, interactors);
+        return controller.getMapping(ud, true, interactors, importableOnly);
     }
 
     @Operation(description = "Maps the identifiers in the file over the different species")
@@ -80,14 +87,16 @@ public class MappingController {
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "413", description = "The file size is larger than the maximum configured size (50MB)"),
             @ApiResponse(responseCode = "415", description = "Unsupported Media Type (only 'text/plain')")})
-    @PostMapping(value = "/form",  produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/form", produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public List<MappedEntity> getMappingPostFile(@Parameter(name = "file", required = true, description = "A file with the data to be mapped")
                                                  @RequestPart MultipartFile file,
                                                  @Parameter(name = "interactors", description = "Include interactors", example = "false")
-                                                 @RequestParam(required = false, defaultValue = "false") Boolean interactors) {
+                                                 @RequestParam(required = false, defaultValue = "false") Boolean interactors,
+                                                 @Parameter(name = "importableOnly", description = "Only include resources which can be later imported", example = "false")
+                                                 @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
         UserData ud = controller.getUserData(file);
-        return controller.getMapping(ud, false, interactors);
+        return controller.getMapping(ud, false, interactors, importableOnly);
     }
 
     @Operation(summary = "Maps the identifiers contained in the provided url over the different species and projects the result to Homo Sapiens",
@@ -106,9 +115,11 @@ public class MappingController {
             )
             @RequestBody String url,
             @Parameter(name = "interactors", description = "Include interactors", example = "false")
-            @RequestParam(required = false, defaultValue = "false") Boolean interactors) {
+            @RequestParam(required = false, defaultValue = "false") Boolean interactors,
+            @Parameter(name = "importableOnly", description = "Only include resources which can be later imported", example = "false")
+            @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
         UserData ud = controller.getUserDataFromURL(url);
-        return controller.getMapping(ud, true, interactors);
+        return controller.getMapping(ud, true, interactors, importableOnly);
     }
 
     @Operation(summary = "Maps the identifiers contained in the provided url over the different species")
@@ -126,9 +137,11 @@ public class MappingController {
                                                 )
                                                 @RequestBody String url,
                                                 @Parameter(name = "interactors", description = "Include interactors", example = "false")
-                                                @RequestParam(required = false, defaultValue = "false") Boolean interactors) {
+                                                @RequestParam(required = false, defaultValue = "false") Boolean interactors,
+                                                @Parameter(name = "importableOnly", description = "Only include resources which can be later imported", example = "false")
+                                                @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
         UserData ud = controller.getUserDataFromURL(url);
-        return controller.getMapping(ud, false, interactors);
+        return controller.getMapping(ud, false, interactors, importableOnly);
     }
 
     @Autowired

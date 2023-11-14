@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.reactome.server.analysis.core.model.UserData;
+import org.reactome.server.analysis.core.result.AnalysisStoredResult;
 import org.reactome.server.analysis.core.result.model.AnalysisResult;
 import org.reactome.server.analysis.service.helper.AnalysisHelper;
 import org.reactome.server.graph.domain.model.Species;
@@ -63,11 +64,13 @@ public class IdentifiersController {
             @RequestParam(required = false) Integer min,
             @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
             @RequestParam(required = false) Integer max,
+            @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+            @RequestParam(required = false, defaultValue = "false") Boolean importableOnly,
             HttpServletRequest request) {
         UserData ud = controller.getUserData(input);
         return controller.analyse(ud, request, true, interactors, includeDisease)
-                .filterPathways(resource, pValue, includeDisease, min, max)
-                .getResultSummary(sortBy, order, resource, pageSize, page);
+                .filterPathways(resource, pValue, includeDisease, min, max, importableOnly)
+                .getResultSummary(sortBy, order, resource, pageSize, page, importableOnly);
     }
 
     @Operation(summary = "Analyse the post identifiers over the different species",
@@ -96,7 +99,7 @@ public class IdentifiersController {
             @RequestParam(required = false) String sortBy,
             @Parameter(name = "order", schema = @Schema(description = "specifies the order", example = "ASC", allowableValues = {"ASC", "DESC"}))
             @RequestParam(required = false) String order,
-            @Parameter(name = "resource", schema = @Schema(description = "the resource to sort", example = "TOTAL", allowableValues = {"TOTAL", "UNIPROT", "ENSEMBL", "CHEBI", "IUPHAR", "MIRBASE", "NCBI_PROTEIN", "EMBL","COMPOUND", "PUBCHEM_COMPOUND"}))
+            @Parameter(name = "resource", schema = @Schema(description = "the resource to sort", example = "TOTAL", allowableValues = {"TOTAL", "UNIPROT", "ENSEMBL", "CHEBI", "IUPHAR", "MIRBASE", "NCBI_PROTEIN", "EMBL", "COMPOUND", "PUBCHEM_COMPOUND"}))
             @RequestParam(required = false, defaultValue = "TOTAL") String resource,
             @Parameter(name = "pValue", description = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", example = "1")
             @RequestParam(required = false, defaultValue = "1") Double pValue,
@@ -106,12 +109,14 @@ public class IdentifiersController {
             @RequestParam(required = false) Integer min,
             @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
             @RequestParam(required = false) Integer max,
+            @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+            @RequestParam(required = false, defaultValue = "false") Boolean importableOnly,
             HttpServletRequest request) {
         UserData ud = controller.getUserData(input);
         List<Species> speciesList = controller.getSpeciesList(species);
         return controller.analyse(ud, request, false, interactors, includeDisease)
-                .filterPathways(speciesList, resource, pValue, includeDisease, min, max)
-                .getResultSummary(sortBy, order, resource, pageSize, page);
+                .filterPathways(speciesList, resource, pValue, includeDisease, min, max, importableOnly)
+                .getResultSummary(sortBy, order, resource, pageSize, page, importableOnly);
     }
 
 
@@ -124,7 +129,7 @@ public class IdentifiersController {
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "413", description = "The file size is larger than the maximum configured size (50MB)"),
             @ApiResponse(responseCode = "415", description = "Unsupported Media Type (only 'text/plain')")})
-    @PostMapping(value = "/form/projection",  produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/form/projection", produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public AnalysisResult getPostFileToHuman(@Parameter(name = "file", required = true, description = "A file with the data to be analysed")
                                              @RequestPart MultipartFile file,
@@ -138,7 +143,7 @@ public class IdentifiersController {
                                              @RequestParam(required = false) String sortBy,
                                              @Parameter(name = "order", schema = @Schema(description = "specifies the order", example = "ASC", allowableValues = {"ASC", "DESC"}))
                                              @RequestParam(required = false) String order,
-                                             @Parameter(name = "resource", schema = @Schema(description = "the resource to sort", example = "TOTAL", allowableValues = {"TOTAL", "UNIPROT", "ENSEMBL", "CHEBI", "IUPHAR", "MIRBASE", "NCBI_PROTEIN", "EMBL","COMPOUND", "PUBCHEM_COMPOUND"}))
+                                             @Parameter(name = "resource", schema = @Schema(description = "the resource to sort", example = "TOTAL", allowableValues = {"TOTAL", "UNIPROT", "ENSEMBL", "CHEBI", "IUPHAR", "MIRBASE", "NCBI_PROTEIN", "EMBL", "COMPOUND", "PUBCHEM_COMPOUND"}))
                                              @RequestParam(required = false, defaultValue = "TOTAL") String resource,
                                              @Parameter(name = "pValue", description = "defines the pValue threshold. Only hit pathway with pValue equals or below the threshold will be returned", example = "1")
                                              @RequestParam(required = false, defaultValue = "1") Double pValue,
@@ -148,11 +153,13 @@ public class IdentifiersController {
                                              @RequestParam(required = false) Integer min,
                                              @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
                                              @RequestParam(required = false) Integer max,
+                                             @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+                                             @RequestParam(required = false, defaultValue = "false") Boolean importableOnly,
                                              HttpServletRequest request) {
         UserData ud = controller.getUserData(file);
         return controller.analyse(ud, request, true, interactors, file.getOriginalFilename(), includeDisease)
-                .filterPathways(resource, pValue, includeDisease, min, max)
-                .getResultSummary(sortBy, order, resource, pageSize, page);
+                .filterPathways(resource, pValue, includeDisease, min, max, importableOnly)
+                .getResultSummary(sortBy, order, resource, pageSize, page, importableOnly);
     }
 
     @Operation(summary = "Analyse the identifiers in the file over the different species",
@@ -189,12 +196,14 @@ public class IdentifiersController {
                                       @RequestParam(required = false) Integer min,
                                       @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
                                       @RequestParam(required = false) Integer max,
+                                      @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+                                      @RequestParam(required = false, defaultValue = "false") Boolean importableOnly,
                                       HttpServletRequest request) {
         UserData ud = controller.getUserData(file);
         List<Species> speciesList = controller.getSpeciesList(species);
         return controller.analyse(ud, request, false, interactors, file.getOriginalFilename(), includeDisease)
-                .filterPathways(speciesList, resource, pValue, includeDisease, min, max)
-                .getResultSummary(sortBy, order, resource, pageSize, page);
+                .filterPathways(speciesList, resource, pValue, includeDisease, min, max, importableOnly)
+                .getResultSummary(sortBy, order, resource, pageSize, page, importableOnly);
     }
 
     @Operation(summary = "Analyse the identifiers contained in the provided url over the different species and projects the result to Homo Sapiens",
@@ -235,12 +244,14 @@ public class IdentifiersController {
             @RequestParam(required = false) Integer min,
             @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
             @RequestParam(required = false) Integer max,
+            @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+            @RequestParam(required = false, defaultValue = "false") Boolean importableOnly,
             HttpServletRequest request) {
         UserData ud = controller.getUserDataFromURL(url);
         String fileName = controller.getFileNameFromURL(url);
         return controller.analyse(ud, request, true, interactors, fileName, includeDisease)
-                .filterPathways(resource, pValue, includeDisease, min, max)
-                .getResultSummary(sortBy, order, resource, pageSize, page);
+                .filterPathways(resource, pValue, includeDisease, min, max, importableOnly)
+                .getResultSummary(sortBy, order, resource, pageSize, page, importableOnly);
     }
 
     @Operation(summary = "Analyse the identifiers contained in the provided url over the different species",
@@ -282,13 +293,15 @@ public class IdentifiersController {
             @RequestParam(required = false) Integer min,
             @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
             @RequestParam(required = false) Integer max,
+            @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+            @RequestParam(required = false, defaultValue = "false") Boolean importableOnly,
             HttpServletRequest request) {
         UserData ud = controller.getUserDataFromURL(url);
         String fileName = controller.getFileNameFromURL(url);
         List<Species> speciesList = controller.getSpeciesList(species);
         return controller.analyse(ud, request, false, interactors, fileName, includeDisease)
-                .filterPathways(speciesList, resource, pValue, includeDisease, min, max)
-                .getResultSummary(sortBy, order, resource, pageSize, page);
+                .filterPathways(speciesList, resource, pValue, includeDisease, min, max, importableOnly)
+                .getResultSummary(sortBy, order, resource, pageSize, page, importableOnly);
     }
 
     @Autowired

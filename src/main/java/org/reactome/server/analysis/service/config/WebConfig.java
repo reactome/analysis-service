@@ -108,9 +108,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public ReactomeGraphConfig graphCore(@Value("${spring.neo4j.uri}") String uri,
+                                         @Value("${spring.data.neo4j.database}") String database,
                                          @Value("${spring.neo4j.authentication.username}") String userName,
                                          @Value("${spring.neo4j.authentication.password}") String password) {
-        return new ReactomeGraphConfig(uri, userName, password);
+        return new ReactomeGraphConfig(uri, userName, password, database);
     }
 
     @Bean

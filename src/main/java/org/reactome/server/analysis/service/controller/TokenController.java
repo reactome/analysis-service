@@ -61,15 +61,17 @@ public class TokenController {
                                    @Parameter(name = "min", description = "minimum number of contained entities per pathway (takes into account the resource)")
                                    @RequestParam(required = false) Integer min,
                                    @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
-                                   @RequestParam(required = false) Integer max) {
+                                   @RequestParam(required = false) Integer max,
+                                   @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+                                   @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
         List<Species> speciesList = analysis.getSpeciesList(species);
         AnalysisStoredResult asr = this.token.getFromToken(token);
 
         if (includeDisease != null) asr.getSummary().setIncludeDisease(includeDisease);
         else includeDisease = asr.getSummary().isIncludeDisease();
 
-        return asr.filterPathways(speciesList, resource, pValue, includeDisease, min, max)
-                .getResultSummary(sortBy, order, resource, pageSize, page);
+        return asr.filterPathways(speciesList, resource, pValue, includeDisease, min, max, importableOnly)
+                .getResultSummary(sortBy, order, resource, pageSize, page, importableOnly);
     }
 
     @Operation(summary = "Returns the result for the pathway ids sent by post (when they are present in the original result)",
@@ -94,6 +96,8 @@ public class TokenController {
                                                        @RequestParam(required = false) Integer min,
                                                        @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
                                                        @RequestParam(required = false) Integer max,
+                                                       @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+                                                       @RequestParam(required = false, defaultValue = "false") Boolean importableOnly,
                                                        @io.swagger.v3.oas.annotations.parameters.RequestBody(
                                                                description = "<b>input</b> A comma separated list with the identifiers of the pathways of interest (NOTE: is plain text, not json)",
                                                                required = true
@@ -106,8 +110,8 @@ public class TokenController {
         if (includeDisease != null) asr.getSummary().setIncludeDisease(includeDisease);
         else includeDisease = asr.getSummary().isIncludeDisease();
 
-        return asr.filterPathways(speciesList, resource, pValue, includeDisease, min, max)
-                .filterByPathways(inputIdentifiers, resource);
+        return asr.filterPathways(speciesList, resource, pValue, includeDisease, min, max, importableOnly)
+                .filterByPathways(inputIdentifiers, resource, importableOnly);
     }
 
     @Operation(summary = "Filters the result by species")
@@ -125,9 +129,11 @@ public class TokenController {
                                                  @Parameter(name = "order", schema = @Schema(description = "specifies the order", example = "ASC", allowableValues = {"ASC", "DESC"}))
                                                  @RequestParam(required = false) String order,
                                                  @Parameter(name = "resource", schema = @Schema(description = "the resource to sort", example = "TOTAL", allowableValues = {"TOTAL", "UNIPROT", "ENSEMBL", "CHEBI", "IUPHAR", "MIRBASE", "NCBI_PROTEIN", "EMBL", "COMPOUND", "PUBCHEM_COMPOUND"}))
-                                                 @RequestParam(required = false, defaultValue = "TOTAL") String resource) {
+                                                 @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                                 @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+                                                 @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
         Species s = analysis.getSpecies(species);
-        return this.token.getFromToken(token).filterBySpecies(s.getDbId(), resource, sortBy, order);
+        return this.token.getFromToken(token).filterBySpecies(s.getDbId(), resource, sortBy, order, importableOnly);
     }
 
     @Operation(summary = "Returns the page where the corresponding pathway is taking into account the passed parameters",
@@ -158,14 +164,16 @@ public class TokenController {
                                 @Parameter(name = "min", description = "minimum number of contained entities per pathway (takes into account the resource)")
                                 @RequestParam(required = false) Integer min,
                                 @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
-                                @RequestParam(required = false) Integer max) {
+                                @RequestParam(required = false) Integer max,
+                                @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+                                @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
 
         AnalysisStoredResult asr = this.token.getFromToken(token);
 
         if (includeDisease != null) asr.getSummary().setIncludeDisease(includeDisease);
         else includeDisease = asr.getSummary().isIncludeDisease();
 
-        return asr.filterPathways(resource, pValue, includeDisease, min, max)
+        return asr.filterPathways(resource, pValue, includeDisease, min, max, importableOnly)
                 .getPage(pathway, sortBy, order, resource, pageSize);
     }
 
@@ -310,15 +318,17 @@ public class TokenController {
                                                     @Parameter(name = "min", description = "minimum number of contained entities per pathway (takes into account the resource)")
                                                     @RequestParam(required = false) Integer min,
                                                     @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
-                                                    @RequestParam(required = false) Integer max) {
+                                                    @RequestParam(required = false) Integer max,
+                                                    @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+                                                    @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
 
         AnalysisStoredResult asr = this.token.getFromToken(token);
 
         if (includeDisease != null) asr.getSummary().setIncludeDisease(includeDisease);
         else includeDisease = asr.getSummary().isIncludeDisease();
 
-        return asr.filterPathways(resource, pValue, includeDisease, min, max)
-                .getFoundReactions(pathway, resource);
+        return asr.filterPathways(resource, pValue, includeDisease, min, max, importableOnly)
+                .getFoundReactions(pathway, resource, importableOnly);
     }
 
     @Operation(summary = "Returns the reaction ids of the pathway ids sent by post that are present in the original result",
@@ -345,15 +355,17 @@ public class TokenController {
                                                      @Parameter(name = "min", description = "minimum number of contained entities per pathway (takes into account the resource)")
                                                      @RequestParam(required = false) Integer min,
                                                      @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
-                                                     @RequestParam(required = false) Integer max) {
+                                                     @RequestParam(required = false) Integer max,
+                                                     @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+                                                     @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
         List<String> pathwayIds = analysis.getInputIdentifiers(input);
         AnalysisStoredResult asr = this.token.getFromToken(token);
 
         if (includeDisease != null) asr.getSummary().setIncludeDisease(includeDisease);
         else includeDisease = asr.getSummary().isIncludeDisease();
 
-        return asr.filterPathways(resource, pValue, includeDisease, min, max)
-                .getFoundReactions(pathwayIds, resource);
+        return asr.filterPathways(resource, pValue, includeDisease, min, max, importableOnly)
+                .getFoundReactions(pathwayIds, resource, importableOnly);
     }
 
     @Operation(summary = "Returns the resources summary associated with the token",
