@@ -61,7 +61,7 @@ public class MappingController {
             @Parameter(name = "importableOnly", description = "Only include resources which can be later imported", example = "false")
             @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
         UserData ud = controller.getUserData(input);
-        return controller.getMapping(ud, false, interactors, false);
+        return controller.getMapping(ud, false, interactors, importableOnly);
     }
 
     @Operation(summary = "Maps the identifiers in the file over the different species and projects the result to Homo Sapiens",
