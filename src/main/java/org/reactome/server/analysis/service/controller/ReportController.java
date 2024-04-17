@@ -89,6 +89,9 @@ public class ReportController {
                                   @RequestParam(required = false, defaultValue = "25") Integer number,
                                   @Parameter(name = "resource", schema = @Schema(description = "the resource to sort", example = "TOTAL", allowableValues = {"TOTAL", "UNIPROT", "ENSEMBL", "CHEBI", "IUPHAR", "MIRBASE", "NCBI_PROTEIN", "EMBL", "COMPOUND", "PUBCHEM_COMPOUND"}))
                                   @RequestParam(required = false, defaultValue = "TOTAL") String resource,
+                                  @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+                                  @RequestParam(required = false, defaultValue = "false") Boolean importableOnly,
+
                                   @Parameter(schema = @Schema(description = "Diagram Color Profile", example = "Modern", allowableValues = {"Modern", "Standard"}))
                                   @RequestParam(value = "diagramProfile", defaultValue = "Modern", required = false) String diagramProfile,
                                   @Parameter(schema = @Schema(description = "Analysis  Color Profile", example = "Standard", allowableValues = {"Standard", "Strosobar", "Copper Plus"}))
@@ -118,7 +121,7 @@ public class ReportController {
             response.setHeader("Content-Disposition", "attachment; filename=\"" + "report.pdf" + "\"");
 
             OutputStream os = response.getOutputStream();
-            analysisReport.create(asr, resource, s.getDbId(), number, diagramProfile, analysisProfile, fireworksProfile, os);
+            analysisReport.create(asr, resource, s.getDbId(), number, importableOnly, diagramProfile, analysisProfile, fireworksProfile, os);
 
             Long reportTime = System.currentTimeMillis() - reportStart;
             logger.debug(String.format("_REPORT_ format:PDF token:%s pathways:%d time:%s", token, number, FormatUtils.getTimeFormatted(reportTime)));

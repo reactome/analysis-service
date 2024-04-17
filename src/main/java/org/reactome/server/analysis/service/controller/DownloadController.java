@@ -56,9 +56,11 @@ public class DownloadController {
     @RequestMapping(value = "/{token}/result.json", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public ExternalAnalysisResult downloadResultJSON(@Parameter(name = "token", required = true, description = "The token associated with the data to query")
-                                                     @PathVariable String token) {
+                                                     @PathVariable String token,
+                                                     @Parameter(name = "importableOnly", description = "Only include resources which can be later imported", example = "false")
+                                                     @RequestParam(required = false, defaultValue = "false") Boolean importableOnly) {
         AnalysisStoredResult result = this.token.getFromToken(token);
-        return new ExternalAnalysisResult(result, generalService.getDBInfo().getVersion());
+        return new ExternalAnalysisResult(result, generalService.getDBInfo().getVersion(), importableOnly);
     }
 
     @Operation(summary = "Returns the complete result in json format (gzipped)",

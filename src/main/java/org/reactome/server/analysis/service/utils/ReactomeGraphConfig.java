@@ -5,7 +5,7 @@ import org.reactome.server.tools.analysis.report.util.AnalysisReportGraphConfig;
 
 public class ReactomeGraphConfig {
 
-    public ReactomeGraphConfig(String uri, String user, String password) {
-        ReactomeGraphCore.initialise(uri, user,password, AnalysisReportGraphConfig.class);
+    public ReactomeGraphConfig(String uri, String user, String password, String databaseName) {
+        ReactomeGraphCore.initialise(uri, user, password, databaseName, AnalysisReportGraphConfig.class);
     }
 }

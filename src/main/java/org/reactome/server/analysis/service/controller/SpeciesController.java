@@ -48,11 +48,13 @@ public class SpeciesController {
                                                @RequestParam(required = false) Integer min,
                                                @Parameter(name = "max", description = "maximum number of contained entities per pathway (takes into account the resource)")
                                                @RequestParam(required = false) Integer max,
+                                               @Parameter(name = "importableOnly", description = "Filters resources to only includes importable ones")
+                                               @RequestParam(required = false, defaultValue = "false") Boolean importableOnly,
                                                HttpServletRequest request) {
         Long from = SpeciesNodeFactory.getHumanNode().getSpeciesID(); //For the time being let's do only human ;)
         return controller.compareSpecies(from, species, request)
-                .filterPathways(resource, pValue, true, min, max)
-                .getResultSummary(sortBy, order, resource, pageSize, page);
+                .filterPathways(resource, pValue, true, min, max, importableOnly)
+                .getResultSummary(sortBy, order, resource, pageSize, page, importableOnly);
     }
 
 
