@@ -4,14 +4,14 @@
     <groupId>org.reactome.server.tools</groupId>
     <artifactId>analysis-service</artifactId>
     <packaging>war</packaging>
-    <version>3.1.7-SNAPSHOT</version>
+    <version>3.1.7</version>
     <name>analysis-service</name>
     <description>Pathway enrichment and expression analysis as well as species comparison tool</description>
 
     <parent>
         <groupId>org.reactome.maven</groupId>
         <artifactId>reactome-parent</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
+        <version>1.0.4</version>
     </parent>
 
     <properties></properties>
