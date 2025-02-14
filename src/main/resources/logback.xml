@@ -16,7 +16,7 @@
             <maxFileSize>500MB</maxFileSize>
         </triggeringPolicy>
         <encoder>
-            <pattern>%d %-5level [%thread] %logger{0}: %msg%n</pattern>
+            <pattern>%d %-5level [@project.name@ - logback] [%thread] %logger{0}: %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -25,7 +25,7 @@
             <level>INFO</level>
         </filter>
         <encoder>
-            <pattern>%d %-5level [%thread] %logger{0}: %msg%n</pattern>
+            <pattern>%d %-5level [@project.name@ - logback] [%thread] %logger{0}: %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -34,7 +34,7 @@
             <level>INFO</level>
         </filter>
         <encoder>
-            <pattern>%d %-5level [%thread] %logger{0}: %msg%n</pattern>
+            <pattern>%d %-5level [@project.name@ - logback] [%thread] %logger{0}: %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -44,7 +44,7 @@
         </filter>
         <target>System.err</target>
         <encoder>
-            <pattern>%d %-5level: %msg%n</pattern>
+            <pattern>%d %-5level [@project.name@ - logback]: %msg%n</pattern>
         </encoder>
     </appender>
 
