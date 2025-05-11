@@ -20,7 +20,6 @@
         <name>Reactome</name>
         <url>https://reactome.org</url>
     </organization>
-
     <licenses>
         <license>
             <name>GNU Affero General Public License, Version 3</name>
