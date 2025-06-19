@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.reactome.maven</groupId>
         <artifactId>reactome-parent</artifactId>
-        <version>1.0.5</version>
+        <version>1.0.5-SNAPSHOT</version>
     </parent>
 
     <properties></properties>
@@ -25,11 +25,13 @@
         <dependency>
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-core</artifactId>
+            <version>3.6.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-report</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
