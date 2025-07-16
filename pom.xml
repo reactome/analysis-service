@@ -25,13 +25,11 @@
         <dependency>
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-core</artifactId>
-            <version>3.6.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.reactome.server.tools</groupId>
             <artifactId>analysis-report</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
