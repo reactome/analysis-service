@@ -16,8 +16,8 @@ Analysis Service is token based, so for every analysis request a TOKEN is associ
 ##### Git Clone
 
 ```console
-git clone https://github.com/reactome/AnalysisTools.git
-cd AnalysisTools; cd Service
+git clone https://github.com/reactome/AnalysisService.git
+cd AnalysisService
 ```
 
 ##### Configuring Maven Profile :memo:
