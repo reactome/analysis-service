@@ -160,7 +160,7 @@ public class ReportController {
             CredentialsProvider provider = new BasicCredentialsProvider();
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(reportUser, reportPassword);
             provider.setCredentials(AuthScope.ANY, credentials);
-            CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(provider).build();
+
             URIBuilder uriBuilder = new URIBuilder(this.reportURL + "/report/analysis/pdf/waiting");
             List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("ip", ip));
@@ -171,12 +171,15 @@ public class ReportController {
             uriBuilder.addParameters(params);
 
             HttpGet httpGet = new HttpGet(uriBuilder.toString());
-            CloseableHttpResponse response = client.execute(httpGet);
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode != 200) {
-                logger.error("[REP001] The url {} returned the code {} and the report hasn't been created.", uriBuilder, statusCode);
+
+            // Use try-with-resources to ensure both client and response are properly closed
+            try (CloseableHttpClient client = HttpClients.custom().setDefaultCredentialsProvider(provider).build();
+                 CloseableHttpResponse response = client.execute(httpGet)) {
+                int statusCode = response.getStatusLine().getStatusCode();
+                if (statusCode != 200) {
+                    logger.error("[REP001] The url {} returned the code {} and the report hasn't been created.", uriBuilder, statusCode);
+                }
             }
-            client.close();
         } catch (ConnectException e) {
             logger.error("[REP002] Report service is unavailable");
         } catch (IOException | URISyntaxException e) {
