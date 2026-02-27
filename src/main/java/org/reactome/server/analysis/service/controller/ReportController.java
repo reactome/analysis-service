@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ConnectException;
@@ -117,21 +118,29 @@ public class ReportController {
             long reportStart = System.currentTimeMillis();
             AnalysisStoredResult asr = this.token.getFromToken(token);
 
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            analysisReport.create(asr, resource, s.getDbId(), number, importableOnly, diagramProfile, analysisProfile, fireworksProfile, buffer);
+
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "attachment; filename=\"" + "report.pdf" + "\"");
-
+            response.setContentLength(buffer.size());
             OutputStream os = response.getOutputStream();
-            analysisReport.create(asr, resource, s.getDbId(), number, importableOnly, diagramProfile, analysisProfile, fireworksProfile, os);
+            buffer.writeTo(os);
+            os.flush();
 
             Long reportTime = System.currentTimeMillis() - reportStart;
             logger.debug(String.format("_REPORT_ format:PDF token:%s pathways:%d time:%s", token, number, FormatUtils.getTimeFormatted(reportTime)));
 
             Map<String, String> map = getReportInformation(request);
             doAsyncSearchReport(map.get("ip-address"), waitingTime, reportTime, number, map.get("user-agent"));
-        } catch (PdfException | IllegalStateException | IOException ise) {
+        } catch (PdfException | IllegalStateException e) {
+            logger.error(String.format("_REPORT_ format:PDF token:%s PDF_Generation_Failed", token), e);
+            try { response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to generate PDF report"); } catch (IOException ignored) {}
+        } catch (IOException e) {
             logger.debug(String.format("_REPORT_ format:PDF token:%s User_Closed_Connection", token));
         } catch (AnalysisExporterException e) {
-            throw new RuntimeException(e.getMessage());
+            logger.error(String.format("_REPORT_ format:PDF token:%s Export_Failed", token), e);
+            try { response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to generate PDF report"); } catch (IOException ignored) {}
         } finally {
             synchronized (REPORT_SEMAPHORE) {
                 REPORT_COUNT--;
