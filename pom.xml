@@ -193,10 +193,16 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
-                <!--<includes>-->
-                <!--<include>**/props/*.properties</include>-->
-                <!--<include>**/webconfig/*.json</include>  &lt;!&ndash; currently needs to be filtered to provide the deployment path of the webapp &ndash;&gt;-->
-                <!--</includes>-->
+                <excludes>
+                    <exclude>fonts/**</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>fonts/**</include>
+                </includes>
             </resource>
         </resources>
 
