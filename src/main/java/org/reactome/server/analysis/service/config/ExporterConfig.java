@@ -5,20 +5,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
-import javax.servlet.ServletContext;
+import java.io.IOException;
 
 @Configuration
 public class ExporterConfig {
     Logger log = LoggerFactory.getLogger("threadLogger");
     @Autowired
-    public ExporterConfig(ServletContext servletContext) {
-        String fontPath = servletContext.getRealPath("/resources/fonts");
-        if (fontPath != null) {
-            log.debug("Configuring Diagram Exporter with font path : " + fontPath);
-            DiagramExporterService.configureFontPath(fontPath);
-        } else {
-            log.error("Font path /resources/fonts could not be resolved from the webapp root");
-        }
+    public ExporterConfig(ResourceLoader loader) throws IOException {
+        Resource resource = loader.getResource("classpath:fonts");
+        String fontPath = resource.getFile().getAbsolutePath();
+        log.debug("Configuring Diagram Exporter with font path : " + fontPath);
+        DiagramExporterService.configureFontPath(fontPath);
     }
 }
