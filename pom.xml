@@ -14,7 +14,12 @@
         <version>1.0.5-SNAPSHOT</version>
     </parent>
 
-    <properties></properties>
+    <properties>
+        <batik.version>1.18</batik.version>
+        <fop.version>2.10</fop.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -200,6 +205,7 @@
             </resource>
         </resources>
 
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -251,6 +257,18 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>otf</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
             </plugin>
         </plugins>
     </build>

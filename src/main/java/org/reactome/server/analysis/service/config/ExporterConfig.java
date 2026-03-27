@@ -15,7 +15,7 @@ public class ExporterConfig {
     Logger log = LoggerFactory.getLogger("threadLogger");
     @Autowired
     public ExporterConfig(ResourceLoader loader) throws IOException {
-        Resource resource = loader.getResource("file:resources/fonts");
+        Resource resource = loader.getResource("classpath:fonts");
         String fontPath = resource.getFile().getAbsolutePath();
         log.debug("Configuring Diagram Exporter with font path : " + fontPath);
         DiagramExporterService.configureFontPath(fontPath);
